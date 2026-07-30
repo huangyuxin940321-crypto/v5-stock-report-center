@@ -1,0 +1,474 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI智能股票组合主理人系统V5.0 - 2026年7月28日收盘分析</title>
+    <style>
+        :root {
+            --bg-primary: #0f172a;
+            --bg-secondary: #1e293b;
+            --bg-card: #334155;
+            --text-primary: #f8fafc;
+            --text-secondary: #cbd5e1;
+            --up-color: #ef4444;
+            --down-color: #22c55e;
+            --accent: #3b82f6;
+            --warning: #f59e0b;
+            --danger: #dc2626;
+            --success: #10b981;
+            --border: #475569;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            line-height: 1.6;
+        }
+        .container { max-width: 1400px; margin: 0 auto; padding: 20px; }
+        header {
+            text-align: center;
+            padding: 30px 0;
+            border-bottom: 2px solid var(--accent);
+            margin-bottom: 30px;
+        }
+        header h1 { font-size: 2.2em; margin-bottom: 10px; }
+        header p { color: var(--text-secondary); font-size: 1.1em; }
+
+        .score-banner {
+            background: linear-gradient(135deg, #1e3a5f 0%, #0f172a 100%);
+            border-radius: 16px;
+            padding: 30px;
+            margin-bottom: 30px;
+            border: 1px solid var(--border);
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            align-items: center;
+        }
+        .score-item {
+            text-align: center;
+            padding: 20px;
+            background: rgba(255,255,255,0.05);
+            border-radius: 12px;
+        }
+        .score-value {
+            font-size: 3em;
+            font-weight: bold;
+            color: var(--danger);
+        }
+        .score-label { color: var(--text-secondary); margin-top: 8px; }
+        .score-status {
+            display: inline-block;
+            padding: 6px 16px;
+            border-radius: 20px;
+            background: var(--danger);
+            color: white;
+            font-weight: bold;
+            margin-top: 10px;
+        }
+
+        .section {
+            background: var(--bg-secondary);
+            border-radius: 12px;
+            padding: 24px;
+            margin-bottom: 24px;
+            border: 1px solid var(--border);
+        }
+        .section h2 {
+            color: var(--accent);
+            font-size: 1.5em;
+            margin-bottom: 16px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid var(--border);
+        }
+        .section h3 {
+            color: var(--text-primary);
+            font-size: 1.2em;
+            margin: 20px 0 12px;
+        }
+
+        .index-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 16px;
+            margin-bottom: 20px;
+        }
+        .index-card {
+            background: var(--bg-card);
+            border-radius: 10px;
+            padding: 16px;
+            text-align: center;
+            border-left: 4px solid var(--down-color);
+        }
+        .index-card h4 { color: var(--text-secondary); font-size: 0.9em; margin-bottom: 8px; }
+        .index-card .price { font-size: 1.4em; font-weight: bold; }
+        .index-card .change { font-size: 1.1em; font-weight: bold; margin-top: 4px; }
+        .up { color: var(--up-color); }
+        .down { color: var(--down-color); }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 16px 0;
+            font-size: 0.95em;
+        }
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid var(--border);
+        }
+        th {
+            background: var(--bg-card);
+            color: var(--accent);
+            font-weight: 600;
+        }
+        tr:hover { background: rgba(255,255,255,0.03); }
+
+        .rating {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 4px;
+            font-weight: bold;
+            font-size: 0.85em;
+        }
+        .rating-s-plus { background: #7c3aed; color: white; }
+        .rating-s { background: var(--accent); color: white; }
+        .rating-a { background: var(--success); color: white; }
+        .rating-b { background: var(--warning); color: black; }
+        .rating-c { background: #6b7280; color: white; }
+
+        .fund-stage {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 4px;
+            font-size: 0.85em;
+            font-weight: bold;
+        }
+        .stage-enter { background: var(--success); color: white; }
+        .stage-accel { background: var(--accent); color: white; }
+        .stage-peak { background: var(--warning); color: black; }
+        .stage-exit { background: var(--danger); color: white; }
+
+        .portfolio-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 24px;
+        }
+        .portfolio-card {
+            background: var(--bg-card);
+            border-radius: 10px;
+            padding: 20px;
+        }
+        .portfolio-card h3 {
+            color: var(--accent);
+            margin-bottom: 14px;
+            font-size: 1.15em;
+        }
+
+        .risk-banner {
+            background: linear-gradient(135deg, #7f1d1d 0%, #991b1b 100%);
+            border-radius: 12px;
+            padding: 24px;
+            margin-bottom: 24px;
+            text-align: center;
+        }
+        .risk-banner h2 { font-size: 2em; margin-bottom: 10px; }
+        .risk-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 16px;
+        }
+        .risk-card {
+            background: var(--bg-secondary);
+            border-radius: 10px;
+            padding: 18px;
+            border-left: 4px solid var(--danger);
+        }
+        .risk-card h4 { color: var(--danger); margin-bottom: 8px; }
+
+        .summary-box {
+            background: rgba(59, 130, 246, 0.1);
+            border-left: 4px solid var(--accent);
+            padding: 16px;
+            border-radius: 0 8px 8px 0;
+            margin: 16px 0;
+        }
+
+        .highlight {
+            color: var(--accent);
+            font-weight: bold;
+        }
+
+        footer {
+            text-align: center;
+            padding: 30px;
+            color: var(--text-secondary);
+            border-top: 1px solid var(--border);
+            margin-top: 40px;
+        }
+
+        @media (max-width: 768px) {
+            .index-grid { grid-template-columns: repeat(2, 1fr); }
+            .score-banner { grid-template-columns: 1fr; }
+            table { font-size: 0.85em; }
+            th, td { padding: 8px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>AI智能股票组合主理人系统V5.0</h1>
+            <p>2026年7月28日（周二）收盘完整分析报告</p>
+        </header>
+
+        <div class="score-banner">
+            <div class="score-item">
+                <div class="score-value">48</div>
+                <div class="score-label">A股市场评分</div>
+                <div class="score-status">风险市场</div>
+            </div>
+            <div class="score-item">
+                <div style="font-size: 2em; font-weight: bold; color: var(--danger);">0%-30%</div>
+                <div class="score-label">推荐仓位</div>
+            </div>
+            <div class="score-item">
+                <div style="font-size: 2em; font-weight: bold; color: var(--warning);">退潮期</div>
+                <div class="score-label">市场情绪周期</div>
+            </div>
+            <div class="score-item">
+                <div style="font-size: 2em; font-weight: bold; color: var(--danger);">红色预警</div>
+                <div class="score-label">风险等级</div>
+            </div>
+        </div>
+
+        <div class="summary-box">
+            <strong>今日核心观点：</strong>海外芯片恐慌情绪跨市场传导，A股科技硬件板块高位坍塌，红利与消费防御板块逆势走强。创业板单日暴跌7.35%，科创50跌6.33%，市场进入风险释放阶段，仓位必须收缩至防御水平。
+        </div>
+
+        <div class="section">
+            <h2>一、核心指数收盘</h2>
+            <div class="index-grid">
+                <div class="index-card">
+                    <h4>上证指数</h4>
+                    <div class="price">3813.31</div>
+                    <div class="change down">-1.16%</div>
+                </div>
+                <div class="index-card">
+                    <h4>深证成指</h4>
+                    <div class="price">13509.68</div>
+                    <div class="change down">-4.52%</div>
+                </div>
+                <div class="index-card">
+                    <h4>创业板指</h4>
+                    <div class="price">3327.03</div>
+                    <div class="change down">-7.35%</div>
+                </div>
+                <div class="index-card">
+                    <h4>沪深300</h4>
+                    <div class="price">4569.52</div>
+                    <div class="change down">-2.83%</div>
+                </div>
+                <div class="index-card">
+                    <h4>中证500</h4>
+                    <div class="price">7443.43</div>
+                    <div class="change down">-3.59%</div>
+                </div>
+                <div class="index-card">
+                    <h4>中证1000</h4>
+                    <div class="price">7026.28</div>
+                    <div class="change down">-2.80%</div>
+                </div>
+                <div class="index-card">
+                    <h4>科创50</h4>
+                    <div class="price">1693.48</div>
+                    <div class="change down">-6.33%</div>
+                </div>
+            </div>
+
+            <h3>市场情绪数据</h3>
+            <table>
+                <tr><th>指标</th><th>数值</th><th>解读</th></tr>
+                <tr><td>沪深两市成交额</td><td>约2.03万亿</td><td>较前日缩量508亿</td></tr>
+                <tr><td>上涨/下跌个股</td><td>约2600只 / 2700只</td><td>涨跌互半，科技权重股拖累指数</td></tr>
+                <tr><td>涨停/跌停</td><td>68只 / 50只</td><td>涨停跌停比接近1:1，情绪退潮</td></tr>
+                <tr><td>主力资金流向</td><td>净卖出约1086亿</td><td>机构大幅撤离科技股</td></tr>
+                <tr><td>个股涨跌中位数</td><td>约-0.05%</td><td>非全面恐慌，但权重股杀跌</td></tr>
+            </table>
+        </div>
+
+        <div class="section">
+            <h2>二、全球市场联动</h2>
+            <table>
+                <tr><th>市场/资产</th><th>表现</th><th>影响</th></tr>
+                <tr><td>美股道琼斯</td><td class="up">+0.51%</td><td>传统经济偏稳</td></tr>
+                <tr><td>美股纳斯达克</td><td class="down">-0.18%</td><td>科技股承压</td></tr>
+                <tr><td>英伟达</td><td class="down">-4.9%</td><td>AI硬件恐慌源头</td></tr>
+                <tr><td>费城半导体</td><td class="down">-2.23%</td><td>芯片情绪恶化</td></tr>
+                <tr><td>韩国KOSPI</td><td class="down">-10.84%</td><td>盘中熔断，存储崩盘</td></tr>
+                <tr><td>SK海力士（韩股）</td><td class="down">-14%</td><td>HBM需求预期动摇</td></tr>
+                <tr><td>COMEX黄金</td><td class="down">-0.64%</td><td>4050.9美元，小幅回调</td></tr>
+                <tr><td>WTI原油</td><td class="down">-1.6%</td><td>81.29美元，地缘溢价回落</td></tr>
+            </table>
+        </div>
+
+        <div class="section">
+            <h2>三、Layer 3 产业趋势TOP10</h2>
+            <table>
+                <tr><th>排名</th><th>产业方向</th><th>评分</th><th>核心逻辑</th><th>风险点</th></tr>
+                <tr><td>1</td><td>高股息红利（银行/公用事业/煤炭）</td><td class="highlight">88</td><td>Risk-off首选，险资增配，政策鼓励分红</td><td>经济复苏超预期</td></tr>
+                <tr><td>2</td><td>国产算力自主可控</td><td>82</td><td>长鑫上市催化，国产替代长期逻辑</td><td>海外需求下修，估值高位</td></tr>
+                <tr><td>3</td><td>食品饮料/大消费</td><td>80</td><td>防御属性+政策促消费，估值合理</td><td>消费复苏力度不足</td></tr>
+                <tr><td>4</td><td>创新药/脑机接口</td><td>78</td><td>政策支持+事件催化，短线资金活跃</td><td>业绩兑现周期长</td></tr>
+                <tr><td>5</td><td>半导体设备/材料</td><td>76</td><td>DUV光刻机突破预期，国产化提速</td><td>海外制裁升级</td></tr>
+                <tr><td>6</td><td>新能源（锂电/光伏/储能）</td><td>72</td><td>龙头估值回落，业绩底逐步确认</td><td>产能过剩</td></tr>
+                <tr><td>7</td><td>机器人/高端制造</td><td>70</td><td>产业趋势明确，特斯拉/华为催化</td><td>缺乏订单验证</td></tr>
+                <tr><td>8</td><td>有色金属</td><td>68</td><td>美元周期+供给约束</td><td>全球经济放缓</td></tr>
+                <tr><td>9</td><td>AI应用/软件</td><td>65</td><td>硬件跌后应用补涨逻辑</td><td>估值仍高</td></tr>
+                <tr><td>10</td><td>军工</td><td>62</td><td>地缘博弈+订单预期</td><td>缺乏催化</td></tr>
+            </table>
+        </div>
+
+        <div class="section">
+            <h2>四、Layer 4 资金主线TOP5</h2>
+            <table>
+                <tr><th>排名</th><th>主线</th><th>资金评分</th><th>资金状态</th><th>阶段标识</th></tr>
+                <tr><td>1</td><td>国有大型银行</td><td class="highlight">92</td><td>机构持续流入，逆势上涨</td><td><span class="fund-stage stage-accel">加速</span></td></tr>
+                <tr><td>2</td><td>白酒/食品饮料</td><td>85</td><td>防御资金流入，龙头护盘</td><td><span class="fund-stage stage-enter">进入</span></td></tr>
+                <tr><td>3</td><td>脑机接口/创新药</td><td>80</td><td>游资炒作，连板活跃</td><td><span class="fund-stage stage-peak">高潮</span></td></tr>
+                <tr><td>4</td><td>高股息红利</td><td>78</td><td>险资与机构避险配置</td><td><span class="fund-stage stage-enter">进入</span></td></tr>
+                <tr><td>5</td><td>CPO/光模块/半导体</td><td>35</td><td>机构大幅流出，资金撤退</td><td><span class="fund-stage stage-exit">撤退</span></td></tr>
+            </table>
+        </div>
+
+        <div class="section">
+            <h2>五、综合评分TOP30股票</h2>
+            <table>
+                <tr>
+                    <th>排名</th><th>代码</th><th>名称</th><th>评分</th><th>评级</th><th>方向</th><th>买入逻辑</th><th>风险点</th><th>操作建议</th>
+                </tr>
+                <tr><td>1</td><td>sh601288</td><td>农业银行</td><td>94</td><td><span class="rating rating-s">S</span></td><td>高股息</td><td>资金持续流入，大行龙头</td><td>经济过热切换</td><td>持有/加仓</td></tr>
+                <tr><td>2</td><td>sh600519</td><td>贵州茅台</td><td>92</td><td><span class="rating rating-s">S</span></td><td>消费</td><td>外资回流，业绩稳健</td><td>估值仍高</td><td>持有</td></tr>
+                <tr><td>3</td><td>sh601398</td><td>工商银行</td><td>91</td><td><span class="rating rating-s">S</span></td><td>高股息</td><td>权重护盘，资金流入</td><td>弹性不足</td><td>持有</td></tr>
+                <tr><td>4</td><td>sh600900</td><td>长江电力</td><td>90</td><td><span class="rating rating-s">S</span></td><td>高股息</td><td>水电稳定，分红确定</td><td>利率上行</td><td>持有</td></tr>
+                <tr><td>5</td><td>sz002847</td><td>盐津铺子</td><td>88</td><td><span class="rating rating-a">A</span></td><td>消费</td><td>食品龙头，涨停突破</td><td>估值偏高</td><td>短线持有</td></tr>
+                <tr><td>6</td><td>sh600199</td><td>金种子酒</td><td>87</td><td><span class="rating rating-a">A</span></td><td>消费</td><td>白酒补涨，短线强势</td><td>业绩不确定</td><td>短线参与</td></tr>
+                <tr><td>7</td><td>sz002594</td><td>比亚迪</td><td>86</td><td><span class="rating rating-a">A</span></td><td>新能源</td><td>业绩确定，外资稳健</td><td>行业价格战</td><td>持有观察</td></tr>
+                <tr><td>8</td><td>sz300750</td><td>宁德时代</td><td>85</td><td><span class="rating rating-a">A</span></td><td>新能源</td><td>北向Q2大幅增持</td><td>产能过剩</td><td>逢低布局</td></tr>
+                <tr><td>9</td><td>sh600733</td><td>北汽蓝谷</td><td>84</td><td><span class="rating rating-a">A</span></td><td>新能源</td><td>华为汽车催化</td><td>业绩亏损</td><td>短线博弈</td></tr>
+                <tr><td>10</td><td>sz002173</td><td>创新医疗</td><td>83</td><td><span class="rating rating-a">A</span></td><td>脑机接口</td><td>题材龙头，4天3板</td><td>纯题材炒作</td><td>快进快出</td></tr>
+                <tr><td>11</td><td>sh600547</td><td>山东黄金</td><td>82</td><td><span class="rating rating-a">A</span></td><td>贵金属</td><td>避险配置</td><td>金价高位回调</td><td>防御配置</td></tr>
+                <tr><td>12</td><td>sz000566</td><td>海南海药</td><td>81</td><td><span class="rating rating-a">A</span></td><td>脑机接口</td><td>2连板，资金聚焦</td><td>业绩一般</td><td>短线</td></tr>
+                <tr><td>13</td><td>sh603690</td><td>至纯科技</td><td>80</td><td><span class="rating rating-a">A</span></td><td>半导体设备</td><td>逆势上涨，国产化</td><td>订单波动</td><td>观察</td></tr>
+                <tr><td>14</td><td>sh688146</td><td>中船特气</td><td>79</td><td><span class="rating rating-b">B+</span></td><td>半导体材料</td><td>机构连续买入</td><td>估值高</td><td>观察</td></tr>
+                <tr><td>15</td><td>sh600403</td><td>大有能源</td><td>78</td><td><span class="rating rating-b">B+</span></td><td>煤炭</td><td>高股息+能源安全</td><td>煤价波动</td><td>防御</td></tr>
+                <tr><td>16</td><td>sz300892</td><td>品渥食品</td><td>77</td><td><span class="rating rating-b">B+</span></td><td>消费</td><td>食品补涨</td><td>市值小波动大</td><td>短线</td></tr>
+                <tr><td>17</td><td>sh603118</td><td>共进股份</td><td>76</td><td><span class="rating rating-b">B+</span></td><td>通信</td><td>资金流入，CPO错杀</td><td>行业调整</td><td>观察</td></tr>
+                <tr><td>18</td><td>sz002407</td><td>多氟多</td><td>75</td><td><span class="rating rating-b">B+</span></td><td>新能源</td><td>六氟龙头，超跌</td><td>周期下行</td><td>观察</td></tr>
+                <tr><td>19</td><td>sh600664</td><td>哈药股份</td><td>74</td><td><span class="rating rating-b">B</span></td><td>医药</td><td>低价医药，避险</td><td>基本面平淡</td><td>短线</td></tr>
+                <tr><td>20</td><td>sh600629</td><td>华建集团</td><td>73</td><td><span class="rating rating-b">B</span></td><td>基建</td><td>涨停，政策预期</td><td>订单不确定</td><td>短线</td></tr>
+                <tr><td>21</td><td>sh603232</td><td>格尔软件</td><td>72</td><td><span class="rating rating-b">B</span></td><td>信创</td><td>电子签名+财税</td><td>业绩不确定</td><td>短线</td></tr>
+                <tr><td>22</td><td>sz300663</td><td>科蓝软件</td><td>71</td><td><span class="rating rating-b">B</span></td><td>金融科技</td><td>财税改革+金融科技</td><td>估值高</td><td>短线</td></tr>
+                <tr><td>23</td><td>sh600396</td><td>华电辽能</td><td>70</td><td><span class="rating rating-b">B</span></td><td>电力</td><td>电力改革+资金流入</td><td>业绩波动</td><td>观察</td></tr>
+                <tr><td>24</td><td>sz300290</td><td>ST荣科</td><td>69</td><td><span class="rating rating-c">C+</span></td><td>医疗IT</td><td>超跌+DRG概念</td><td>ST风险</td><td>回避</td></tr>
+                <tr><td>25</td><td>sh688825</td><td>C长鑫</td><td>68</td><td><span class="rating rating-c">C+</span></td><td>存储</td><td>国产替代标杆</td><td>估值极高</td><td>观望</td></tr>
+                <tr><td>26</td><td>sh688256</td><td>寒武纪</td><td>65</td><td><span class="rating rating-c">C+</span></td><td>AI芯片</td><td>国产算力龙头</td><td>估值泡沫，亏损</td><td>观望</td></tr>
+                <tr><td>27</td><td>sh603986</td><td>兆易创新</td><td>62</td><td><span class="rating rating-c">C</span></td><td>存储</td><td>行业龙头</td><td>周期下行</td><td>回避</td></tr>
+                <tr><td>28</td><td>sz300308</td><td>中际旭创</td><td>58</td><td><span class="rating rating-c">C</span></td><td>CPO</td><td>光模块龙头</td><td>海外需求担忧</td><td>回避</td></tr>
+                <tr><td>29</td><td>sz300502</td><td>新易盛</td><td>55</td><td><span class="rating rating-c">C</span></td><td>CPO</td><td>光模块核心</td><td>估值坍塌</td><td>回避</td></tr>
+                <tr><td>30</td><td>sz000725</td><td>京东方A</td><td>52</td><td><span class="rating rating-c">C</span></td><td>面板</td><td>超跌</td><td>面板周期低迷</td><td>回避</td></tr>
+            </table>
+        </div>
+
+        <div class="section">
+            <h2>六、组合管理建议</h2>
+            <div class="portfolio-grid">
+                <div class="portfolio-card">
+                    <h3>鑫未来（中线组合）</h3>
+                    <p><strong>建议仓位：15%-25%</strong></p>
+                    <table>
+                        <tr><th>标的</th><th>仓位</th><th>操作</th></tr>
+                        <tr><td>农业银行</td><td>5%</td><td>持有</td></tr>
+                        <tr><td>贵州茅台</td><td>4%</td><td>持有</td></tr>
+                        <tr><td>长江电力</td><td>3%</td><td>持有</td></tr>
+                        <tr><td>比亚迪</td><td>3%</td><td>持有观察</td></tr>
+                        <tr><td>宁德时代</td><td>3%</td><td>逢低小幅加仓</td></tr>
+                        <tr><td>山东黄金</td><td>2%</td><td>持有</td></tr>
+                        <tr><td>工商银行</td><td>2%</td><td>持有</td></tr>
+                        <tr><td>现金</td><td>78%</td><td>等待企稳</td></tr>
+                    </table>
+                    <p style="margin-top:12px;color:var(--warning);">暂停新增：CPO、光模块、半导体设计、AI应用等成长板块</p>
+                </div>
+                <div class="portfolio-card">
+                    <h3>鑫准出击（短线组合）</h3>
+                    <p><strong>建议仓位：0%-10%</strong></p>
+                    <table>
+                        <tr><th>标的</th><th>题材</th><th>策略</th></tr>
+                        <tr><td>创新医疗</td><td>脑机接口</td><td>龙头持有，破板止盈</td></tr>
+                        <tr><td>海南海药</td><td>脑机接口</td><td>跟风，开板即走</td></tr>
+                        <tr><td>金种子酒</td><td>白酒</td><td>不板减仓</td></tr>
+                        <tr><td>盐津铺子</td><td>食品</td><td>业绩线持有</td></tr>
+                        <tr><td>北汽蓝谷</td><td>华为汽车</td><td>低吸博弈，止损5%</td></tr>
+                        <tr><td>格尔软件</td><td>财税改革</td><td>次日兑现</td></tr>
+                        <tr><td>科蓝软件</td><td>金融科技</td><td>不追涨</td></tr>
+                    </table>
+                    <p style="margin-top:12px;color:var(--danger);">风控：单票≤2%，总仓位≤10%，跌破MA5无条件止损</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="risk-banner">
+            <h2>风险等级：红色预警</h2>
+            <p>科技主线高位坍塌，建议仓位控制在30%以内</p>
+        </div>
+
+        <div class="section">
+            <h2>七、Layer 9 风险委员会扫描</h2>
+            <div class="risk-grid">
+                <div class="risk-card">
+                    <h4>市场风险</h4>
+                    <p>创业板单日跌7.35%，科创50跌6.33%，科技主线流动性坍塌，情绪快速退潮。</p>
+                </div>
+                <div class="risk-card">
+                    <h4>行业集中风险</h4>
+                    <p>AI硬件（CPO/存储/半导体）持仓过重者面临持续回撤，建议清仓高位科技。</p>
+                </div>
+                <div class="risk-card">
+                    <h4>个股风险</h4>
+                    <p>中际旭创、新易盛、兆易创新等龙头股资金连续大幅流出，需严格止损。</p>
+                </div>
+                <div class="risk-card">
+                    <h4>情绪过热风险</h4>
+                    <p>涨停68只、跌停50只，昨日情绪狂热后今日快速退潮，短线容错率低。</p>
+                </div>
+                <div class="risk-card">
+                    <h4>外围传导风险</h4>
+                    <p>日韩股市熔断，美股科技股大跌，7月30日凌晨美联储议息决议临近。</p>
+                </div>
+                <div class="risk-card">
+                    <h4>估值风险</h4>
+                    <p>创业板PE 57倍以上，科创50 PE 179倍，高估值小盘成长估值中枢下移。</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>八、明日关注</h2>
+            <ol style="margin-left: 20px;">
+                <li><strong>美联储7月议息决议</strong>（7月30日凌晨）：若释放鹰派信号，全球风险资产将继续承压</li>
+                <li><strong>科技股惯性杀跌</strong>：观察中际旭创、新易盛、寒武纪等是否止跌</li>
+                <li><strong>成交量变化</strong>：若成交额跌破1.8万亿且跌停扩大，需进一步降仓</li>
+                <li><strong>防御板块持续性</strong>：银行/消费若冲高回落，说明市场缺乏主线</li>
+                <li><strong>脑机接口题材分化</strong>：创新医疗等龙头能否延续强势</li>
+            </ol>
+        </div>
+
+        <footer>
+            <p>AI智能股票组合主理人系统V5.0 | 报告生成时间：2026-07-28 15:30</p>
+            <p style="font-size: 0.9em; margin-top: 8px;">数据来源：westock-mcp、tdx-connector、公开新闻资讯 | 本报告仅供参考，不构成投资建议</p>
+        </footer>
+    </div>
+</body>
+</html>

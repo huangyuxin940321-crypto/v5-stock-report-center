@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>V5.0 收盘分析 2026-07-30</title>
+<style>
+  :root {
+    --bg: #0f1117; --card: #161b22; --border: #30363d;
+    --text: #c9d1d9; --text2: #8b949e;
+    --red: #ff4d4f; --green: #52c41a; --gold: #faad14;
+    --blue: #1890ff; --purple: #722ed1;
+  }
+  body { background: var(--bg); color: var(--text); font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; margin: 0; padding: 20px; line-height: 1.6; }
+  h1 { font-size: 1.6rem; margin: 0 0 8px; color: #fff; }
+  h2 { font-size: 1.2rem; margin: 28px 0 12px; padding-bottom: 6px; border-bottom: 1px solid var(--border); color: #fff; }
+  h3 { font-size: 1rem; margin: 18px 0 8px; color: var(--gold); }
+  .subtitle { color: var(--text2); font-size: 0.9rem; margin-bottom: 20px; }
+  .banner { background: linear-gradient(90deg, #2a1215, #1f1117); border: 1px solid var(--border); border-radius: 12px; padding: 20px; margin-bottom: 20px; display: flex; gap: 20px; flex-wrap: wrap; align-items: center; }
+  .score-box { text-align: center; min-width: 120px; }
+  .score-num { font-size: 3rem; font-weight: 700; color: var(--red); }
+  .score-label { font-size: 0.85rem; color: var(--text2); }
+  .score-state { font-size: 1.1rem; font-weight: 600; color: var(--red); margin-top: 4px; }
+  .position-box { background: var(--card); border-radius: 8px; padding: 12px 18px; border: 1px solid var(--border); }
+  .position-label { font-size: 0.8rem; color: var(--text2); }
+  .position-val { font-size: 1.4rem; font-weight: 700; color: var(--blue); }
+  .cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 12px; margin: 16px 0; }
+  .card { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 14px; }
+  .card-title { font-size: 0.85rem; color: var(--text2); }
+  .card-val { font-size: 1.3rem; font-weight: 700; margin-top: 4px; }
+  .up { color: var(--red); }
+  .down { color: var(--green); }
+  .validation { background: var(--card); border-left: 4px solid var(--gold); padding: 14px 18px; border-radius: 0 8px 8px 0; margin: 16px 0; }
+  .validation.ok { border-left-color: var(--green); }
+  .conflict { background: #2b1d11; border: 1px solid var(--gold); border-radius: 10px; padding: 16px; margin: 16px 0; }
+  .conflict-title { color: var(--gold); font-weight: 700; margin-bottom: 8px; }
+  table { width: 100%; border-collapse: collapse; margin: 12px 0; font-size: 0.9rem; }
+  th, td { padding: 8px 10px; text-align: left; border-bottom: 1px solid var(--border); }
+  th { color: var(--text2); font-weight: 600; font-size: 0.8rem; text-transform: uppercase; }
+  tr:hover td { background: rgba(255,255,255,0.03); }
+  .badge { display: inline-block; padding: 2px 8px; border-radius: 4px; font-size: 0.75rem; font-weight: 600; }
+  .badge-s { background: #531dab; color: #d3adf7; }
+  .badge-a { background: #135200; color: #b7eb8f; }
+  .badge-b { background: #614700; color: #ffe58f; }
+  .badge-c { background: #5c0011; color: #ff7875; }
+  .phase-enter { color: var(--green); }
+  .phase-accel { color: var(--blue); }
+  .phase-caution { color: var(--gold); }
+  .phase-exit { color: var(--red); }
+  .risk-red { background: #2a1215; border-left: 4px solid var(--red); padding: 12px 16px; margin: 8px 0; border-radius: 0 8px 8px 0; }
+  .risk-yellow { background: #2b1d11; border-left: 4px solid var(--gold); padding: 12px 16px; margin: 8px 0; border-radius: 0 8px 8px 0; }
+  .risk-green { background: #162312; border-left: 4px solid var(--green); padding: 12px 16px; margin: 8px 0; border-radius: 0 8px 8px 0; }
+  .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  @media (max-width: 768px) { .grid-2 { grid-template-columns: 1fr; } .banner { flex-direction: column; align-items: flex-start; } }
+  .footer { margin-top: 40px; padding-top: 16px; border-top: 1px solid var(--border); color: var(--text2); font-size: 0.8rem; text-align: center; }
+  .one-liner { background: var(--card); border-radius: 8px; padding: 14px 18px; border: 1px solid var(--border); margin: 16px 0; font-size: 1rem; }
+</style>
+</head>
+<body>
+
+<h1>AI智能股票组合主理人系统 V5.0</h1>
+<div class="subtitle">收盘完整分析报告 · 2026-07-30（周四）15:30 · 全天唯一正式市场评分</div>
+<div class="one-liner"><strong>今日观点：</strong>美联储鹰派按兵不动+全球科技股崩盘传导，A股成长主线破位，防御风格主导。</div>
+
+<div class="banner">
+  <div class="score-box">
+    <div class="score-num">45</div>
+    <div class="score-label">市场评分</div>
+    <div class="score-state">风险市场</div>
+  </div>
+  <div class="position-box">
+    <div class="position-label">建议仓位</div>
+    <div class="position-val">0% - 30%</div>
+  </div>
+  <div style="flex:1; min-width:200px;">
+    <div style="font-size:0.85rem; color:var(--text2); margin-bottom:6px;">评分变化：昨日52分 → 今日45分（-7分）</div>
+    <div style="font-size:0.85rem; color:var(--text2);">状态：成长主线破位，防御风格主导</div>
+  </div>
+</div>
+
+
+<div class="validation">
+  <strong>数据验证状态：部分通过（含[时效警告]与[跌幅显著]标注）</strong><br>
+  <span style="color:var(--text2); font-size:0.85rem;">
+
+  · 关1 交叉验证：上证/深证/沪深300/创业板/科创50 同时从 tdx-connector 获取当日收盘；westock market_overview 返回 T-1（7/29）数据，已标注[时效警告]。两者日期不同，不存在同一指标冲突。<br>
+  · 关2 异常检测：科创50跌5.38%、创业板指跌3.97%、通信设备跌8.57%、元件跌7.96%、半导体跌6.63%，跌幅显著但符合全球科技股崩盘传导，标记[跌幅显著]；未发现涨跌幅&gt;±15%的指数或板块。<br>
+  · 关3 逻辑校验：指数价格与涨跌幅逻辑自洽；代码名称经数据源核对一致；评分均在0-120范围内，无系统bug。<br>
+  · <span style='color:var(--gold)'>westock market_overview 返回 T-1 数据（7/29），已标注[时效警告]</span>
+  </span></div>
+<h2>A股指数收盘</h2><div class="cards">
+<div class="card"><div class="card-title">上证指数</div><div class="card-val down">3804.69 <span style="font-size:0.8rem;">-0.62%</span></div></div>
+<div class="card"><div class="card-title">深证成指</div><div class="card-val down">13285.80 <span style="font-size:0.8rem;">-2.73%</span></div></div>
+<div class="card"><div class="card-title">沪深300</div><div class="card-val down">4549.72 <span style="font-size:0.8rem;">-1.10%</span></div></div>
+<div class="card"><div class="card-title">中证500</div><div class="card-val down">7309.58 <span style="font-size:0.8rem;">-2.86%</span></div></div>
+<div class="card"><div class="card-title">中证1000</div><div class="card-val down">6900.66 <span style="font-size:0.8rem;">-2.74%</span></div></div>
+<div class="card"><div class="card-title">创业板指</div><div class="card-val down">3244.62 <span style="font-size:0.8rem;">-3.97%</span></div></div>
+<div class="card"><div class="card-title">科创50</div><div class="card-val down">1588.41 <span style="font-size:0.8rem;">-5.38%</span></div></div>
+<div class="card"><div class="card-title">两市成交额</div><div class="card-val" style="color:var(--blue);">约23400亿 <span style="font-size:0.8rem;">约98%</span></div></div>
+</div>
+<h2>全球市场</h2><div class="cards">
+<div class="card"><div class="card-title">道琼斯</div><div class="card-val down">51594.14 <span style="font-size:0.8rem;">-2.19%</span></div></div>
+<div class="card"><div class="card-title">纳斯达克</div><div class="card-val down">24442.94 <span style="font-size:0.8rem;">-1.74%</span></div></div>
+<div class="card"><div class="card-title">标普500</div><div class="card-val down">7316.15 <span style="font-size:0.8rem;">-1.52%</span></div></div>
+<div class="card"><div class="card-title">费城半导体</div><div class="card-val down">— <span style="font-size:0.8rem;">-5.33%</span></div></div>
+<div class="card"><div class="card-title">美光科技</div><div class="card-val down">— <span style="font-size:0.8rem;">-9.90%</span></div></div>
+<div class="card"><div class="card-title">英伟达</div><div class="card-val down">— <span style="font-size:0.8rem;">-3.50%</span></div></div>
+<div class="card"><div class="card-title">COMEX黄金</div><div class="card-val up">4108.3美元 <span style="font-size:0.8rem;">+0.28%</span></div></div>
+<div class="card"><div class="card-title">布伦特原油</div><div class="card-val up">88.84美元 <span style="font-size:0.8rem;">+0.85%</span></div></div>
+<div class="card"><div class="card-title">美元人民币</div><div class="card-val ">6.7597 <span style="font-size:0.8rem;">0.00%</span></div></div>
+<div class="card"><div class="card-title">美元指数</div><div class="card-val down">100.82 <span style="font-size:0.8rem;">-0.59%</span></div></div>
+</div>
+<div class="one-liner" style="font-size:0.9rem;"><strong>美联储决议：</strong>美联储7月30日凌晨维持利率3.50%-3.75%不变，但出现3张反对票（主张加息25bp），为2016年来首次。鲍威尔表态偏鹰，强调2%通胀目标不动摇。</div>
+
+<div class="conflict">
+  <div class="conflict-title">⚠️ 模块冲突标注</div>
+  <div style="font-size:0.9rem; color:var(--text2);">
+    · Layer 1 市场评分：<strong style="color:var(--red);">45分（偏空/风险市场）</strong><br>
+    · Layer 3 产业评分：<strong style="color:var(--green);">白酒/银行 75-78分（偏多/防御偏强）</strong><br>
+    · Layer 4 资金评分：<strong style="color:var(--blue);">银行/白酒 80-85分（偏多/资金加速）</strong><br>
+    · <strong>冲突解读：</strong>市场整体处于风险区间，但防御性方向（银行、白酒、高股息）资金逆势加速流入，呈现典型的『大盘弱、防御强』格局。<br>
+    · <strong>操作建议：</strong>降低总仓位至0-30%，但保留防御性核心仓位，科技成长暂时规避。
+  </div>
+</div>
+
+<h2>资金主线 TOP5</h2>
+<table><tr><th>排名</th><th>主线</th><th>资金评分</th><th>资金阶段</th><th>判断依据</th></tr>
+<tr><td>1</td><td><strong>银行/高股息</strong></td><td><span class="badge badge-a">A</span></td><td class="phase-accel">加速→建仓</td><td>股份制银行主力净流入+18.05亿，国有大行20日涨幅领先，资金连续流入</td></tr>
+<tr><td>2</td><td><strong>白酒/食品饮料</strong></td><td><span class="badge badge-a">A</span></td><td class="phase-accel">加速→建仓</td><td>白酒主力净流入+15.87亿，茅台/五粮液逆势获机构买入</td></tr>
+<tr><td>3</td><td><strong>乘用车/新能源车</strong></td><td><span class="badge badge-b">B</span></td><td class="phase-enter">进入→关注</td><td>乘用车主力净流入+10.56亿，赛力斯/比亚迪/江淮汽车资金活跃</td></tr>
+<tr><td>4</td><td><strong>商用车/汽车产业链</strong></td><td><span class="badge badge-b">B</span></td><td class="phase-enter">进入→关注</td><td>商用车板块涨4.42%领涨两市，资金聚焦政策受益方向</td></tr>
+<tr><td>5</td><td><strong>油服/能源</strong></td><td><span class="badge badge-c">C</span></td><td class="phase-enter">进入→关注</td><td>布伦特原油因地缘冲突大涨，油服工程20日涨幅12.59%</td></tr>
+</table>
+<h2>未来3-6个月核心产业方向 TOP10</h2>
+<table><tr><th>排名</th><th>产业方向</th><th>评分</th><th>核心逻辑</th><th>TOP5股票</th><th>资金阶段</th></tr>
+<tr><td>1</td><td>白酒/食品饮料</td><td><span class="badge badge-b">B</span></td><td>防御属性+消费复苏+资金逆势流入，估值回落至合理区间</td><td>贵州茅台、五粮液、山西汾酒、金徽酒、均瑶健康</td><td class="phase-enter">进入→关注</td></tr>
+<tr><td>2</td><td>银行/高股息</td><td><span class="badge badge-b">B</span></td><td>利率下行预期+高股息防御+护盘资金持续流入</td><td>工商银行、浦发银行、交通银行、招商银行、建设银行</td><td class="phase-accel">加速→建仓</td></tr>
+<tr><td>3</td><td>AI算力/CPO</td><td><span class="badge badge-b">B</span></td><td>长期AI算力扩容刚需，短期受美股映射暴跌，进入超跌观察区</td><td>中际旭创、新易盛、天孚通信、光迅科技、剑桥科技</td><td class="phase-enter">进入→关注</td></tr>
+<tr><td>4</td><td>乘用车/新能源车</td><td><span class="badge badge-b">B</span></td><td>以旧换新政策+出海+智能化第二曲线</td><td>比亚迪、赛力斯、长城汽车、长安汽车、理想汽车</td><td class="phase-enter">进入→关注</td></tr>
+<tr><td>5</td><td>商用车/汽车产业链</td><td><span class="badge badge-c">C</span></td><td>今日领涨+政策催化+机器人产业链协同</td><td>江淮汽车、宇通客车、福田汽车、中国重汽、江铃汽车</td><td class="phase-accel">加速→建仓</td></tr>
+<tr><td>6</td><td>油服工程/能源</td><td><span class="badge badge-c">C</span></td><td>中东地缘冲突升级+油价飙升+高股息</td><td>中国石油、中国海油、通源石油、中海油服、石化油服</td><td class="phase-enter">进入→关注</td></tr>
+<tr><td>7</td><td>家电/消费</td><td><span class="badge badge-c">C</span></td><td>以旧换新+低估值+消费复苏</td><td>美的集团、海尔智家、格力电器、苏泊尔、火星人</td><td class="phase-enter">进入→关注</td></tr>
+<tr><td>8</td><td>电力/公用事业</td><td><span class="badge badge-c">C</span></td><td>高股息防御+夏季用电高峰+电价改革</td><td>长江电力、华能国际、国投电力、中国核电、三峡能源</td><td class="phase-enter">进入→关注</td></tr>
+<tr><td>9</td><td>人形机器人/高端制造</td><td><span class="badge badge-c">C</span></td><td>长期产业趋势明确，短期随科技股调整</td><td>汇川技术、埃斯顿、绿的谐波、三花智控、拓普集团</td><td class="phase-enter">进入→关注</td></tr>
+<tr><td>10</td><td>半导体设备/材料</td><td><span class="badge badge-c">C</span></td><td>国产替代长期逻辑，短期受全球芯片崩盘拖累</td><td>北方华创、中微公司、拓荆科技、芯源微、华海清科</td><td class="phase-exit">撤退→卖出</td></tr>
+</table>
+<h2>综合评分 TOP30</h2>
+<table><tr><th>排名</th><th>代码</th><th>名称</th><th>评分</th><th>评级</th><th>行业</th><th>操作</th><th>资金阶段</th><th>涨跌</th><th>买入逻辑</th><th>风险点</th></tr>
+<tr><td>1</td><td>002594</td><td>比亚迪</td><td>86</td><td><span class="badge badge-a">A</span></td><td>新能源车</td><td>持有/关注</td><td class="phase-enter">进入</td><td class="up">+1.42%</td><td>车+机器人双轮驱动，PE合理，出海+智能化增量</td><td>行业价格战加剧，海外政策风险</td></tr>
+<tr><td>2</td><td>600519</td><td>贵州茅台</td><td>85</td><td><span class="badge badge-a">A</span></td><td>白酒</td><td>持有</td><td class="phase-enter">进入</td><td class="up">+3.09%</td><td>品牌护城河深厚，防御底仓首选，今日获资金净流入5.33亿</td><td>北向资金季度减持，消费复苏不及预期</td></tr>
+<tr><td>3</td><td>300750</td><td>宁德时代</td><td>84</td><td><span class="badge badge-a">A</span></td><td>锂电池</td><td>持有/关注</td><td class="phase-enter">进入</td><td class="up">+1.27%</td><td>全球动力电池龙头，储能+出海第二曲线，资金净流入6.11亿</td><td>锂电产能过剩，毛利率承压</td></tr>
+<tr><td>4</td><td>000858</td><td>五粮液</td><td>83</td><td><span class="badge badge-a">A</span></td><td>白酒</td><td>持有</td><td class="phase-enter">进入</td><td class="">0.00%</td><td>高端白酒核心标的，估值回落后性价比提升，资金净流入5.12亿</td><td>库存去化压力，批价波动</td></tr>
+<tr><td>5</td><td>601127</td><td>赛力斯</td><td>81</td><td><span class="badge badge-a">A</span></td><td>乘用车</td><td>快进快出</td><td class="phase-enter">进入</td><td class="up">+5.95%</td><td>华为智选车核心，问界系列持续放量，今日资金净流入3.97亿</td><td>估值偏高，合作方依赖风险</td></tr>
+<tr><td>6</td><td>600418</td><td>江淮汽车</td><td>78</td><td><span class="badge badge-b">B</span></td><td>商用车/乘用车</td><td>快进快出</td><td class="phase-accel">加速</td><td class="up">+10.01%</td><td>华为汽车股权合作催化，今日涨停，资金净流入3.90亿</td><td>短线涨幅过大，概念炒作成分</td></tr>
+<tr><td>7</td><td>601398</td><td>工商银行</td><td>77</td><td><span class="badge badge-b">B</span></td><td>银行</td><td>持有</td><td class="phase-accel">加速</td><td class="up">+2.52%</td><td>国有大行龙头，高股息防御，资金持续流入</td><td>净息差收窄，经济增速下行</td></tr>
+<tr><td>8</td><td>600000</td><td>浦发银行</td><td>76</td><td><span class="badge badge-b">B</span></td><td>银行</td><td>持有</td><td class="phase-accel">加速</td><td class="up">+4.63%</td><td>股份制银行领涨，今日资金净流入2.42亿，股息率高</td><td>资产质量压力</td></tr>
+<tr><td>9</td><td>603986</td><td>兆易创新</td><td>75</td><td><span class="badge badge-b">B</span></td><td>存储芯片</td><td>关注</td><td class="phase-enter">进入</td><td class="up">+1.94%</td><td>存储芯片龙头，在行业暴跌中逆势收红，资金净流入3.39亿</td><td>半导体周期下行，海外需求疲软</td></tr>
+<tr><td>10</td><td>600809</td><td>山西汾酒</td><td>74</td><td><span class="badge badge-b">B</span></td><td>白酒</td><td>持有</td><td class="phase-enter">进入</td><td class="up">+6.04%</td><td>清香型白酒龙头，弹性较大，今日大涨6%</td><td>次高端竞争加剧</td></tr>
+<tr><td>11</td><td>601328</td><td>交通银行</td><td>73</td><td><span class="badge badge-b">B</span></td><td>银行</td><td>持有</td><td class="phase-accel">加速</td><td class="up">+3.24%</td><td>国有大行，高股息+低估值，20日涨幅14%</td><td>息差压力</td></tr>
+<tr><td>12</td><td>301308</td><td>江波龙</td><td>72</td><td><span class="badge badge-b">B</span></td><td>存储芯片</td><td>关注</td><td class="phase-enter">进入</td><td class="up">+2.78%</td><td>存储模组龙头，今日逆势上涨，行业周期触底预期</td><td>股价波动大，估值偏高</td></tr>
+<tr><td>13</td><td>600036</td><td>招商银行</td><td>71</td><td><span class="badge badge-b">B</span></td><td>银行</td><td>持有</td><td class="phase-enter">进入</td><td class="">0.00%</td><td>零售银行标杆，资产质量优，高股息</td><td>地产相关敞口，零售信贷需求弱</td></tr>
+<tr><td>14</td><td>001309</td><td>德明利</td><td>70</td><td><span class="badge badge-b">B</span></td><td>存储芯片</td><td>快进快出</td><td class="phase-caution">高潮</td><td class="up">+10.00%</td><td>存储概念龙头，今日涨停，龙虎榜活跃</td><td>估值极高，纯题材炒作</td></tr>
+<tr><td>15</td><td>000636</td><td>风华高科</td><td>70</td><td><span class="badge badge-b">B</span></td><td>被动元件</td><td>快进快出</td><td class="phase-enter">进入</td><td class="up">+6.29%</td><td>MLCC龙头，今日逆势大涨，龙虎榜获游资和机构关注</td><td>主力资金今日净流出9.05亿，分歧大</td></tr>
+<tr><td>16</td><td>601857</td><td>中国石油</td><td>69</td><td><span class="badge badge-b">B</span></td><td>油服/能源</td><td>持有</td><td class="phase-enter">进入</td><td class="up">+3.49%</td><td>油价上涨+高股息，能源央企防御价值</td><td>油价波动，能源转型压力</td></tr>
+<tr><td>17</td><td>600938</td><td>中国海油</td><td>68</td><td><span class="badge badge-b">B</span></td><td>油服/能源</td><td>持有</td><td class="phase-enter">进入</td><td class="">0.00%</td><td>海上油气龙头，高股息+低成本</td><td>油价地缘风险</td></tr>
+<tr><td>18</td><td>000333</td><td>美的集团</td><td>67</td><td><span class="badge badge-b">B</span></td><td>家电</td><td>持有</td><td class="phase-enter">进入</td><td class="">0.00%</td><td>家电龙头，低估值高股息，以旧换新受益</td><td>海外需求疲软</td></tr>
+<tr><td>19</td><td>600690</td><td>海尔智家</td><td>66</td><td><span class="badge badge-b">B</span></td><td>家电</td><td>持有</td><td class="phase-enter">进入</td><td class="">0.00%</td><td>全球化家电龙头，业绩稳健</td><td>海外市场竞争加剧</td></tr>
+<tr><td>20</td><td>001258</td><td>立新能源</td><td>65</td><td><span class="badge badge-b">B</span></td><td>新能源</td><td>快进快出</td><td class="phase-enter">进入</td><td class="up">+6.37%</td><td>新疆新能源运营商，今日大涨，政策受益</td><td>业绩波动，补贴依赖</td></tr>
+<tr><td>21</td><td>600176</td><td>中国巨石</td><td>64</td><td><span class="badge badge-b">B</span></td><td>玻纤</td><td>观望</td><td class="phase-enter">进入</td><td class="down">-4.58%</td><td>玻纤龙头，行业周期触底，今日随市场调整</td><td>需求复苏慢，价格下跌</td></tr>
+<tr><td>22</td><td>300308</td><td>中际旭创</td><td>62</td><td><span class="badge badge-c">C</span></td><td>CPO</td><td>观望</td><td class="phase-exit">撤退</td><td class="down">-9.15%</td><td>全球CPO龙头，长期AI需求确定，短期受美股映射错杀</td><td>主力资金今日净流出36.6亿，估值偏高，波动极大</td></tr>
+<tr><td>23</td><td>300502</td><td>新易盛</td><td>60</td><td><span class="badge badge-c">C</span></td><td>CPO</td><td>观望</td><td class="phase-exit">撤退</td><td class="down">-11.89%</td><td>800G光模块核心供应商，长期受益AI算力扩容</td><td>主力资金今日净流出32.6亿，PE高企</td></tr>
+<tr><td>24</td><td>300285</td><td>国瓷材料</td><td>58</td><td><span class="badge badge-c">C</span></td><td>电子化学品</td><td>快进快出</td><td class="phase-enter">进入</td><td class="up">+3.65%</td><td>电子陶瓷材料龙头，今日逆势上涨，受益国产替代</td><td>下游需求波动</td></tr>
+<tr><td>25</td><td>603919</td><td>金徽酒</td><td>56</td><td><span class="badge badge-c">C</span></td><td>白酒</td><td>快进快出</td><td class="phase-caution">高潮</td><td class="up">+10.03%</td><td>区域白酒龙头，今日涨停，游资活跃</td><td>基本面支撑弱，纯情绪驱动</td></tr>
+<tr><td>26</td><td>605388</td><td>均瑶健康</td><td>54</td><td><span class="badge badge-c">C</span></td><td>饮料乳品</td><td>快进快出</td><td class="phase-caution">高潮</td><td class="up">+10.07%</td><td>乳酸菌饮品，今日涨停，消费防御题材</td><td>业绩增速放缓</td></tr>
+<tr><td>27</td><td>600105</td><td>永鼎股份</td><td>52</td><td><span class="badge badge-c">C</span></td><td>通信设备</td><td>快进快出</td><td class="phase-enter">进入</td><td class="up">+7.33%</td><td>光通信+超导概念，今日逆势大涨，通信板块内少数强势</td><td>通信板块整体资金净流出121.9亿，板块风险大</td></tr>
+<tr><td>28</td><td>300894</td><td>火星人</td><td>50</td><td><span class="badge badge-c">C</span></td><td>厨卫电器</td><td>快进快出</td><td class="phase-caution">高潮</td><td class="up">+20.04%</td><td>集成灶龙头，今日20cm涨停，消费复苏题材</td><td>地产后周期需求弱，短线过热</td></tr>
+<tr><td>29</td><td>688260</td><td>昀冢科技</td><td>48</td><td><span class="badge badge-c">C</span></td><td>光通信</td><td>快进快出</td><td class="phase-caution">高潮</td><td class="up">+16.16%</td><td>光通信精密结构件，今日大涨16%，龙虎榜活跃</td><td>市值小波动大，业绩亏损</td></tr>
+<tr><td>30</td><td>003032</td><td>传智教育</td><td>46</td><td><span class="badge badge-c">C</span></td><td>教育</td><td>快进快出</td><td class="phase-caution">高潮</td><td class="up">+10.03%</td><td>IT培训+教育信息化，今日涨停</td><td>政策监管风险，业绩不稳定</td></tr>
+</table>
+<h2>龙虎榜重点</h2>
+<h3>净买入 TOP5</h3>
+<table><tr><th>排名</th><th>代码</th><th>名称</th><th>净买入（亿）</th><th>机构数</th><th>涨跌</th></tr>
+<tr><td>1</td><td>000636</td><td>风华高科</td><td class="up">+3.57</td><td>3</td><td class="up">+6.29%</td></tr>
+<tr><td>2</td><td>000938</td><td>紫光股份</td><td class="up">+2.14</td><td>4</td><td class="down">-9.99%</td></tr>
+<tr><td>3</td><td>002141</td><td>贤丰控股</td><td class="up">+2.11</td><td>5</td><td class="up">+9.95%</td></tr>
+<tr><td>4</td><td>002580</td><td>圣阳股份</td><td class="up">+0.87</td><td>1</td><td class="up">+9.99%</td></tr>
+<tr><td>5</td><td>002558</td><td>巨人网络</td><td class="up">+0.60</td><td>1</td><td class="up">+9.99%</td></tr>
+</table>
+<h3>净卖出 TOP5</h3>
+<table><tr><th>排名</th><th>代码</th><th>名称</th><th>净卖出（亿）</th><th>机构数</th><th>涨跌</th></tr>
+<tr><td>1</td><td>002156</td><td>通富微电</td><td class="down">-13.35</td><td>5</td><td class="down">-10.00%</td></tr>
+<tr><td>2</td><td>000938</td><td>紫光股份</td><td class="down">-8.09</td><td>4</td><td class="down">-9.99%</td></tr>
+<tr><td>3</td><td>603256</td><td>宏和科技</td><td class="down">-4.73</td><td>2</td><td class="down">-6.44%</td></tr>
+<tr><td>4</td><td>002141</td><td>贤丰控股</td><td class="down">-3.66</td><td>4</td><td class="up">+9.95%</td></tr>
+<tr><td>5</td><td>002969</td><td>嘉美包装</td><td class="down">-2.09</td><td>4</td><td class="up">+4.20%</td></tr>
+</table>
+<h2>组合管理</h2><div class="grid-2"><div>
+<h3>鑫未来（中线3月-2年）</h3>
+<table><tr><th>代码</th><th>名称</th><th>仓位</th><th>评分</th><th>评级</th><th>逻辑</th></tr>
+<tr><td>002594</td><td>比亚迪</td><td>6%</td><td>86</td><td><span class="badge badge-a">A</span></td><td>车+机器人双轮驱动，防御中成长</td></tr>
+<tr><td>300750</td><td>宁德时代</td><td>5%</td><td>84</td><td><span class="badge badge-a">A</span></td><td>储能+出海，龙头护城河</td></tr>
+<tr><td>600519</td><td>贵州茅台</td><td>5%</td><td>85</td><td><span class="badge badge-a">A</span></td><td>防御底仓，品牌护城河</td></tr>
+<tr><td>000858</td><td>五粮液</td><td>4%</td><td>83</td><td><span class="badge badge-a">A</span></td><td>高端白酒，估值合理</td></tr>
+<tr><td>601127</td><td>赛力斯</td><td>4%</td><td>81</td><td><span class="badge badge-a">A</span></td><td>华为智选车核心</td></tr>
+<tr><td>601398</td><td>工商银行</td><td>3%</td><td>77</td><td><span class="badge badge-b">B</span></td><td>高股息防御</td></tr>
+</table></div><div>
+<h3>鑫准出击（短线5-20日）</h3>
+<table><tr><th>代码</th><th>名称</th><th>仓位</th><th>逻辑</th></tr>
+<tr><td>600418</td><td>江淮汽车</td><td>4%</td><td>华为汽车催化， momentum强</td></tr>
+<tr><td>000636</td><td>风华高科</td><td>3%</td><td>MLCC龙头，龙虎榜活跃</td></tr>
+<tr><td>001309</td><td>德明利</td><td>2%</td><td>存储概念，涨停 momentum</td></tr>
+<tr><td>603919</td><td>金徽酒</td><td>2%</td><td>区域白酒弹性</td></tr>
+<tr><td>605388</td><td>均瑶健康</td><td>2%</td><td>消费防御+涨停</td></tr>
+</table></div></div>
+<h2>当前持仓调整建议</h2><ol>
+<li>总仓位：降至0%-30%，保留现金为主。</li>
+<li>科技成长股（CPO/半导体/AI硬件）：减仓或清仓，规避全球科技股崩盘传导。</li>
+<li>高股息防御（银行/电力/能源）：加仓或持有，作为底仓。</li>
+<li>消费（白酒/食品饮料）：持有核心龙头，快进快出题材票。</li>
+<li>新能源/汽车：保留龙头仓位，剔除跟风票。</li>
+</ol>
+<h2>最大风险提示</h2>
+<div class="risk-红色"><strong>红色预警：科技主线坍塌</strong><br>创业板指跌3.97%、科创50跌5.38%，CPO/半导体/通信设备集体暴跌，资金大幅净流出。<br><strong>建议：</strong>减仓科技成长，规避破位风险</div>
+<div class="risk-红色"><strong>红色预警：全球科技股崩盘传导</strong><br>美联储鹰派按兵不动+3票反对，纳指6连跌，费城半导体5日跌近16%，英伟达/美光等龙头重挫。<br><strong>建议：</strong>降低海外映射仓位，等待企稳信号</div>
+<div class="risk-黄色"><strong>黄色预警：高估值成长股风险</strong><br>中证全指PE_TTM 20.92，10年分位数85.4%；创业板/科创板估值仍高。<br><strong>建议：</strong>规避纯题材高估值标的</div>
+<div class="risk-黄色"><strong>黄色预警：地缘冲突升级</strong><br>中东局势紧张，霍尔木兹海峡航运受阻，油价波动加剧。<br><strong>建议：</strong>关注能源/黄金方向，控制仓位</div>
+<div class="footer">报告由 AI智能股票组合主理人系统 V5.0 自动生成 · 仅供参考，不构成投资建议</div>
+</body></html>

@@ -1,0 +1,437 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI智能股票组合主理人系统 V5.0 — 深度复盘报告 | 2026-07-27</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+    background: #ffffff; color: #24292f; line-height: 1.6; padding: 20px;
+  }
+  .container { max-width: 1200px; margin: 0 auto; }
+
+  .header {
+    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+    border-radius: 12px; padding: 28px 32px; margin-bottom: 20px;
+    display: flex; justify-content: space-between; align-items: center; color: #fff;
+  }
+  .header h1 { font-size: 22px; margin-bottom: 4px; }
+  .header .sub { font-size: 13px; opacity: 0.7; }
+  .header .date-badge {
+    background: rgba(255,255,255,0.15); padding: 8px 16px; border-radius: 8px;
+    font-size: 14px; font-weight: 600; text-align: center;
+  }
+  .header .date-badge .time { font-size: 12px; opacity: 0.85; }
+
+  .score-banner {
+    background: linear-gradient(135deg, #fff8e1 0%, #fef3c7 100%);
+    border: 2px solid #f0883e; border-radius: 12px; padding: 24px 32px; margin-bottom: 20px;
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .score-banner .score-left { display: flex; align-items: center; gap: 20px; }
+  .score-circle {
+    width: 80px; height: 80px; border-radius: 50%; border: 4px solid #f0883e;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 32px; font-weight: 700; color: #f0883e; background: #fff;
+  }
+  .score-info .label { font-size: 13px; color: #57606a; margin-bottom: 2px; }
+  .score-info .status { font-size: 20px; font-weight: 600; color: #f0883e; }
+  .score-info .pos { font-size: 14px; color: #cf222e; margin-top: 4px; }
+
+  .section-title {
+    font-size: 18px; font-weight: 600; color: #0969da; margin: 24px 0 12px;
+    padding-left: 12px; border-left: 4px solid #0969da;
+  }
+  .table-wrap { overflow-x: auto; margin-bottom: 20px; border-radius: 10px; border: 1px solid #d0d7de; }
+  table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  th { background: #f6f8fa; color: #57606a; padding: 10px 12px; text-align: left; font-weight: 600; border-bottom: 2px solid #d0d7de; white-space: nowrap; }
+  td { padding: 8px 12px; border-bottom: 1px solid #e8ecf0; color: #24292f; }
+  tr:hover { background: #f6f8fa; }
+  .up { color: #cf222e; }
+  .down { color: #1a7f37; }
+
+  .rating { font-weight: 700; padding: 2px 8px; border-radius: 4px; font-size: 12px; display: inline-block; }
+  .r-spp { background: #cf222e; color: #fff; }
+  .r-s { background: #f0883e; color: #fff; }
+  .r-a { background: #bf8700; color: #fff; }
+  .r-b { background: #0969da; color: #fff; }
+  .r-c { background: #6e7781; color: #fff; }
+
+  .star-block { color: #f0883e; font-size: 14px; letter-spacing: 1px; }
+
+  .portfolio-dual { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 20px; }
+  .portfolio-card {
+    background: #f6f8fa; border: 1px solid #d0d7de; border-radius: 12px; padding: 20px;
+  }
+  .portfolio-card .p-title { font-size: 16px; font-weight: 600; margin-bottom: 12px; color: #24292f; }
+  .p-tag { font-size: 11px; padding: 2px 8px; border-radius: 4px; margin-left: 8px; }
+  .tag-mid { background: #ddf4ff; color: #0969da; }
+  .tag-short { background: #fff8c5; color: #9a6700; }
+
+  .risk-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; margin-bottom: 20px; }
+  .risk-card { border-radius: 10px; padding: 16px; border: 1px solid; }
+  .risk-red { background: #ffe1e4; border-color: #cf222e; }
+  .risk-yellow { background: #fff8c5; border-color: #bf8700; }
+  .risk-green { background: #dafbe1; border-color: #1a7f37; }
+  .risk-card .r-title { font-size: 14px; font-weight: 600; margin-bottom: 4px; }
+  .risk-red .r-title { color: #cf222e; }
+  .risk-yellow .r-title { color: #9a6700; }
+  .risk-green .r-title { color: #1a7f37; }
+  .risk-card .r-desc { font-size: 12px; color: #57606a; }
+  .risk-card .r-sugg { font-size: 12px; margin-top: 6px; }
+
+  .lhb-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 20px; }
+  .lhb-card {
+    background: #f6f8fa; border: 1px solid #d0d7de; border-radius: 10px; padding: 16px;
+  }
+  .lhb-card h4 { font-size: 15px; margin-bottom: 8px; }
+
+  .summary-box {
+    background: linear-gradient(135deg, #f0f6fc, #e8f0fe);
+    border: 1px solid #0969da; border-radius: 12px; padding: 20px 24px; margin-bottom: 20px;
+  }
+  .summary-box h3 { color: #0969da; font-size: 16px; margin-bottom: 10px; }
+  .summary-box ol, .summary-box ul { padding-left: 20px; }
+  .summary-box li { font-size: 13px; padding: 4px 0; }
+
+  .divider-box {
+    background: #f6f8fa; border: 1px solid #d0d7de; border-radius: 10px; padding: 16px 20px; margin-bottom: 20px;
+    font-size: 13px;
+  }
+  .divider-box h4 { margin-bottom: 8px; color: #24292f; }
+  .divider-box p { line-height: 1.7; }
+
+  .alert-yellow { background: #fff8c5; border: 1px solid #bf870044; border-radius: 10px; padding: 16px 20px; margin-bottom: 16px; }
+
+  .footer { text-align: center; padding: 20px; font-size: 12px; color: #57606a; border-top: 1px solid #d0d7de; margin-top: 20px; }
+
+  @media (max-width: 768px) {
+    .portfolio-dual, .risk-grid, .lhb-grid { grid-template-columns: 1fr; }
+    .score-banner { flex-direction: column; gap: 16px; }
+    .header { flex-direction: column; gap: 16px; }
+  }
+</style>
+</head>
+<body>
+<div class="container">
+
+<!-- Header -->
+<div class="header">
+  <div>
+    <h1>AI智能股票组合主理人系统 V5.0</h1>
+    <div class="sub">九层投资决策模型 | 长安鑫工作室 | 深度复盘</div>
+  </div>
+  <div class="date-badge">
+    2026-07-27 周一
+    <div class="time">20:00 深度复盘</div>
+  </div>
+</div>
+
+<!-- Score Banner -->
+<div class="score-banner">
+  <div class="score-left">
+    <div class="score-circle">66</div>
+    <div class="score-info">
+      <div class="label">市场评分 (0-100)</div>
+      <div class="status">震荡修复</div>
+      <div class="pos">明日建议仓位：45%-50%</div>
+    </div>
+  </div>
+  <div style="font-size:13px;color:#57606a;max-width:400px;">
+    较15:30上调1分：龙虎榜机构大幅买入锂电/电子材料，地缘风险（油价）边际缓和。但成交额与均线结构不支持快速转多。
+  </div>
+</div>
+
+<!-- 一、今日回顾总结 -->
+<div class="divider-box">
+  <h4>一、今日回顾总结</h4>
+  <p><strong>A股从上周五冰点放量反弹，创业板领涨3.16%，宁德时代400亿回购引爆锂电产业链，近5200股上涨；但成交额2.08万亿仍低于20日均值2.86万亿，外部地缘与美联储议息前夜压制风险偏好，市场处于"反弹确认、趋势未明"的震荡修复阶段。</strong></p>
+</div>
+
+<!-- 二、市场评分确认 -->
+<div class="section-title">二、市场评分确认 (8维度)</div>
+<div class="table-wrap">
+<table>
+<thead><tr><th>维度</th><th>15:30</th><th>20:00</th><th>说明</th></tr></thead>
+<tbody>
+<tr><td>全球环境</td><td>-10</td><td style="color:#1a7f37">-8</td><td>美伊暂停打击，油价大跌，地缘压力边际缓和</td></tr>
+<tr><td>国内政策</td><td>+12</td><td>+12</td><td>宁德时代回购+央行2万亿逆回购托底</td></tr>
+<tr><td>技术面</td><td>+8</td><td>+8</td><td>超卖反弹，短期均线仍空头排列</td></tr>
+<tr><td>流动性</td><td>+8</td><td style="color:#cf222e">+9</td><td>成交放量7.5%，但绝对额仍低于20日均值</td></tr>
+<tr><td>估值水平</td><td>-5</td><td>-5</td><td>中证全指PE分位91%维持偏高</td></tr>
+<tr><td>市场情绪</td><td>+10</td><td>+10</td><td>涨停37→50+，涨跌比改善</td></tr>
+<tr><td>趋势方向</td><td>+5</td><td>+5</td><td>反弹确认，中期趋势待验证</td></tr>
+<tr><td>聪明资金</td><td>—</td><td style="color:#cf222e">+5</td><td>龙虎榜机构大举买入锂电/电子材料，ETF宽基持续流入</td></tr>
+<tr style="font-weight:700;background:#fef3c7;"><td>综合评分</td><td>65</td><td style="color:#f0883e;font-size:16px;">66</td><td>震荡修复 | 仓位45%-50%</td></tr>
+</tbody>
+</table>
+</div>
+
+<!-- 三、预期差发现 -->
+<div class="section-title">三、预期差发现</div>
+<div class="table-wrap">
+<table>
+<thead><tr><th>股票</th><th>代码</th><th>市场认知</th><th>AI判断</th><th>预期差</th><th>操作建议</th></tr></thead>
+<tbody>
+<tr><td>宁德时代</td><td>300750</td><td>电池龙头、估值偏高</td><td>400亿回购+北向Q2加仓1.33亿股+储能高增</td><td><span class="star-block">★★★★★</span></td><td>鑫未来核心建仓10%</td></tr>
+<tr><td>中船特气</td><td>688146</td><td>电子特气次新股</td><td>机构+游资+北向三重买入，国产替代核心</td><td><span class="star-block">★★★★★</span></td><td>回踩5日线加仓 8%</td></tr>
+<tr><td>国际复材</td><td>301526</td><td>电子布次新股</td><td>机构净买4.52亿，玻纤电子布景气超预期</td><td><span class="star-block">★★★★☆</span></td><td>短线低吸/打板 3%</td></tr>
+<tr><td>有研新材</td><td>600206</td><td>靶材小票</td><td>北向Q2加仓46.7万股，国产替代验证</td><td><span class="star-block">★★★★☆</span></td><td>中线持有 5-6%</td></tr>
+<tr><td>方邦股份</td><td>688020</td><td>电磁屏蔽膜</td><td>涨停+机构关注，AI终端材料替代未充分定价</td><td><span class="star-block">★★★★☆</span></td><td>短线关注 4%</td></tr>
+<tr><td>三环集团</td><td>300408</td><td>MLCC龙头</td><td>北向Q2减持7827万股但涨停，业绩分歧加大</td><td><span class="star-block">★★★☆☆</span></td><td>持有，看中报验证</td></tr>
+<tr><td>雅克科技</td><td>002409</td><td>半导体前驱体龙头</td><td>机构净卖5.18亿，北向持续减持，抱团瓦解</td><td><span class="star-block">★★☆☆☆</span></td><td>减仓至2%或清仓</td></tr>
+</tbody>
+</table>
+</div>
+
+<!-- 四、组合调整决策 -->
+<div class="section-title">四、组合调整决策</div>
+<div class="portfolio-dual">
+  <!-- 鑫未来 -->
+  <div class="portfolio-card">
+    <div class="p-title">鑫未来 — 中线成长<span class="p-tag tag-mid">3月-2年 | 仓位约43%</span></div>
+    <table>
+    <thead><tr><th>操作</th><th>代码</th><th>名称</th><th>评分</th><th>评级</th><th>仓位</th></tr></thead>
+    <tbody>
+    <tr><td style="color:#cf222e;font-weight:700">新增</td><td>300750</td><td>宁德时代</td><td>96</td><td><span class="rating r-spp">S++</span></td><td>10%</td></tr>
+    <tr><td style="color:#cf222e;font-weight:700">加仓</td><td>688146</td><td>中船特气</td><td>94</td><td><span class="rating r-s">S</span></td><td>8%</td></tr>
+    <tr><td style="color:#0969da;font-weight:700">持有</td><td>600206</td><td>有研新材</td><td>88</td><td><span class="rating r-a">A</span></td><td>6%</td></tr>
+    <tr><td style="color:#0969da;font-weight:700">持有</td><td>300408</td><td>三环集团</td><td>89</td><td><span class="rating r-a">A</span></td><td>5%</td></tr>
+    <tr><td style="color:#0969da;font-weight:700">持有</td><td>688048</td><td>长光华芯</td><td>87</td><td><span class="rating r-a">A</span></td><td>4%</td></tr>
+    <tr><td style="color:#0969da;font-weight:700">持有</td><td>300684</td><td>中石科技</td><td>85</td><td><span class="rating r-a">A</span></td><td>4%</td></tr>
+    <tr><td style="color:#cf222e;font-weight:700">新增</td><td>688020</td><td>方邦股份</td><td>92</td><td><span class="rating r-s">S</span></td><td>4%</td></tr>
+    <tr><td style="color:#1a7f37;font-weight:700">减仓</td><td>002409</td><td>雅克科技</td><td>86</td><td><span class="rating r-a">A</span></td><td>2%</td></tr>
+    <tr><td style="color:#1a7f37;font-weight:700">清仓</td><td>601991</td><td>大唐发电</td><td>73</td><td><span class="rating r-b">B</span></td><td>清仓</td></tr>
+    </tbody>
+    </table>
+  </div>
+  <!-- 鑫准出击 -->
+  <div class="portfolio-card">
+    <div class="p-title">鑫准出击 — 短线波段<span class="p-tag tag-short">5-20日 | 仓位约15%</span></div>
+    <table>
+    <thead><tr><th>代码</th><th>名称</th><th>评分</th><th>评级</th><th>触发条件</th><th>仓位</th></tr></thead>
+    <tbody>
+    <tr><td>301526</td><td>国际复材</td><td>91</td><td><span class="rating r-s">S</span></td><td>高开3%内+量能维持</td><td>3%</td></tr>
+    <tr><td>688146</td><td>中船特气</td><td>94</td><td><span class="rating r-s">S</span></td><td>回踩5日线缩量企稳</td><td>3%</td></tr>
+    <tr><td>603690</td><td>至纯科技</td><td>90</td><td><span class="rating r-s">S</span></td><td>竞价放量突破高点</td><td>3%</td></tr>
+    <tr><td>301234</td><td>五洲医疗</td><td>79</td><td><span class="rating r-b">B</span></td><td>3连板确认</td><td>2%</td></tr>
+    <tr><td>300414</td><td>中光防雷</td><td>78</td><td><span class="rating r-b">B</span></td><td>分时承接有力</td><td>2%</td></tr>
+    <tr><td>002716</td><td>湖南白银</td><td>77</td><td><span class="rating r-b">B</span></td><td>金价站上4080</td><td>2%</td></tr>
+    </tbody>
+    </table>
+    <div style="margin-top:10px;font-size:11px;color:#57606a">严格止损-5%，总仓位45%-50%</div>
+  </div>
+</div>
+
+<!-- 五、风险委员会报告 -->
+<div class="section-title">五、风险委员会报告</div>
+<div class="alert-yellow">
+  <span style="color:#9a6700;font-size:18px;font-weight:700">🟡 风险等级：黄色</span>
+  <span style="color:#57606a;font-size:13px;margin-left:16px">地缘边际缓和但超级周来临，总仓位控制45%-50%</span>
+</div>
+<div class="risk-grid">
+  <div class="risk-card risk-yellow">
+    <div class="r-title">🟡 超级周不确定性</div>
+    <div class="r-desc">美联储7/29-30议息，油价边际缓和但通胀预期仍高</div>
+    <div class="r-sugg" style="color:#9a6700">建议：仓位不超50%</div>
+  </div>
+  <div class="risk-card risk-yellow">
+    <div class="r-title">🟡 科技拥挤风险</div>
+    <div class="r-desc">公募电子+通信仓位超60%，AI/半导体拥挤度高</div>
+    <div class="r-sugg" style="color:#9a6700">建议：半导体仓位降至15%以下</div>
+  </div>
+  <div class="risk-card risk-red">
+    <div class="r-title">🔴 个股分化加剧</div>
+    <div class="r-desc">雅克科技机构+北向双减持，半导体材料内部分化</div>
+    <div class="r-sugg" style="color:#cf222e">建议：雅克科技减仓至2%</div>
+  </div>
+  <div class="risk-card risk-yellow">
+    <div class="r-title">🟡 增量资金不足</div>
+    <div class="r-desc">成交2.08万亿低于20日均值2.86万亿，反弹持续性待验证</div>
+    <div class="r-sugg" style="color:#9a6700">建议：保留10%现金防御</div>
+  </div>
+  <div class="risk-card risk-yellow">
+    <div class="r-title">🟡 估值偏高</div>
+    <div class="r-desc">中证全指PE-TTM 21.4，10年分位91%</div>
+    <div class="r-sugg" style="color:#9a6700">建议：回避高估值无业绩个股</div>
+  </div>
+  <div class="risk-card risk-green">
+    <div class="r-title">🟢 组合分散度良好</div>
+    <div class="r-desc">无单一个股超10%，结构合理</div>
+    <div class="r-sugg" style="color:#1a7f37">建议：维持</div>
+  </div>
+</div>
+
+<!-- 六、龙虎榜深度解读 -->
+<div class="section-title">六、龙虎榜深度解读</div>
+<div class="lhb-grid">
+  <div class="lhb-card">
+    <h4>机构重点布局 (净买入TOP)</h4>
+    <table>
+    <thead><tr><th>股票</th><th>代码</th><th>净买(万)</th><th>方向</th></tr></thead>
+    <tbody>
+    <tr><td>国际复材</td><td>301526</td><td style="color:#cf222e">45,168</td><td>电子布/玻纤</td></tr>
+    <tr><td>美利云</td><td>000815</td><td style="color:#cf222e">20,088</td><td>IDC/算力</td></tr>
+    <tr><td>日科化学</td><td>300214</td><td style="color:#cf222e">13,806</td><td>化工材料</td></tr>
+    <tr><td>中船特气</td><td>688146</td><td style="color:#cf222e">12,939</td><td>电子特气</td></tr>
+    <tr><td>陇神戎发</td><td>300534</td><td style="color:#cf222e">8,511</td><td>中药</td></tr>
+    <tr><td>创新医疗</td><td>002173</td><td style="color:#cf222e">8,446</td><td>脑机接口</td></tr>
+    <tr><td>五洲医疗</td><td>301234</td><td style="color:#cf222e">4,478</td><td>医疗器械</td></tr>
+    </tbody>
+    </table>
+  </div>
+  <div class="lhb-card">
+    <h4>机构重点撤退 (净卖出)</h4>
+    <table>
+    <thead><tr><th>股票</th><th>代码</th><th>净卖(万)</th><th>方向</th></tr></thead>
+    <tbody>
+    <tr><td>杰瑞股份</td><td>002353</td><td style="color:#1a7f37">161,395</td><td>油服/油价跌</td></tr>
+    <tr><td>雅克科技</td><td>002409</td><td style="color:#1a7f37">51,850</td><td>半导体材料</td></tr>
+    <tr><td>托伦斯</td><td>301583</td><td style="color:#1a7f37">33,084</td><td>航空精密</td></tr>
+    <tr><td>风华高科</td><td>000636</td><td style="color:#1a7f37">28,460</td><td>MLCC</td></tr>
+    <tr><td>甘咨询</td><td>000779</td><td style="color:#1a7f37">21,760</td><td>工程咨询</td></tr>
+    </tbody>
+    </table>
+  </div>
+</div>
+<div class="lhb-grid">
+  <div class="lhb-card">
+    <h4>游资主攻方向</h4>
+    <table>
+    <thead><tr><th>游资</th><th>净额(万)</th><th>买入方向</th></tr></thead>
+    <tbody>
+    <tr><td>东北猛男</td><td style="color:#cf222e">+37,364</td><td>华安证券、滨化股份、中船特气</td></tr>
+    <tr><td>成都系</td><td style="color:#cf222e">+33,804</td><td>风华高科、雅克科技</td></tr>
+    <tr><td>作手新一</td><td style="color:#cf222e">+3,739</td><td>狮头股份</td></tr>
+    <tr><td>温州帮</td><td>+28</td><td>天源转债</td></tr>
+    <tr><td>粉葛</td><td style="color:#1a7f37">-630</td><td>卖出宿迁联盛</td></tr>
+    </tbody>
+    </table>
+  </div>
+  <div class="lhb-card">
+    <h4>深层信号解读</h4>
+    <div style="font-size:12px;line-height:1.8;color:#57606a;">
+      <p>• 机构与游资在半导体材料（雅克科技、风华高科）分歧巨大</p>
+      <p>• 机构真金白银买电子布/电子特气/脑机接口，反弹有产业逻辑支撑</p>
+      <p style="color:#cf222e;">• 油服股杰瑞股份机构大卖16亿，规避周期股</p>
+    </div>
+  </div>
+</div>
+
+<!-- 七、北向资金+ETF+融资全景 -->
+<div class="section-title">七、北向资金+ETF+融资全景</div>
+<div class="table-wrap">
+<table>
+<thead><tr><th>资金类型</th><th>今日方向</th><th>近5日/季度趋势</th><th>信号解读</th></tr></thead>
+<tbody>
+<tr>
+  <td style="font-weight:700">北向资金</td>
+  <td>宁德时代Q2加仓1.33亿股；至纯科技+355万股；中��特气+194万股</td>
+  <td>持续加仓锂电、半导体设备；减持三环集团、雅克科技</td>
+  <td style="color:#0969da">长期看好国产替代+新能源龙头</td>
+</tr>
+<tr>
+  <td style="font-weight:700">ETF资金</td>
+  <td>科创50ETF、沪深300ETF主力净流入</td>
+  <td>股票型ETF上周净流入550.99亿；通信ETF净流出70亿</td>
+  <td style="color:#0969da">国家队借道宽基托底，科技内部切换</td>
+</tr>
+<tr>
+  <td style="font-weight:700">融资融券</td>
+  <td>两市融资情绪偏谨慎</td>
+  <td>融资余额减少34.08亿；融券余额增加4.63亿</td>
+  <td style="color:#9a6700">杠杆资金未追涨，反弹由机构主导</td>
+</tr>
+<tr>
+  <td style="font-weight:700">机构研报</td>
+  <td>普遍看"底部区域、震荡修复"</td>
+  <td>华泰、招商、中信建投等建议控制仓位等方向选择</td>
+  <td style="color:#9a6700">共识：短期不悲观不盲目，结构再平衡</td>
+</tr>
+</tbody>
+</table>
+</div>
+
+<!-- 八、重要财经新闻汇总 -->
+<div class="section-title">八、重要财经新闻 (10条)</div>
+<div class="divider-box">
+  <ol style="padding-left:20px;">
+    <li><strong>宁德时代宣布200-400亿回购</strong>，A股史上最大规模，引爆锂电产业链。</li>
+    <li><strong>长鑫科技（N长鑫）今日上市</strong>，首日涨465%，成交额超1400亿，A股市值新王。</li>
+    <li><strong>美暂停打击伊朗</strong>，中东局势边际缓和，布伦特原油、WTI原油大跌逾3%。</li>
+    <li><strong>央行7/29-31日、8/3日开展隔夜逆回购</strong>，合计超2万亿，平抑跨月流动性。</li>
+    <li><strong>英伟达+特斯拉CEO为中国AI发声</strong>，称美国限制挡不住中国AI。</li>
+    <li><strong>三星与博通签署2000亿美元代工合作</strong>，SK集团7500亿美元供应协议。</li>
+    <li><strong>VC添加剂涨至20万元/吨</strong>，一个多月涨幅超40%，锂电材料涨价验证。</li>
+    <li><strong>国内脑机接口获商业化突破</strong>，欧盟批准相关应用。</li>
+    <li><strong>全球首个零碳机场技术在鄂尔多斯发布</strong>，新型电力系统加速。</li>
+    <li><strong>方星海涉嫌严重违纪违法被查</strong>，监管释放反腐信号。</li>
+  </ol>
+</div>
+
+<!-- 九、明日财经日历 -->
+<div class="section-title">九、明日财经日历</div>
+<div class="table-wrap">
+<table>
+<thead><tr><th>时间</th><th>事件</th><th>影响板块</th><th>关注度</th></tr></thead>
+<tbody>
+<tr><td>20:15</td><td>美国ADP就业周报</td><td>全球风险偏好、科技成长股</td><td style="color:#cf222e">★高</td></tr>
+<tr><td>20:30</td><td>美国6月耐用品订单月率</td><td>制造业、机械、出口链</td><td style="color:#9a6700">★中</td></tr>
+<tr><td>21:00</td><td>美国5月FHFA房价指数</td><td>地产链、金融</td><td style="color:#9a6700">★中</td></tr>
+<tr><td>盘前</td><td>可口可乐、波音、Visa等财报</td><td>美股情绪、A股联动</td><td style="color:#cf222e">★高</td></tr>
+<tr><td>周三凌晨</td><td>微软、Meta财报预期</td><td>AI资本开支、算力链</td><td style="color:#cf222e">★高</td></tr>
+<tr><td>周三凌晨</td><td>美联储7月利率决议+鲍威尔发布会</td><td>全球流动性、成长股估值</td><td style="color:#cf222e;font-weight:700">★★极高</td></tr>
+</tbody>
+</table>
+</div>
+
+<!-- 十、明日开盘前瞻 -->
+<div class="section-title">十、明日开盘前瞻</div>
+<div class="portfolio-dual">
+  <div class="portfolio-card" style="border-left:4px solid #cf222e;">
+    <div class="p-title" style="color:#cf222e;">利多因素</div>
+    <div style="font-size:12px;line-height:1.9;">
+      <p>• 宁德时代400亿回购+VC涨价40%</p>
+      <p>• 油价大跌3%+，中东局势缓和</p>
+      <p>• 今日放量反弹，近5200股上涨</p>
+      <p>• 宽基ETF持续流入，长期资金托底</p>
+      <p>• 央行2万亿逆回购稳定流动性</p>
+    </div>
+  </div>
+  <div class="portfolio-card" style="border-left:4px solid #1a7f37;">
+    <div class="p-title" style="color:#1a7f37;">利空风险</div>
+    <div style="font-size:12px;line-height:1.9;">
+      <p>• 美联储议息，若鹰派压制成长股估值</p>
+      <p>• AI/半导体拥挤度仍高，公募仓位超60%</p>
+      <p>• 雅克科技、风华高科机构游资分歧巨大</p>
+      <p>• 成交2.08万亿仍低于20日均值</p>
+      <p>• 美股科技财报密集，波动可能传导</p>
+    </div>
+  </div>
+</div>
+
+<!-- 操作建议 -->
+<div class="summary-box">
+  <h3>明日操作建议</h3>
+  <ol>
+    <li><strong style="color:#cf222e">总仓位45%-50%</strong>，不宜满仓</li>
+    <li><strong>中线</strong>：聚焦宁德时代、中船特气、有研新材、三环集团，持有并择机加仓</li>
+    <li><strong>短线</strong>：仅博弈机构买入龙头（国际复材、中船特气、至纯科技），严格止损-5%</li>
+    <li><strong style="color:#cf222e">回避</strong>：机构+北向双减持的雅克科技，高拥挤CPO/通信ETF方向</li>
+    <li><strong>对冲</strong>：保留10%现金或黄金/电力防御仓位，应对周三美联储决议</li>
+  </ol>
+</div>
+
+<!-- Footer -->
+<div class="footer">
+  <p>AI智能股票组合主理人系统 V5.0 | 长安鑫工作室</p>
+  <p style="margin-top:4px">数据来源：westock-mcp（腾讯自选股）· tdx-connector（通达信）· WebSearch · 龙虎榜 · 北向资金 · ETF · 研报</p>
+  <p style="margin-top:4px;color:#57606a">本报告由AI系统自动生成，不构成投资建议。投资有风险，入市需谨慎。</p>
+  <p style="margin-top:4px">生成时间：2026-07-27 20:00</p>
+</div>
+
+</div>
+</body>
+</html>

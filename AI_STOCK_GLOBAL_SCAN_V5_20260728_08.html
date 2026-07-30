@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>🌍 全球市场扫描 | 2026-07-28 08:00</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+    background: #ffffff; color: #1f2329; line-height: 1.6; padding: 20px;
+  }
+  .container { max-width: 1200px; margin: 0 auto; }
+
+  /* Header */
+  .header {
+    background: linear-gradient(135deg, #f0f6fc 0%, #e8f0fe 100%);
+    border: 1px solid #d0d7de; border-radius: 12px; padding: 28px 32px; margin-bottom: 20px;
+    display: flex; justify-content: space-between; align-items: center;
+  }
+  .header h1 { font-size: 24px; color: #0969da; margin-bottom: 4px; }
+  .header .sub { font-size: 13px; color: #57606a; }
+  .header .date-badge {
+    background: #0969da; color: #fff; padding: 10px 20px; border-radius: 10px;
+    font-size: 15px; font-weight: 600; text-align: center;
+  }
+  .header .date-badge .time { font-size: 12px; opacity: 0.85; margin-top: 2px; }
+
+  /* Score Banner */
+  .score-banner {
+    background: linear-gradient(135deg, #fff8e1 0%, #fef3c7 100%);
+    border: 2px solid #f0883e; border-radius: 12px; padding: 24px 32px; margin-bottom: 20px;
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .score-banner .score-left { display: flex; align-items: center; gap: 20px; }
+  .score-circle {
+    width: 80px; height: 80px; border-radius: 50%; border: 4px solid #f0883e;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 32px; font-weight: 700; color: #f0883e; background: #fff;
+  }
+  .score-info .label { font-size: 13px; color: #57606a; margin-bottom: 2px; }
+  .score-info .status { font-size: 20px; font-weight: 600; color: #f0883e; }
+  .score-info .pos { font-size: 14px; color: #cf222e; margin-top: 4px; }
+  .score-banner .score-right { text-align: right; }
+  .score-banner .score-right .title { font-size: 14px; color: #57606a; margin-bottom: 6px; }
+  .score-banner .score-right .view { font-size: 15px; color: #1f2329; max-width: 400px; }
+
+  /* Section Title */
+  .section-title {
+    font-size: 18px; font-weight: 600; color: #0969da; margin: 28px 0 12px;
+    padding-left: 12px; border-left: 4px solid #0969da;
+  }
+
+  /* Global Market Cards */
+  .global-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; margin-bottom: 20px; }
+  .global-card {
+    background: #f6f8fa; border: 1px solid #d0d7de; border-radius: 10px; padding: 16px;
+    text-align: center; transition: transform 0.2s, border-color 0.2s;
+  }
+  .global-card:hover { transform: translateY(-2px); border-color: #0969da; background: #fff; }
+  .global-card .g-name { font-size: 13px; color: #57606a; margin-bottom: 6px; }
+  .global-card .g-price { font-size: 20px; font-weight: 700; color: #1f2329; margin-bottom: 4px; }
+  .global-card .g-chg { font-size: 14px; font-weight: 600; }
+  .global-card .g-signal { font-size: 11px; color: #6b7280; margin-top: 4px; }
+  .up { color: #cf222e; }
+  .down { color: #1a7f37; }
+
+  /* Table */
+  .table-wrap { overflow-x: auto; margin-bottom: 20px; border-radius: 10px; border: 1px solid #d0d7de; }
+  table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  th { background: #f6f8fa; color: #57606a; padding: 10px 12px; text-align: left; font-weight: 600; border-bottom: 2px solid #d0d7de; white-space: nowrap; }
+  td { padding: 8px 12px; border-bottom: 1px solid #e8ecf0; color: #1f2329; }
+  tr:hover { background: #f6f8fa; }
+  tr:last-child td { border-bottom: none; }
+
+  /* Signal Boxes */
+  .signal-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 20px; }
+  .signal-box {
+    border-radius: 10px; padding: 20px; border: 1px solid;
+  }
+  .signal-bull { background: #fef2f2; border-color: #fecaca; }
+  .signal-bear { background: #f0fdf4; border-color: #bbf7d0; }
+  .signal-box h3 { font-size: 15px; margin-bottom: 10px; display: flex; align-items: center; gap: 6px; }
+  .signal-bull h3 { color: #cf222e; }
+  .signal-bear h3 { color: #1a7f37; }
+  .signal-box ul { list-style: none; }
+  .signal-box li { font-size: 13px; padding: 4px 0; color: #1f2329; padding-left: 16px; position: relative; }
+  .signal-bull li::before { content: "▸"; color: #cf222e; position: absolute; left: 0; }
+  .signal-bear li::before { content: "▸"; color: #1a7f37; position: absolute; left: 0; }
+
+  /* Focus Box */
+  .focus-box {
+    background: #fffbeb; border: 2px solid #fbbf24; border-radius: 10px; padding: 20px; margin-bottom: 20px;
+  }
+  .focus-box h3 { font-size: 15px; color: #92400e; margin-bottom: 10px; }
+  .focus-box .item { font-size: 14px; padding: 6px 0; color: #1f2329; }
+  .focus-box .item strong { color: #92400e; }
+
+  /* Score Breakdown */
+  .score-breakdown {
+    background: #f6f8fa; border: 1px solid #d0d7de; border-radius: 10px; padding: 20px; margin-bottom: 20px;
+  }
+  .score-breakdown .row { display: flex; align-items: center; gap: 12px; padding: 6px 0; }
+  .score-breakdown .row .label { width: 160px; font-size: 13px; color: #57606a; }
+  .score-breakdown .row .bar-wrap { flex: 1; height: 20px; background: #e8ecf0; border-radius: 10px; overflow: hidden; }
+  .score-breakdown .row .bar { height: 100%; border-radius: 10px; display: flex; align-items: center; justify-content: flex-end; padding-right: 8px; font-size: 11px; color: #fff; font-weight: 600; }
+  .score-breakdown .row .weight { width: 50px; font-size: 12px; color: #6b7280; text-align: right; }
+
+  /* Footer */
+  .footer {
+    text-align: center; padding: 24px; font-size: 13px; color: #6b7280;
+    border-top: 1px solid #e8ecf0; margin-top: 20px;
+  }
+
+  /* Note block */
+  .note-block {
+    background: #eff6ff; border-left: 4px solid #0969da; border-radius: 0 8px 8px 0;
+    padding: 16px 20px; margin-bottom: 20px; font-size: 13px; color: #1e40af; line-height: 1.7;
+  }
+</style>
+</head>
+<body>
+<div class="container">
+
+  <!-- Header -->
+  <div class="header">
+    <div>
+      <h1>🌍 全球市场扫描</h1>
+      <div class="sub">V5.0系统 | Market Intelligence Agent | 长安鑫工作室</div>
+    </div>
+    <div class="date-badge">
+      2026-07-28
+      <div class="time">08:00</div>
+    </div>
+  </div>
+
+  <!-- Score Banner -->
+  <div class="score-banner">
+    <div class="score-left">
+      <div class="score-circle">68</div>
+      <div class="score-info">
+        <div class="label">市场环境评分</div>
+        <div class="status">震荡偏多</div>
+        <div class="pos">建议仓位 50% - 70%</div>
+      </div>
+    </div>
+    <div class="score-right">
+      <div class="title">核心判断</div>
+      <div class="view">A股放量普涨确认短期底部，油价暴跌降低通胀压力，央行2.1万亿流动性维稳；但中期调整未完全结束，融资余额持续下降</div>
+    </div>
+  </div>
+
+  <!-- Score Breakdown -->
+  <div class="section-title">评分分项</div>
+  <div class="score-breakdown">
+    <div class="row">
+      <div class="label">全球环境</div>
+      <div class="bar-wrap"><div class="bar" style="width:70%;background:#0969da;">70</div></div>
+      <div class="weight">×40%</div>
+    </div>
+    <div class="row">
+      <div class="label">A股趋势</div>
+      <div class="bar-wrap"><div class="bar" style="width:65%;background:#f0883e;">65</div></div>
+      <div class="weight">×40%</div>
+    </div>
+    <div class="row">
+      <div class="label">流动性</div>
+      <div class="bar-wrap"><div class="bar" style="width:68%;background:#1a7f37;">68</div></div>
+      <div class="weight">×20%</div>
+    </div>
+    <div class="row" style="border-top:1px solid #d0d7de; margin-top:8px; padding-top:12px;">
+      <div class="label" style="font-weight:600;color:#1f2329;">综合得分</div>
+      <div class="bar-wrap"><div class="bar" style="width:68%;background:#f0883e;">68 / 100</div></div>
+      <div class="weight" style="font-weight:600;">100%</div>
+    </div>
+  </div>
+
+  <!-- 1. Overnight Global Markets -->
+  <div class="section-title">一、隔夜外盘</div>
+  <div class="global-grid">
+    <div class="global-card">
+      <div class="g-name">道琼斯工业</div>
+      <div class="g-price">52,210.08</div>
+      <div class="g-chg up">+0.51%</div>
+      <div class="g-signal">偏强，消费/通信领涨</div>
+    </div>
+    <div class="global-card">
+      <div class="g-name">标普500</div>
+      <div class="g-price">7,413.18</div>
+      <div class="g-chg up">+0.02%</div>
+      <div class="g-signal">持平，7/11板块上涨</div>
+    </div>
+    <div class="global-card">
+      <div class="g-name">纳斯达克</div>
+      <div class="g-price">24,932.08</div>
+      <div class="g-chg down">-0.18%</div>
+      <div class="g-signal">四连跌，芯片重挫</div>
+    </div>
+    <div class="global-card">
+      <div class="g-name">费城半导体</div>
+      <div class="g-price">—</div>
+      <div class="g-chg down">-2%+</div>
+      <div class="g-signal">英伟达-5%，创5月新低</div>
+    </div>
+    <div class="global-card">
+      <div class="g-name">德国DAX30</div>
+      <div class="g-price">25,361.03</div>
+      <div class="g-chg up">+1.04%</div>
+      <div class="g-signal">欧股全线走强</div>
+    </div>
+    <div class="global-card">
+      <div class="g-name">中概金龙指数</div>
+      <div class="g-price">—</div>
+      <div class="g-chg up">+2.51%</div>
+      <div class="g-signal">中概普涨，正面A股</div>
+    </div>
+  </div>
+  <div class="note-block">
+    <strong>美股结构分化严重：</strong>消费/通信偏强，但半导体/AI链遭重锤。英伟达跌近5%（7500亿美元AI循环融资争议），SK海力士破发，费城半导体创5月新低。苹果涨超1%再创历史新高，总市值逼近5万亿美元。
+  </div>
+
+  <!-- 2. Commodities & Forex -->
+  <div class="section-title">二、大宗商品与外汇</div>
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr><th>品种</th><th>最新</th><th>变动</th><th>对A股影响</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>COMEX黄金</td><td>4,074 美元/盎司</td><td class="down">-0.07%</td><td>高位整理，避险需求温和</td></tr>
+        <tr><td>现货黄金</td><td>4,076.96 美元/盎司</td><td class="up">+0.60%</td><td>金价维持强势</td></tr>
+        <tr><td>WTI原油</td><td><strong>82.09 美元/桶</strong></td><td class="down"><strong>-7.5%</strong></td><td>暴跌！美伊停火谈判驱动</td></tr>
+        <tr><td>布伦特原油</td><td>88.36 美元/桶</td><td class="down"><strong>-8.7%</strong></td><td>同步暴跌，地缘风险溢价回撤</td></tr>
+        <tr><td>美元指数</td><td>101.539</td><td class="up">+0.07%</td><td>低位徘徊，整体弱势</td></tr>
+        <tr><td>人民币中间价</td><td>6.7911</td><td class="up">+28基点</td><td>人民币偏强</td></tr>
+        <tr><td>在岸CNY（夜盘）</td><td>6.7625</td><td class="up">+77基点</td><td>升值趋势</td></tr>
+        <tr><td>离岸CNH</td><td>6.7655</td><td class="up">+63基点</td><td>较在岸略弱，价差仅7点</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="note-block">
+    <strong>油价暴跌是最大变量：</strong>美伊军事对峙暂缓，停火谈判延续至第三天，特朗普称双方正进行"深度谈判"。油价单日跌7-9%显著降低输入性通胀预期，利好制造业成本端和消费端。
+  </div>
+
+  <!-- 3. A-Share Indices -->
+  <div class="section-title">三、A股指数概览</div>
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr><th>指数</th><th>昨收 (7/27)</th><th>涨跌幅</th><th>近5日</th><th>近10日</th><th>近20日</th><th>位置判断</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>上证指数</td><td>3,858.25</td><td class="up">+1.15%</td><td class="up">+1.63%</td><td class="down">-1.42%</td><td class="down">-5.29%</td><td>超跌反弹，20日线承压</td></tr>
+        <tr><td>沪深300</td><td>4,702.43</td><td class="up">+1.15%</td><td class="up">+2.26%</td><td class="up">+0.15%</td><td class="down">-4.56%</td><td>温和反弹，中期仍偏弱</td></tr>
+        <tr><td>中证500</td><td>7,720.60</td><td class="up">+2.49%</td><td class="up">+4.17%</td><td class="down">-5.13%</td><td class="down"><strong>-12.48%</strong></td><td>反弹力度大，但中期深跌</td></tr>
+        <tr><td>中证1000</td><td>7,228.78</td><td class="up">+3.33%</td><td class="up">+3.78%</td><td class="down">-7.18%</td><td class="down"><strong>-15.92%</strong></td><td>中小盘反弹最强，调整最深</td></tr>
+        <tr><td>创业板指</td><td>3,590.79</td><td class="up">+3.16%</td><td class="up">+4.29%</td><td class="down">-3.56%</td><td class="down"><strong>-14.84%</strong></td><td>反弹领涨，但20日仍深跌</td></tr>
+        <tr><td>科创50</td><td>1,807.95</td><td class="up">+1.16%</td><td class="up">+5.19%</td><td class="down">-9.34%</td><td class="down"><strong>-14.96%</strong></td><td>高位剧烈波动，年内+34.5%</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="note-block">
+    <strong>市场全景：</strong>两市成交额<strong>2.09万亿</strong>（放量1,442亿），上涨5,100+只（占比94%），121只涨停，6只跌停。长鑫科技上市首日暴涨465.82%，成交额超1,400亿，成为A股市值第一。板块：脑机接口/玻璃玻纤/元件/美容护理领涨，仅石油石化/煤炭下跌。
+  </div>
+
+  <!-- 4. Score Rationale -->
+  <div class="section-title">四、评分依据</div>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>#</th><th>依据</th></tr></thead>
+      <tbody>
+        <tr><td>1</td><td><strong>A股放量普涨确认短期底部</strong> — 7/27两市2.09万亿成交，5100+只上涨（94%），121只涨停。三大指数集体收涨超1%，中小盘反弹力度最大（创业板+3.16%/中证1000+3.33%），超跌反弹动能强劲。</td></tr>
+        <tr><td>2</td><td><strong>美股结构分化，芯片承压但中概股利好</strong> — 道指+0.51%偏强，但纳指四连跌（英伟达-5%、费城半导体创5月新低）。中概金龙指数+2.51%，对A股情绪正面传导。</td></tr>
+        <tr><td>3</td><td><strong>油价暴跌7-8%降低通胀压力</strong> — 美伊停火谈判推进，WTI暴跌至82美元，布伦特跌至88美元。输入性通胀预期大幅回落，利好A股制造业成本和消费端。</td></tr>
+        <tr><td>4</td><td><strong>央行释放2.1万亿流动性维稳信号</strong> — 提前预告7/29-8/3四次隔夜逆回购操作合计2.1万亿，频率较6月翻倍，维持资金面充裕。</td></tr>
+        <tr><td>5</td><td><strong>融资余额持续下降反映风险偏好未完全恢复</strong> — 融资余额26,582亿（-0.83%），两融余额连续下降，杠杆资金仍谨慎，中小盘20日跌幅仍大（-12%至-16%），中期调整尚未确认结束。</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- 5. Key Signals -->
+  <div class="section-title">五、今日关键信号</div>
+  <div class="signal-grid">
+    <div class="signal-box signal-bull">
+      <h3>🔴 利多信号</h3>
+      <ul>
+        <li>A股放量普涨，短期超跌反弹动能强劲，情绪明显回暖</li>
+        <li>央行预告2.1万亿流动性投放，资金面充裕利好风险偏好</li>
+        <li>油价暴跌7-8%（美伊缓和），输入性通胀压力大幅下降</li>
+        <li>中概股金龙指数+2.51%，外资情绪正面</li>
+      </ul>
+    </div>
+    <div class="signal-box signal-bear">
+      <h3>🟢 利空信号</h3>
+      <ul>
+        <li>英伟达跌5%拖累AI芯片链，费城半导体创新低</li>
+        <li>融资余额连续下降，杠杆资金仍处撤退阶段</li>
+        <li>本周美联储议息会议（周三），加息概率上升</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="focus-box">
+    <h3>⚡ 重点关注</h3>
+    <div class="item"><strong>1. 本周三美联储利率决议</strong> — 预计按兵不动，但加息概率高于近期，关注点阵图/措辞变化</div>
+    <div class="item"><strong>2. 国内重磅会议</strong> — 政策预期方向将决定反弹持续性</div>
+    <div class="item"><strong>3. 长鑫科技虹吸效应</strong> — 首日1400亿成交创纪录，关注后续对半导体/科技板块资金分流</div>
+  </div>
+
+  <!-- Footer -->
+  <div class="footer">
+    ⚡ V5.0系统 | Market Intelligence Agent | 2026-07-28 08:00<br>
+    <span style="font-size:11px;opacity:0.6;">长安鑫工作室 | AI智能股票组合主理人系统</span>
+  </div>
+
+</div>
+</body>
+</html>

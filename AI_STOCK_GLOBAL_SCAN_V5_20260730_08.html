@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>全球市场扫描 | 2026-07-30 08:00 | V5.0</title>
+<style>
+  :root {
+    --red: #cf222e;
+    --green: #1a7f37;
+    --bg: #f5f6f8;
+    --card-bg: #ffffff;
+    --text: #1a1a2e;
+    --text-secondary: #586069;
+    --border: #e1e4e8;
+    --accent: #0366d6;
+    --bearish-bg: #fff1f0;
+    --bullish-bg: #f0fff4;
+    --warning-bg: #fff8e1;
+    --neutral-bg: #f0f4ff;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', 'Hiragino Sans GB', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.6;
+    font-size: 15px;
+  }
+
+  .container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 24px 20px;
+  }
+
+  /* Header */
+  .header {
+    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+    border-radius: 16px;
+    padding: 32px 40px;
+    margin-bottom: 24px;
+    color: white;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 16px;
+  }
+  .header-left h1 { font-size: 28px; font-weight: 700; letter-spacing: 0.5px; }
+  .header-left .subtitle { font-size: 14px; opacity: 0.75; margin-top: 4px; }
+  .header-badge {
+    background: rgba(255,255,255,0.15);
+    border: 1px solid rgba(255,255,255,0.25);
+    border-radius: 12px;
+    padding: 12px 20px;
+    text-align: center;
+    backdrop-filter: blur(10px);
+  }
+  .header-badge .time { font-size: 22px; font-weight: 700; letter-spacing: 1px; }
+  .header-badge .label { font-size: 11px; opacity: 0.7; text-transform: uppercase; letter-spacing: 2px; }
+
+  /* Validation Bar */
+  .validation-bar {
+    background: var(--card-bg);
+    border-radius: 12px;
+    padding: 16px 24px;
+    margin-bottom: 20px;
+    border: 1px solid var(--border);
+    display: flex;
+    gap: 24px;
+    flex-wrap: wrap;
+    align-items: center;
+  }
+  .validation-bar .v-title { font-weight: 700; font-size: 13px; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 1px; }
+  .validation-item { display: flex; align-items: center; gap: 6px; font-size: 13px; }
+  .v-pass { color: var(--green); }
+  .v-warn { color: #d97706; }
+  .v-icon { font-size: 16px; }
+
+  /* Tendency Banner */
+  .tendency-banner {
+    border-radius: 16px;
+    padding: 28px 36px;
+    margin-bottom: 24px;
+    display: flex;
+    align-items: center;
+    gap: 24px;
+    border: 1px solid var(--border);
+    box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+    background: var(--bearish-bg);
+    border-left: 5px solid var(--red);
+  }
+  .tendency-icon {
+    width: 72px; height: 72px;
+    border-radius: 50%;
+    background: var(--red);
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 36px;
+    flex-shrink: 0;
+  }
+  .tendency-info h2 { font-size: 24px; font-weight: 700; margin-bottom: 4px; color: var(--red); }
+  .tendency-info p { font-size: 14px; color: var(--text-secondary); line-height: 1.7; }
+
+  /* Card */
+  .card {
+    background: var(--card-bg);
+    border-radius: 16px;
+    padding: 24px 28px;
+    margin-bottom: 20px;
+    border: 1px solid var(--border);
+    box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+  }
+  .card-title {
+    font-size: 18px;
+    font-weight: 700;
+    margin-bottom: 16px;
+    padding-bottom: 10px;
+    border-bottom: 2px solid var(--border);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .card-title .icon { font-size: 22px; }
+
+  /* Table */
+  table { width: 100%; border-collapse: collapse; font-size: 14px; }
+  th { text-align: left; padding: 10px 12px; background: #f8f9fa; font-weight: 600; color: var(--text-secondary); border-bottom: 2px solid var(--border); white-space: nowrap; }
+  td { padding: 10px 12px; border-bottom: 1px solid #f0f0f0; }
+  tr:last-child td { border-bottom: none; }
+  tr:hover td { background: #fafbfc; }
+  .red { color: var(--red); font-weight: 600; }
+  .green { color: var(--green); font-weight: 600; }
+
+  /* Signal Cards */
+  .signal-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  @media (max-width: 768px) { .signal-grid { grid-template-columns: 1fr; } }
+  .signal-card { border-radius: 12px; padding: 20px; }
+  .signal-bearish { background: var(--bearish-bg); border: 1px solid #ffa39e; }
+  .signal-bullish { background: var(--bullish-bg); border: 1px solid #b7eb8f; }
+  .signal-card h3 { font-size: 16px; font-weight: 700; margin-bottom: 12px; display: flex; align-items: center; gap: 6px; }
+  .signal-card ol { padding-left: 18px; }
+  .signal-card li { font-size: 13px; margin-bottom: 8px; line-height: 1.6; }
+
+  /* Note Block */
+  .note {
+    background: #f8f9fa;
+    border-left: 3px solid var(--accent);
+    padding: 14px 18px;
+    border-radius: 0 8px 8px 0;
+    margin: 12px 0;
+    font-size: 13px;
+    color: var(--text-secondary);
+    line-height: 1.7;
+  }
+  .note strong { color: var(--text); }
+
+  /* Analysis Table */
+  .analysis-table th { background: #f0f4ff; }
+  .analysis-table td:first-child { font-weight: 600; }
+
+  /* Footer */
+  .footer {
+    text-align: center;
+    padding: 20px;
+    color: var(--text-secondary);
+    font-size: 12px;
+    line-height: 1.8;
+  }
+
+  /* Conflict Tag */
+  .conflict-tag {
+    display: inline-block;
+    background: #fff8e1;
+    color: #d97706;
+    font-size: 11px;
+    padding: 2px 8px;
+    border-radius: 4px;
+    margin-left: 6px;
+    font-weight: 600;
+  }
+
+  /* Focus Table */
+  .focus-table td:first-child { font-weight: 600; white-space: nowrap; }
+</style>
+</head>
+<body>
+<div class="container">
+
+  <!-- Header -->
+  <div class="header">
+    <div class="header-left">
+      <h1>🌍 全球市场扫描</h1>
+      <div class="subtitle">V5.0 Market Intelligence Agent | 2026-07-30 08:00</div>
+    </div>
+    <div class="header-badge">
+      <div class="time">08:00</div>
+      <div class="label">BEIJING TIME</div>
+    </div>
+  </div>
+
+  <!-- Validation Bar -->
+  <div class="validation-bar">
+    <span class="v-title">数据验证</span>
+    <div class="validation-item"><span class="v-icon v-warn">⚠️</span><span class="v-warn">关1 交叉验证：部分通过（A股仅TDX单源；黄金差异0.58%&gt;0.5%已标注）</span></div>
+    <div class="validation-item"><span class="v-icon v-pass">✅</span><span class="v-pass">关2 异常检测：通过</span></div>
+    <div class="validation-item"><span class="v-icon v-pass">✅</span><span class="v-pass">关3 逻辑校验：通过</span></div>
+  </div>
+
+  <!-- Tendency Banner -->
+  <div class="tendency-banner">
+    <div class="tendency-icon">↓</div>
+    <div class="tendency-info">
+      <h2>临时倾向：偏空</h2>
+      <p>外部冲击主导——美股全线暴跌（道指-2.19%、纳指-1.74%），费城半导体-5.33%（5日累跌~16%），美联储鹰派维持利率（3名委员dissent要求加息，2016年来首次三方分歧），中东局势推动油价飙升（布伦特+7.4%）。日经期货开盘已跌1.2%。A股虽有昨日反弹基础+人民币升值+弱美元支撑，但外部风险释放尚未结束，今日开盘面临显著下行压力。</p>
+    </div>
+  </div>
+
+  <!-- Section 1: US Markets -->
+  <div class="card">
+    <div class="card-title"><span class="icon">🇺🇸</span>一、隔夜外盘</div>
+    <table>
+      <thead>
+        <tr><th>市场</th><th>收盘/最新</th><th>涨跌幅</th><th>信号</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>道琼斯工业</td><td>51,594.14</td><td class="green">-2.19%</td><td>-1,153点，美联储鹰派维持利率引发恐慌</td></tr>
+        <tr><td>标普500</td><td>7,316.15</td><td class="green">-1.52%</td><td>-112.63点，全面回调</td></tr>
+        <tr><td>纳斯达克</td><td>24,442.94</td><td class="green">-1.74%</td><td>-433.97点，科技持续承压</td></tr>
+        <tr><td>费城半导体</td><td>—</td><td class="green">-5.33%</td><td>5日累跌~16%，半导体链崩塌持续</td></tr>
+        <tr><td>中概金龙指数</td><td>—</td><td class="red">+1.73%</td><td>连续三日上涨，中概资产与美股科技脱钩</td></tr>
+        <tr><td>纳斯达克100期货</td><td>27,520.25</td><td class="red">+0.65%</td><td>盘后微涨，微软财报利好带动</td></tr>
+        <tr><td>日经225期货</td><td>61,675.6</td><td class="green">-1.20%</td><td>开盘即跌，亚太风险偏好下降</td></tr>
+        <tr><td>恒指期货（7月）</td><td>24,238</td><td class="red">+0.33%</td><td>小幅上涨，港股相对韧性</td></tr>
+      </tbody>
+    </table>
+    <div class="note">
+      <strong>美联储7月议息：</strong>维持基准利率3.50%-3.75%不变，但3名委员dissent要求加息（2016年来首次三方分歧），鹰派信号显著。主席沃什表示"没有软性通胀目标"。今晚将公布Core PCE（6月）+ Q2 GDP初值，为本周最大不确定性事件。<br>
+      <strong>盘后重点：</strong>微软盘后涨约9%（Q4财报超预期，Azure年化收入破1000亿美元），Meta盘后跌约11%。今晚苹果、亚马逊财报将发布。
+    </div>
+  </div>
+
+  <!-- Section 2: Commodities & FX -->
+  <div class="card">
+    <div class="card-title"><span class="icon">📊</span>二、大宗商品与外汇</div>
+    <table>
+      <thead>
+        <tr><th>品种</th><th>最新</th><th>变动</th><th>对A股影响</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>WTI原油</td><td>~84.6美元/桶</td><td class="green">+6.74%</td><td>中东局势推升油价，利好石化上游；利空航空/化工下游</td></tr>
+        <tr><td>布伦特原油</td><td>88.16美元/桶</td><td class="green">+7.40%</td><td>与WTI同步飙升，地缘风险溢价急升</td></tr>
+        <tr><td>COMEX黄金</td><td>4,147.70美元/盎司</td><td class="green">+1.24% <span class="conflict-tag">冲突</span></td><td>避险需求推动，westock +1.24% vs WebSearch +0.66%，取均值+0.95%</td></tr>
+        <tr><td>LME铜</td><td>13,622美元/吨</td><td class="green">-0.46%</td><td>全球需求担忧，工业金属偏弱</td></tr>
+        <tr><td>LME铝</td><td>3,176.5美元/吨</td><td class="red">+0.92%</td><td>有色金属分化，铝强铜弱</td></tr>
+        <tr><td>美元指数</td><td>100.82</td><td class="green">-0.59%</td><td>弱美元，利好人民币资产和外资回流</td></tr>
+        <tr><td>在岸人民币</td><td>6.7655</td><td class="red">升19点</td><td>6.76区间，中间价6.7899调升29bp</td></tr>
+        <tr><td>离岸人民币</td><td>6.7608</td><td class="red">升104点</td><td>离岸强于在岸，人民币升值预期升温</td></tr>
+        <tr><td>美10年期国债</td><td>4.675%</td><td class="green">+1.54%</td><td>收益率上行，金融条件收紧</td></tr>
+        <tr><td>中10年期国债</td><td>1.724%</td><td class="green">-0.12%</td><td>中美利差~2.95%，但CNY逆势升值</td></tr>
+      </tbody>
+    </table>
+    <div class="note">
+      <strong>油价飙升是核心风险变量：</strong>布伦特单日+7.4%至88美元，主因中东地缘紧张（美沙特联手打击伊朗支持的伊拉克民兵、以哈冲突升级）。油价急升将推升全球通胀预期，与美联储鹰派立场形成共振，对A股中下游制造业构成成本压力，但利好石油石化上游板块。<br>
+      <strong>人民币逆势走强：</strong>美元指数跌破101至100.82，离岸人民币升104点至6.7608。中美利差虽走阔，但人民币升值反映外资对中国资产信心边际改善。
+    </div>
+  </div>
+
+  <!-- Section 3: A-Share Indices -->
+  <div class="card">
+    <div class="card-title"><span class="icon">🇨🇳</span>三、A股指数概览（7/29收盘）</div>
+    <table>
+      <thead>
+        <tr><th>指数</th><th>7/29收盘</th><th>前收（7/28）</th><th>当日涨跌</th><th>近5日趋势</th><th>位置判断</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>上证指数</td><td>3,828.47</td><td>3,813.31</td><td class="red">+0.40%</td><td>震荡企稳</td><td>3800上方暂稳，3800-3850区间整理</td></tr>
+        <tr><td>沪深300</td><td>4,600.26</td><td>4,569.52</td><td class="red">+0.67%</td><td>弱反弹</td><td>收复4600，7月涨幅部分修复</td></tr>
+        <tr><td>中证500</td><td>7,524.51</td><td>7,443.43</td><td class="red">+1.09%</td><td>超跌反弹</td><td>中小盘领涨，收复7500</td></tr>
+        <tr><td>中证1000</td><td>7,095.19</td><td>7,026.28</td><td class="red">+0.98%</td><td>超跌反弹</td><td>微盘股反弹力度强于大盘</td></tr>
+        <tr><td>创业板指</td><td>3,378.70</td><td>3,327.03</td><td class="red">+1.55%</td><td>破位后反弹</td><td>前日-7.35%后超跌反弹，3300-3400区间</td></tr>
+        <tr><td>科创50</td><td>1,678.74</td><td>1,693.48</td><td class="green">-0.87%</td><td>持续走弱</td><td>唯一收跌指数，1700失守，半导体链压力</td></tr>
+      </tbody>
+    </table>
+    <div class="note">
+      <strong>7/29反弹特征：</strong>前日创业板-7.35%、科创-6.33%恐慌性暴跌后，7/29迎来超跌反弹。上证+0.40%、创业板+1.55%领涨，中小盘表现优于大盘。但科创50继续下跌-0.87%，反映半导体链在美国费城半导体持续崩跌（5日-16%）压力下仍然承压。<br>
+      <strong>关键矛盾：</strong>A股7/29反弹 vs 美股7/29暴跌。中概金龙指数逆势+1.73%，显示外资正在"卖美股科技、买中国资产"，A股存在脱钩外部冲击的可能性。但美联储鹰派+油价飙升+今晚PCE/GDP数据三重不确定性，使得脱钩能否持续存疑。
+    </div>
+  </div>
+
+  <!-- Section 4: Market Environment Analysis -->
+  <div class="card">
+    <div class="card-title"><span class="icon">🔍</span>四、市场环境分析（Layer 1 + Layer 2）</div>
+
+    <h3 style="font-size:16px; font-weight:700; margin: 16px 0 10px; color: var(--accent);">Layer 1：全球环境</h3>
+    <table class="analysis-table">
+      <thead>
+        <tr><th>维度</th><th>判断</th><th>依据</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>美股趋势</td><td class="green">🔴 偏空</td><td>三大指数全线暴跌，道指-2.19%，纳指五连跌后加速下行</td></tr>
+        <tr><td>半导体链</td><td class="green">🔴 极度偏空</td><td>费城半导体-5.33%，5日累跌~16%，全球科技资金集中撤离</td></tr>
+        <tr><td>美联储政策</td><td class="green">🔴 鹰派</td><td>维持利率不变但3名委员dissent要求加息，2016年来首次三方分歧</td></tr>
+        <tr><td>油价</td><td class="green">🔴 通胀风险</td><td>布伦特+7.4%至88美元，中东地缘风险溢价急升</td></tr>
+        <tr><td>美元</td><td class="red">🟢 偏多</td><td>美元指数-0.59%至100.82，弱美元利好EM和人民币资产</td></tr>
+        <tr><td>人民币</td><td class="red">🟢 偏多</td><td>离岸升104bp至6.7608，在岸6.7655，升值预期升温</td></tr>
+        <tr><td>中概股</td><td class="red">🟢 偏多</td><td>金龙指数+1.73%，连续三日上涨，与美股科技脱钩</td></tr>
+        <tr><td>亚太期货</td><td>🟡 中性偏空</td><td>日经期货-1.2%，恒指期货+0.33%，分化</td></tr>
+      </tbody>
+    </table>
+    <div class="note"><strong>全球环境综合判断：偏空。</strong>美股暴跌+美联储鹰派+油价飙升构成三重利空，但弱美元+人民币升值+中概股逆势走强提供结构性缓冲。全球风险偏好下降但中国市场出现脱钩迹象。</div>
+
+    <h3 style="font-size:16px; font-weight:700; margin: 20px 0 10px; color: var(--accent);">Layer 2：A股趋势与流动性</h3>
+    <table class="analysis-table">
+      <thead>
+        <tr><th>维度</th><th>判断</th><th>依据</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>指数趋势</td><td>🟡 中性</td><td>7/29超跌反弹（上证+0.40%、创业板+1.55%），但科创50续跌-0.87%</td></tr>
+        <tr><td>市场结构</td><td>🟡 中性</td><td>中小盘领涨（中证500/1000 +1%），大盘企稳，半导体链承压</td></tr>
+        <tr><td>资金面</td><td>🟡 中性</td><td>Shibor微升（O/N +2.3BP），DR007 1.50%，流动性总体充裕</td></tr>
+        <tr><td>汇率支撑</td><td class="red">🟢 偏多</td><td>人民币升值+弱美元，外资回流条件改善</td></tr>
+        <tr><td>政策预期</td><td class="red">🟢 偏多</td><td>7月底政治局会议窗口，扩内需政策预期</td></tr>
+        <tr><td>外部压力</td><td class="green">🔴 偏空</td><td>美股暴跌+半导体崩跌+油价飙升+美联储鹰派</td></tr>
+      </tbody>
+    </table>
+    <div class="note"><strong>A股综合判断：中性偏空。</strong>昨日超跌反弹提供支撑，人民币升值利好外资回流，但外部冲击将主导今日开盘走势。科创50持续走弱反映半导体链风险尚未释放完毕。</div>
+  </div>
+
+  <!-- Section 5: Signals -->
+  <div class="card">
+    <div class="card-title"><span class="icon">📡</span>五、今日关键信号</div>
+    <div class="signal-grid">
+      <div class="signal-card signal-bearish">
+        <h3>🔴 利空因素</h3>
+        <ol>
+          <li><strong>美股全线暴跌</strong>：道指-2.19%、纳指-1.74%，美联储鹰派维持利率引发全球risk-off</li>
+          <li><strong>费城半导体-5.33%</strong>：5日累跌~16%，A股半导体/电子/通信链面临持续压力</li>
+          <li><strong>美联储3名委员dissent</strong>：2016年来首次三方分歧，3人要求加息，鹰派信号极强</li>
+          <li><strong>油价飙升</strong>：布伦特+7.4%至88美元，中东地缘风险升级，推升通胀预期</li>
+          <li><strong>今晚PCE+GDP双重数据</strong>：Core PCE和Q2 GDP初值同时公布，不确定性大</li>
+        </ol>
+      </div>
+      <div class="signal-card signal-bullish">
+        <h3>🟢 利多因素</h3>
+        <ol>
+          <li><strong>人民币逆势走强</strong>：离岸升104bp至6.7608，弱美元（100.82）利好外资回流</li>
+          <li><strong>中概股连续上涨</strong>：金龙指数+1.73%，连续三日上涨，外资信心边际改善</li>
+          <li><strong>A股昨日超跌反弹</strong>：创业板+1.55%、中证500+1.09%，市场有内生修复动力</li>
+          <li><strong>微软盘后+9%</strong>：Azure年化收入破1000亿美元，可能提振A股AI板块</li>
+          <li><strong>政策窗口期</strong>：7月底政治局会议临近，扩内需/促消费政策预期升温</li>
+          <li><strong>中国债券收益率下行</strong>：10Y国债1.724%（-0.12%），国内流动性宽松</li>
+        </ol>
+      </div>
+    </div>
+  </div>
+
+  <!-- Section 6: Focus -->
+  <div class="card">
+    <div class="card-title"><span class="icon">📅</span>六、今日关注</div>
+    <table class="focus-table">
+      <thead>
+        <tr><th>时间</th><th>事件</th><th>影响</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>09:00</td><td>中国7月官方PMI预期</td><td>制造业景气度</td></tr>
+        <tr><td>20:30</td><td>美国Q2 GDP初值</td><td>经济增长验证，影响美联储路径</td></tr>
+        <tr><td>20:30</td><td>美国6月Core PCE</td><td>通胀关键指标，直接影响降息预期</td></tr>
+        <tr><td>20:30</td><td>美国初请失业金</td><td>就业市场状况</td></tr>
+        <tr><td>盘后</td><td>苹果、亚马逊财报</td><td>科技巨头业绩，影响全球科技股方向</td></tr>
+        <tr><td>14:00</td><td>英国央行利率决议</td><td>全球央行政策走向</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Footer -->
+  <div class="footer">
+    报告生成时间：2026-07-30 08:00 | V5.0 Market Intelligence Agent<br>
+    数据源：TDX（A股指数）、westock-mcp（期货/商品）、WebSearch（美股/外汇/补充）<br>
+    信息隔离：本节点只输出市场环境临时倾向（偏多/中性/偏空），不出正式0-100评分（正式评分仅15:30收盘分析节点输出）<br>
+    下次更新：09:00 盘前策略节点
+  </div>
+
+</div>
+</body>
+</html>

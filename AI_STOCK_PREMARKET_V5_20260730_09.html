@@ -1,0 +1,559 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>盘前策略 | 2026-07-30 09:00 | V5.0</title>
+  <style>
+    :root {
+      --bg: #f6f8fa;
+      --card: #ffffff;
+      --text: #1f2328;
+      --text-secondary: #57606a;
+      --border: #d0d7de;
+      --red: #cf222e;
+      --green: #1a7f37;
+      --yellow: #d4a72c;
+      --blue: #0969da;
+      --purple: #8250df;
+      --teal: #1b7c83;
+      --shadow: 0 1px 2px rgba(31,35,40,0.04), 0 1px 3px rgba(31,35,40,0.08);
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+    }
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 24px;
+    }
+    header {
+      background: linear-gradient(135deg, #ffffff 0%, #f6f8fa 100%);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 28px 32px;
+      box-shadow: var(--shadow);
+      margin-bottom: 24px;
+    }
+    header h1 {
+      margin: 0 0 8px 0;
+      font-size: 28px;
+      font-weight: 700;
+    }
+    .meta {
+      display: flex;
+      gap: 16px;
+      flex-wrap: wrap;
+      align-items: center;
+      color: var(--text-secondary);
+      font-size: 14px;
+    }
+    .badge {
+      display: inline-block;
+      padding: 4px 10px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 600;
+    }
+    .badge-time { background: #ddf4ff; color: var(--blue); }
+    .badge-version { background: #fbefff; color: var(--purple); }
+    .badge-status { background: #dafbe1; color: var(--green); }
+    .badge-warning { background: #fff8c5; color: #7a5c00; }
+
+    section {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 24px;
+      margin-bottom: 24px;
+      box-shadow: var(--shadow);
+    }
+    section h2 {
+      margin: 0 0 16px 0;
+      font-size: 20px;
+      padding-bottom: 12px;
+      border-bottom: 1px solid var(--border);
+    }
+    section h3 {
+      margin: 20px 0 10px 0;
+      font-size: 16px;
+      color: var(--text);
+    }
+
+    .validation-bar {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 14px 18px;
+      border-radius: 8px;
+      background: #fff8c5;
+      border: 1px solid #e6d78a;
+      margin-bottom: 16px;
+    }
+    .validation-bar.ok { background: #dafbe1; border-color: #a7e9b6; }
+    .validation-bar.warn { background: #fff8c5; border-color: #e6d78a; }
+    .validation-bar .icon { font-size: 20px; }
+    .validation-bar .title { font-weight: 700; }
+    .validation-list { margin: 0; padding-left: 20px; color: var(--text-secondary); font-size: 14px; }
+    .validation-list li { margin-bottom: 6px; }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 14px;
+      margin-top: 12px;
+    }
+    th, td {
+      padding: 12px 14px;
+      text-align: left;
+      border-bottom: 1px solid #e6eaef;
+    }
+    th {
+      background: #f6f8fa;
+      font-weight: 600;
+      color: var(--text-secondary);
+    }
+    tr:hover { background: #f6f8fa; }
+    .rank { font-weight: 700; color: var(--blue); width: 50px; }
+    .score { font-weight: 700; }
+    .score-high { color: var(--red); }
+    .score-mid { color: var(--yellow); }
+    .score-low { color: var(--green); }
+    .phase-tag {
+      display: inline-block;
+      padding: 3px 8px;
+      border-radius: 4px;
+      font-size: 12px;
+      font-weight: 600;
+    }
+    .phase-enter { background: #ddf4ff; color: var(--blue); }
+    .phase-accel { background: #fff2f5; color: var(--red); }
+    .phase-caution { background: #fff8c5; color: #7a5c00; }
+    .phase-exit { background: #ffebe9; color: #82071e; }
+    .progress {
+      width: 100%;
+      height: 6px;
+      background: #e6eaef;
+      border-radius: 3px;
+      overflow: hidden;
+      margin-top: 4px;
+    }
+    .progress-bar { height: 100%; border-radius: 3px; }
+
+    .card-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 16px;
+      margin-top: 12px;
+    }
+    .fund-card {
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 16px;
+      background: #fafbfc;
+    }
+    .fund-card .rank-num {
+      display: inline-block;
+      width: 28px;
+      height: 28px;
+      line-height: 28px;
+      text-align: center;
+      border-radius: 50%;
+      background: var(--blue);
+      color: #fff;
+      font-weight: 700;
+      font-size: 13px;
+      margin-right: 8px;
+    }
+    .fund-card .title { font-weight: 700; font-size: 15px; }
+    .fund-card .score { font-size: 13px; color: var(--text-secondary); margin: 6px 0; }
+    .fund-card .leaders {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+      margin-top: 10px;
+      font-size: 12px;
+    }
+    .fund-card .leader {
+      background: #fff;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 6px 8px;
+      text-align: center;
+    }
+    .fund-card .leader .code { font-weight: 700; color: var(--text); }
+    .fund-card .leader .name { color: var(--text-secondary); }
+
+    .sentiment-gauge {
+      display: flex;
+      align-items: center;
+      gap: 24px;
+      flex-wrap: wrap;
+      margin-top: 12px;
+    }
+    .gauge-box {
+      width: 140px;
+      height: 140px;
+      border-radius: 50%;
+      background: conic-gradient(var(--yellow) 0deg 252deg, #e6eaef 252deg 360deg);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+    }
+    .gauge-inner {
+      width: 110px;
+      height: 110px;
+      border-radius: 50%;
+      background: #fff;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      box-shadow: inset 0 1px 3px rgba(0,0,0,0.05);
+    }
+    .gauge-label { font-size: 13px; color: var(--text-secondary); }
+    .gauge-phase { font-size: 18px; font-weight: 700; color: var(--yellow); }
+    .sentiment-stats {
+      flex: 1;
+      min-width: 240px;
+    }
+    .stat-row {
+      display: flex;
+      justify-content: space-between;
+      padding: 10px 0;
+      border-bottom: 1px solid #f0f2f5;
+    }
+    .stat-row .value { font-weight: 700; }
+    .up { color: var(--red); }
+    .down { color: var(--green); }
+
+    .strategy-cols {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      gap: 20px;
+    }
+    .strategy-box {
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 18px;
+      background: #fafbfc;
+    }
+    .strategy-box h4 {
+      margin: 0 0 12px 0;
+      font-size: 15px;
+      color: var(--blue);
+    }
+    .strategy-box ul { margin: 0; padding-left: 18px; }
+    .strategy-box li { margin-bottom: 8px; }
+
+    .risk-box {
+      background: #fff8c5;
+      border: 1px solid #e6d78a;
+      border-radius: 10px;
+      padding: 16px;
+      margin-bottom: 12px;
+    }
+    .risk-box.danger {
+      background: #ffebe9;
+      border-color: #ff818266;
+    }
+    .risk-box h4 { margin: 0 0 8px 0; }
+    .risk-box ul { margin: 0; padding-left: 18px; }
+
+    footer {
+      text-align: center;
+      color: var(--text-secondary);
+      font-size: 13px;
+      padding: 20px 0 40px 0;
+    }
+
+    @media (max-width: 640px) {
+      .container { padding: 12px; }
+      header { padding: 18px; }
+      header h1 { font-size: 22px; }
+      section { padding: 16px; }
+      th, td { padding: 8px 10px; font-size: 12px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>📋 盘前策略 | 2026-07-30 09:00</h1>
+      <div class="meta">
+        <span class="badge badge-time">09:00 盘前</span>
+        <span class="badge badge-version">V5.0 盘前策略Agent</span>
+        <span class="badge badge-status">数据验证：通过</span>
+        <span class="badge badge-warning">含时效警告</span>
+      </div>
+    </header>
+
+    <section>
+      <h2>⚠️ 数据验证报告</h2>
+      <div class="validation-bar warn">
+        <span class="icon">⚠️</span>
+        <div>
+          <div class="title">验证状态：通过（含时效警告）</div>
+          <div style="color:#7a5c00; font-size:13px; margin-top:4px;">data_market_overview 返回 2026-07-29 收盘数据；指数实时数据为 2026-07-30 09:37 前后，正常。</div>
+        </div>
+      </div>
+      <ul class="validation-list">
+        <li><strong>交叉验证：</strong>上证指数 westock +0.19% vs tdx +0.25%（差0.06%）；深证成指 -0.61% vs -0.48%（差0.13%）；创业板指 -1.38% vs -1.21%（差0.17%）；科创50 -1.28% vs -1.01%（差0.27%）；沪深300 -0.22% vs -0.17%（差0.05%）。均&lt;0.5%，无冲突。</li>
+        <li><strong>异常检测：</strong>N欣兴工具涨201.37%为新股首日，属正常；未发现其他&gt;±15%异动。</li>
+        <li><strong>逻辑校验：</strong>指数涨跌方向一致，数据合理可用。</li>
+      </ul>
+    </section>
+
+    <section>
+      <h2>一、产业方向TOP10（独立评分）</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>排名</th>
+            <th>行业</th>
+            <th>评分</th>
+            <th>资金阶段</th>
+            <th>核心逻辑</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="rank">1</td>
+            <td>贵金属/黄金</td>
+            <td class="score score-high">88
+              <div class="progress"><div class="progress-bar" style="width:88%; background:var(--red)"></div></div>
+            </td>
+            <td><span class="phase-tag phase-accel">加速</span></td>
+            <td>避险+降息预期，板块20日+15.71%，招金黄金领涨8.58%</td>
+          </tr>
+          <tr>
+            <td class="rank">2</td>
+            <td>油服工程</td>
+            <td class="score score-high">85
+              <div class="progress"><div class="progress-bar" style="width:85%; background:var(--red)"></div></div>
+            </td>
+            <td><span class="phase-tag phase-accel">加速</span></td>
+            <td>地缘博弈+能源安全，20日+13.68%，通源石油领涨8.33%</td>
+          </tr>
+          <tr>
+            <td class="rank">3</td>
+            <td>白酒</td>
+            <td class="score score-high">82
+              <div class="progress"><div class="progress-bar" style="width:82%; background:var(--red)"></div></div>
+            </td>
+            <td><span class="phase-tag phase-enter">进入→加速</span></td>
+            <td>消费估值修复+资金回流，20日+10.84%，金徽酒领涨3.06%</td>
+          </tr>
+          <tr>
+            <td class="rank">4</td>
+            <td>国有大型银行/高股息</td>
+            <td class="score score-high">80
+              <div class="progress"><div class="progress-bar" style="width:80%; background:var(--red)"></div></div>
+            </td>
+            <td><span class="phase-tag phase-accel">加速</span></td>
+            <td>防御配置+大盘风格主导，20日+11.22%，资金持续流入</td>
+          </tr>
+          <tr>
+            <td class="rank">5</td>
+            <td>游戏/传媒</td>
+            <td class="score score-mid">78
+              <div class="progress"><div class="progress-bar" style="width:78%; background:var(--yellow)"></div></div>
+            </td>
+            <td><span class="phase-tag phase-accel">加速</span></td>
+            <td>AI应用落地+政策边际回暖，恺英网络/巨人网络获机构买入</td>
+          </tr>
+          <tr>
+            <td class="rank">6</td>
+            <td>财税改革/金融科技</td>
+            <td class="score score-mid">76
+              <div class="progress"><div class="progress-bar" style="width:76%; background:var(--yellow)"></div></div>
+            </td>
+            <td><span class="phase-tag phase-enter">进入</span></td>
+            <td>政策催化+热点题材，普联软件20%涨停，中科金财10%涨停</td>
+          </tr>
+          <tr>
+            <td class="rank">7</td>
+            <td>工业金属</td>
+            <td class="score score-mid">74
+              <div class="progress"><div class="progress-bar" style="width:74%; background:var(--yellow)"></div></div>
+            </td>
+            <td><span class="phase-tag phase-enter">关注</span></td>
+            <td>20日资金净流入+78亿为行业最高，但当日流入放缓</td>
+          </tr>
+          <tr>
+            <td class="rank">8</td>
+            <td>乘用车/汽车</td>
+            <td class="score score-mid">72
+              <div class="progress"><div class="progress-bar" style="width:72%; background:var(--yellow)"></div></div>
+            </td>
+            <td><span class="phase-tag phase-enter">关注</span></td>
+            <td>以旧换新+出海逻辑，北汽蓝谷/江淮汽车跟涨</td>
+          </tr>
+          <tr>
+            <td class="rank">9</td>
+            <td>教育</td>
+            <td class="score score-mid">70
+              <div class="progress"><div class="progress-bar" style="width:70%; background:var(--yellow)"></div></div>
+            </td>
+            <td><span class="phase-tag phase-enter">关注</span></td>
+            <td>低估值+政策边际改善，创业黑马涨10.62%，换手率偏高</td>
+          </tr>
+          <tr>
+            <td class="rank">10</td>
+            <td>数据要素/AI编程</td>
+            <td class="score score-low">68
+              <div class="progress"><div class="progress-bar" style="width:68%; background:var(--green)"></div></div>
+            </td>
+            <td><span class="phase-tag phase-enter">进入</span></td>
+            <td>数字经济政策+AI应用扩散，福昕软件/宝兰德异动</td>
+          </tr>
+        </tbody>
+      </table>
+      <p style="font-size:12px; color:var(--text-secondary); margin-top:10px;">评分说明：产业空间30% + 政策支持20% + 资金关注20% + 竞争格局20% + 估值合理10%，满分100，独立评分，未参考市场总评分。</p>
+    </section>
+
+    <section>
+      <h2>二、资金主线TOP5（独立评分）</h2>
+      <div class="card-grid">
+        <div class="fund-card">
+          <div><span class="rank-num">1</span><span class="title">财税改革/金融科技</span></div>
+          <div class="score">资金评分：<span class="score-high">86</span> | <span class="phase-tag phase-enter">进入→关注</span></div>
+          <div class="leaders">
+            <div class="leader"><div class="code">300996</div><div class="name">普联软件</div></div>
+            <div class="leader"><div class="code">002657</div><div class="name">中科金财</div></div>
+            <div class="leader"><div class="code">300333</div><div class="name">兆日科技</div></div>
+          </div>
+        </div>
+        <div class="fund-card">
+          <div><span class="rank-num">2</span><span class="title">游戏/传媒</span></div>
+          <div class="score">资金评分：<span class="score-high">84</span> | <span class="phase-tag phase-accel">加速</span></div>
+          <div class="leaders">
+            <div class="leader"><div class="code">002558</div><div class="name">巨人网络</div></div>
+            <div class="leader"><div class="code">002517</div><div class="name">恺英网络</div></div>
+            <div class="leader"><div class="code">002425</div><div class="name">凯撒文化</div></div>
+          </div>
+        </div>
+        <div class="fund-card">
+          <div><span class="rank-num">3</span><span class="title">高股息银行</span></div>
+          <div class="score">资金评分：<span class="score-high">82</span> | <span class="phase-tag phase-accel">加速</span></div>
+          <div class="leaders">
+            <div class="leader"><div class="code">601939</div><div class="name">建设银行</div></div>
+            <div class="leader"><div class="code">601818</div><div class="name">光大银行</div></div>
+            <div class="leader"><div class="code">600000</div><div class="name">浦发银行</div></div>
+          </div>
+        </div>
+        <div class="fund-card">
+          <div><span class="rank-num">4</span><span class="title">黄金/贵金属</span></div>
+          <div class="score">资金评分：<span class="score-mid">80</span> | <span class="phase-tag phase-accel">加速</span></div>
+          <div class="leaders">
+            <div class="leader"><div class="code">000506</div><div class="name">招金黄金</div></div>
+            <div class="leader"><div class="code">600988</div><div class="name">赤峰黄金</div></div>
+            <div class="leader"><div class="code">601969</div><div class="name">海南矿业</div></div>
+          </div>
+        </div>
+        <div class="fund-card">
+          <div><span class="rank-num">5</span><span class="title">白酒/食品饮料</span></div>
+          <div class="score">资金评分：<span class="score-mid">76</span> | <span class="phase-tag phase-enter">进入</span></div>
+          <div class="leaders">
+            <div class="leader"><div class="code">603919</div><div class="name">金徽酒</div></div>
+            <div class="leader"><div class="code">605388</div><div class="name">均瑶健康</div></div>
+            <div class="leader"><div class="code">600382</div><div class="name">广东明珠</div></div>
+          </div>
+        </div>
+      </div>
+      <p style="font-size:12px; color:var(--text-secondary); margin-top:10px;">资金评分独立判断，未参考产业评分。数据来自板块资金流向、龙虎榜机构买卖、北向持仓变动综合。</p>
+    </section>
+
+    <section>
+      <h2>三、情绪周期判断（独立评分）</h2>
+      <div class="sentiment-gauge">
+        <div class="gauge-box">
+          <div class="gauge-inner">
+            <div class="gauge-label">情绪阶段</div>
+            <div class="gauge-phase">分化过渡</div>
+          </div>
+        </div>
+        <div class="sentiment-stats">
+          <div class="stat-row"><span>昨日涨停</span><span class="value up">79 只</span></div>
+          <div class="stat-row"><span>昨日跌停</span><span class="value down">0 只</span></div>
+          <div class="stat-row"><span>涨跌比</span><span class="value up">3.5</span></div>
+          <div class="stat-row"><span>成交额</span><span class="value">22965.79 亿</span></div>
+          <div class="stat-row"><span>今日创业板</span><span class="value down">-1.38%</span></div>
+          <div class="stat-row"><span>今日科创50</span><span class="value down">-1.28%</span></div>
+        </div>
+      </div>
+      <p style="margin-top:16px;"><strong>情绪阶段：</strong>高潮 → 分化/退潮过渡期</p>
+      <p><strong>一句话判断：</strong>昨日普涨情绪狂热后，今日早盘资金快速切向防御与政策题材，科技成长兑现压力显现，短线进入“去弱留强”阶段。</p>
+    </section>
+
+    <section>
+      <h2>四、今日操作策略</h2>
+      <div class="strategy-cols">
+        <div class="strategy-box">
+          <h4>鑫未来（中线）</h4>
+          <p><strong>关注方向：</strong></p>
+          <ul>
+            <li>高股息银行（国有大行、股份行）</li>
+            <li>白酒/食品饮料（估值修复+资金回流）</li>
+            <li>黄金/贵金属（避险+降息预期）</li>
+            <li>油服工程（能源安全主题）</li>
+            <li>游戏/传媒（AI应用+低估值修复）</li>
+          </ul>
+          <p><strong>建议操作：</strong>暂停科技成长（半导体/通信/元件/消费电子）新增；对高股息+消费方向可逢低布局；总仓位按昨日市场环境控制在 0-30% 区间，待15:30正式评分确认后再调。</p>
+        </div>
+        <div class="strategy-box">
+          <h4>鑫准出击（短线）</h4>
+          <p><strong>今日热点池：</strong></p>
+          <ul>
+            <li>300996 普联软件（财税改革+20cm涨停）</li>
+            <li>002558 巨人网络（游戏+机构大买+北向重仓）</li>
+            <li>002657 中科金财（金融科技+稳定币）</li>
+            <li>000506 招金黄金（黄金+板块领涨）</li>
+            <li>003032 传智教育（连板高标+教育）</li>
+          </ul>
+          <p><strong>条件触发：</strong></p>
+          <ul>
+            <li>入场：早盘跌停数≤5只、高标未核按钮、成交额维持2万亿以上。</li>
+            <li>回避：半导体/通信/元件/消费电子竞价低开低走、机构大卖股继续杀跌。</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <h2>五、风险预警</h2>
+      <div class="risk-box danger">
+        <h4>🚨 今日需回避</h4>
+        <ul>
+          <li>半导体、元件、通信设备、消费电子等科技成长板块（资金20日持续大幅流出，龙虎榜机构净卖出通富微电、紫光股份、宏和科技）。</li>
+          <li>昨日涨停但今日无资金承接的跟风股，炸板风险高。</li>
+        </ul>
+      </div>
+      <div class="risk-box">
+        <h4>📍 关键价位</h4>
+        <ul>
+          <li><strong>上证指数：</strong>支撑 3812（今日低点），压力 3845-3850（昨日高点/布林中轨3915下方）。</li>
+          <li><strong>深证成指：</strong>支撑 13530（今日低点），压力 13620-13750。</li>
+          <li><strong>创业板指：</strong>支撑 3330（今日低点），压力 3354-3411。</li>
+          <li><strong>科创50：</strong>支撑 1653（今日低点），压力 1671-1690。</li>
+        </ul>
+      </div>
+      <div class="risk-box">
+        <h4>⚠️ 模块冲突标注（Layer 8-9整合前置）</h4>
+        <p>产业/资金方向偏向防御+政策题材，而市场情绪处于高潮后分化，短期市场评分（15:30输出）可能偏弱；如市场评分&lt;50，则防御方向仓位仍可控，热点题材需降低仓位参与。</p>
+      </div>
+    </section>
+
+    <footer>
+      ⚡ V5.0系统 | 盘前策略Agent | 2026-07-30 09:00
+    </footer>
+  </div>
+</body>
+</html>

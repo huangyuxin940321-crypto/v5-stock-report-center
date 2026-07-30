@@ -1,0 +1,649 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>V5.0 深度复盘 2026-07-29 20:00</title>
+<style>
+  * { box-sizing: border-box; }
+  body {
+    background: #f6f8fa;
+    color: #1f2328;
+    font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", "Segoe UI", Roboto, Arial, sans-serif;
+    margin: 0; padding: 20px; line-height: 1.65;
+  }
+  .container { max-width: 1200px; margin: 0 auto; }
+  h1 { font-size: 1.7rem; margin: 0 0 6px; color: #1f2328; }
+  h2 { font-size: 1.25rem; margin: 30px 0 12px; padding: 8px 14px; background: #ffffff; border-left: 4px solid #cf222e; border-radius: 4px; color: #1f2328; box-shadow: 0 1px 3px rgba(0,0,0,0.04); }
+  h3 { font-size: 1.05rem; margin: 18px 0 8px; color: #57606a; border-bottom: 1px dashed #d0d7de; padding-bottom: 4px; }
+  .subtitle { color: #57606a; font-size: 0.92rem; margin-bottom: 18px; }
+  .header { background: linear-gradient(135deg, #ffffff, #f0f4f8); border: 1px solid #d0d7de; border-radius: 12px; padding: 22px 28px; margin-bottom: 18px; box-shadow: 0 2px 8px rgba(0,0,0,0.05); }
+  .header-row { display: flex; gap: 28px; flex-wrap: wrap; align-items: center; }
+  .header-title { flex: 1; min-width: 220px; }
+  .header-meta { display: flex; gap: 12px; flex-wrap: wrap; }
+  .meta-pill { background: #ffffff; border: 1px solid #d0d7de; border-radius: 16px; padding: 4px 12px; font-size: 0.8rem; color: #57606a; }
+  .meta-pill.time { background: #cf222e; color: #ffffff; border-color: #cf222e; }
+  .score-banner { background: #fff8e1; border: 1px solid #f7c948; border-radius: 10px; padding: 16px 22px; margin-bottom: 18px; display: flex; gap: 24px; flex-wrap: wrap; align-items: center; box-shadow: 0 1px 3px rgba(0,0,0,0.04); }
+  .score-big { font-size: 2.6rem; font-weight: 800; color: #d97706; }
+  .score-label { font-size: 0.85rem; color: #92400e; }
+  .score-info { flex: 1; min-width: 200px; font-size: 0.92rem; color: #1f2328; }
+  .score-info .ref-note { color: #57606a; font-size: 0.82rem; margin-top: 4px; }
+  .validation-bar { background: #ffffff; border: 1px solid #d0d7de; border-left: 4px solid #1a7f37; padding: 12px 18px; border-radius: 0 8px 8px 0; margin-bottom: 18px; }
+  .validation-bar strong { color: #1a7f37; }
+  .summary-box { background: #ffffff; border: 1px solid #d0d7de; border-radius: 10px; padding: 16px 22px; margin-bottom: 18px; }
+  .summary-box p { margin: 6px 0; color: #1f2328; }
+  table { width: 100%; border-collapse: collapse; margin: 10px 0; font-size: 0.88rem; background: #ffffff; border-radius: 8px; overflow: hidden; box-shadow: 0 1px 3px rgba(0,0,0,0.04); }
+  th, td { padding: 8px 10px; text-align: left; border-bottom: 1px solid #eaeef2; }
+  th { background: #f6f8fa; color: #57606a; font-weight: 600; font-size: 0.78rem; text-transform: uppercase; }
+  tr:last-child td { border-bottom: none; }
+  tr:hover td { background: #f6f8fa; }
+  .up { color: #cf222e; font-weight: 600; }
+  .down { color: #1a7f37; font-weight: 600; }
+  .badge { display: inline-block; padding: 2px 8px; border-radius: 4px; font-size: 0.72rem; font-weight: 600; }
+  .badge-spp { background: #fef3c7; color: #92400e; border: 1px solid #f59e0b; }
+  .badge-s { background: #fee2e2; color: #b91c1c; border: 1px solid #ef4444; }
+  .badge-a { background: #ffedd5; color: #c2410c; border: 1px solid #f97316; }
+  .badge-b { background: #dbeafe; color: #1d4ed8; border: 1px solid #3b82f6; }
+  .badge-c { background: #f3f4f6; color: #4b5563; border: 1px solid #9ca3af; }
+  .badge-red { background: #fee2e2; color: #b91c1c; border: 1px solid #ef4444; }
+  .badge-yellow { background: #fef3c7; color: #92400e; border: 1px solid #f59e0b; }
+  .badge-green { background: #d1fae5; color: #065f46; border: 1px solid #10b981; }
+  .badge-new { background: #dcfce7; color: #166534; }
+  .badge-add { background: #dbeafe; color: #1e40af; }
+  .badge-hold { background: #f3f4f6; color: #374151; }
+  .badge-reduce { background: #ffedd5; color: #9a3412; }
+  .badge-clear { background: #fee2e2; color: #991b1b; }
+  .star-on { color: #cf222e; }
+  .star-off { color: #d0d7de; }
+  .risk-red { background: #fef2f2; border: 1px solid #fca5a5; border-left: 4px solid #cf222e; padding: 12px 16px; margin: 8px 0; border-radius: 0 8px 8px 0; }
+  .risk-yellow { background: #fffbeb; border: 1px solid #fcd34d; border-left: 4px solid #d97706; padding: 12px 16px; margin: 8px 0; border-radius: 0 8px 8px 0; }
+  .risk-green { background: #f0fdf4; border: 1px solid #86efac; border-left: 4px solid #16a34a; padding: 12px 16px; margin: 8px 0; border-radius: 0 8px 8px 0; }
+  .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+  .card { background: #ffffff; border: 1px solid #d0d7de; border-radius: 10px; padding: 14px; box-shadow: 0 1px 3px rgba(0,0,0,0.04); }
+  .card-title { font-size: 0.82rem; color: #57606a; }
+  .card-val { font-size: 1.25rem; font-weight: 700; margin-top: 4px; }
+  .news-list { background: #ffffff; border: 1px solid #d0d7de; border-radius: 8px; padding: 16px 22px; }
+  .news-list ol { margin: 0; padding-left: 22px; color: #1f2328; }
+  .news-list ol li { padding: 5px 0; border-bottom: 1px dashed #eaeef2; }
+  .news-list ol li:last-child { border-bottom: none; }
+  .calendar-stars { font-size: 0.85rem; }
+  .bull { background: #fff5f5; border: 1px solid #fca5a5; border-radius: 8px; padding: 14px 18px; }
+  .bear { background: #f0fdf4; border: 1px solid #86efac; border-radius: 8px; padding: 14px 18px; }
+  .bull-title { color: #b91c1c; font-weight: 700; margin-bottom: 8px; }
+  .bear-title { color: #166534; font-weight: 700; margin-bottom: 8px; }
+  .bull ol, .bear ol { margin: 0; padding-left: 22px; }
+  .bull li, .bear li { padding: 3px 0; font-size: 0.9rem; }
+  .footer { margin-top: 40px; padding: 18px; background: #ffffff; border: 1px solid #d0d7de; border-radius: 8px; color: #57606a; font-size: 0.85rem; text-align: center; }
+  .footer strong { color: #cf222e; }
+  .section-tag { display: inline-block; background: #cf222e; color: #ffffff; padding: 3px 10px; border-radius: 4px; font-size: 0.78rem; font-weight: 600; margin-left: 8px; vertical-align: middle; }
+  .data-source { font-size: 0.8rem; color: #57606a; font-style: italic; margin: 4px 0 12px; }
+  @media (max-width: 768px) {
+    .grid-2, .grid-3 { grid-template-columns: 1fr; }
+    .header-row { flex-direction: column; align-items: flex-start; }
+    h1 { font-size: 1.3rem; }
+    body { padding: 12px; }
+  }
+</style>
+</head>
+<body>
+<div class="container">
+
+<!-- 头部 -->
+<div class="header">
+  <div class="header-row">
+    <div class="header-title">
+      <h1>🔍 深度复盘 <span class="section-tag">20:00 时段</span></h1>
+      <div class="subtitle">AI智能股票组合主理人系统 V5.0 · 长安鑫工作室</div>
+    </div>
+    <div class="header-meta">
+      <span class="meta-pill time">⏰ 2026-07-29 20:00</span>
+      <span class="meta-pill">📅 周三</span>
+      <span class="meta-pill">📊 引用15:30正式评分</span>
+    </div>
+  </div>
+</div>
+
+<!-- 评分Banner -->
+<div class="score-banner">
+  <div>
+    <div class="score-big">52<span style="font-size:1.2rem; color:#92400e;">/100</span></div>
+    <div class="score-label">市场评分（引用15:30）</div>
+  </div>
+  <div class="score-info">
+    <div><strong>市场状态：</strong>震荡偏弱（恐慌后弱修复）</div>
+    <div><strong>建议仓位：</strong>30% - 50%</div>
+    <div><strong>较昨日：</strong>48分 → 52分（+4分，弱修复）</div>
+    <div class="ref-note">📌 引用规则：不重复打分，仅引用15:30收盘分析的正式评分</div>
+  </div>
+</div>
+
+<!-- 数据验证 -->
+<div class="validation-bar">
+  <strong>✅ 数据验证状态：通过</strong><br>
+  <span style="color:#57606a; font-size:0.85rem;">
+  · 上证/深证/创业板的westock与tdx交叉验证：差异&lt;0.01% ✅<br>
+  · 7/28两融余额单日-294亿，标记[异常量能]（创近两月最大单日净流出）<br>
+  · 7/29两融余额26691亿、tdx 15:30:01 时效正常<br>
+  · 信息隔离规则：20:00节点不重复评分，仅读当日事实数据
+  </span>
+</div>
+
+<!-- 今日回顾 -->
+<div class="summary-box">
+  <h3>📌 今日一句话总结</h3>
+  <p><strong>指数弱修复但极度分化</strong>——昨日创业板-7.35%大阴后仅反弹+1.55%，科技主线仍未企稳，但消费+游戏+教育强势领涨，4253只上涨形成"普涨假象"。<strong>机构在CPO逆势抢筹27亿+真金白银构筑底部信号</strong>，外围科技股崩盘+地缘冲突+美联储鹰派三重压力未消，A股在"暴跌后弱修复"中等待方向选择。</p>
+</div>
+
+<h2>⚠️ 风险委员会报告 <span class="section-tag" style="background:#d97706;">黄色</span></h2>
+
+<div class="grid-3">
+  <div class="risk-yellow">
+    <strong>🟡 市场风险</strong>
+    <p style="font-size:0.85rem; margin:6px 0;">美联储7/30凌晨决议后鲍曼+沃勒罕见投反对票要求降息，政策内部分歧加大；费半-4.5%连续两日暴跌</p>
+    <p style="font-size:0.8rem; color:#92400e;">建议：仓位不超50%，保留现金</p>
+  </div>
+  <div class="risk-red">
+    <strong>🔴 个股风险</strong>
+    <p style="font-size:0.85rem; margin:6px 0;">C长鑫PE 1676倍+换手率20%；风华高科PE 183倍；昀冢科技市值极小</p>
+    <p style="font-size:0.8rem; color:#b91c1c;">建议：完全回避，列入禁止名单</p>
+  </div>
+  <div class="risk-red">
+    <strong>🔴 外围传导风险</strong>
+    <p style="font-size:0.85rem; margin:6px 0;">7/29夜盘费半可能继续承压，7/30苹果/亚马逊财报不及预期将冲击A股</p>
+    <p style="font-size:0.8rem; color:#b91c1c;">建议：半导体仓位降至最低，仅保留CPO</p>
+  </div>
+</div>
+
+<div class="grid-3">
+  <div class="risk-yellow">
+    <strong>🟡 行业集中风险</strong>
+    <p style="font-size:0.85rem; margin:6px 0;">CPO方向资金集中（中际旭创+新易盛合计22%仓位），AI逻辑若证伪将集体回调</p>
+    <p style="font-size:0.8rem; color:#92400e;">建议：CPO仓位不超22%，分散游戏/消费</p>
+  </div>
+  <div class="risk-yellow">
+    <strong>🟡 情绪过热风险</strong>
+    <p style="font-size:0.85rem; margin:6px 0;">涨停86只（较昨日57+），20cm涨停增多（兆日/全通/昀冢/天晟）</p>
+    <p style="font-size:0.8rem; color:#92400e;">建议：短线快进快出，严设止损</p>
+  </div>
+  <div class="risk-green">
+    <strong>🟢 流动性风险</strong>
+    <p style="font-size:0.85rem; margin:6px 0;">两市成交22966亿（+13.3%），ETF份额大增199亿份</p>
+    <p style="font-size:0.8rem; color:#166534;">建议：无需特别措施</p>
+  </div>
+</div>
+
+<div class="risk-yellow">
+  <strong>📌 最大风险提示：</strong>美联储鹰派（鲍曼+沃勒罕见同时投反对票要求降息，30年来首次）+ 外围科技股崩盘传导（费半-4.5%/美光-8.85%/闪迪-14%）。7/30苹果/亚马逊财报是全球AI叙事"终极审判"，若Capex指引下调将冲击A股科技股。创业板-7.35%大阴后仅修复+1.55%，二次探底概率不低。<strong>应对：总仓位不超50%，CPO作为底仓但严控比例，保留33-50%现金等待右侧确认。</strong>
+</div>
+
+<h2>🔍 预期差发现 <span class="section-tag" style="background:#7c3aed;">Layer 5</span></h2>
+<p class="data-source">基于当日事实数据 + 公开信息独立识别（不引用前序节点评分）</p>
+
+<table>
+  <tr>
+    <th>股票</th><th>代码</th><th>市场认知</th><th>AI判断</th><th>预期差等级</th><th>操作建议</th>
+  </tr>
+  <tr>
+    <td><strong>中际旭创</strong></td><td>300308</td>
+    <td>高估值AI标的，PE 124倍泡沫</td>
+    <td>拟回购40-80亿（H+A同步，7/30港股上市），公司真金白银彰显业绩信心</td>
+    <td class="up"><span class="star-on">★★★★★</span><span class="star-off">★</span></td>
+    <td>回踩MA20企稳建仓，<strong>鑫未来核心持有</strong></td>
+  </tr>
+  <tr>
+    <td><strong>三环集团</strong></td><td>300408</td>
+    <td>跟随风华高科被忽视的MLCC二线</td>
+    <td>MLCC涨价周期真正龙头，PE 30+倍合理（vs 风华183倍），机构抱团不充分</td>
+    <td class="up"><span class="star-on">★★★★★</span><span class="star-off">★</span></td>
+    <td><strong>重点关注，鑫未来候选新增</strong></td>
+  </tr>
+  <tr>
+    <td><strong>长鑫科技</strong></td><td>688825</td>
+    <td>新股高换手率20%纯炒作</td>
+    <td>8/10纳入MSCI中国全股票指数（被动资金约300-500亿配置）</td>
+    <td class="up"><span class="star-on">★★★★</span><span class="star-off">★</span><span class="star-off">★</span></td>
+    <td>关注，8/10前低吸而非追高</td>
+  </tr>
+  <tr>
+    <td><strong>国瓷材料</strong></td><td>300285</td>
+    <td>MLCC陶瓷材料龙头</td>
+    <td>风华高科涨停时国瓷材料仅+4.79%，机构定价不充分</td>
+    <td class="up"><span class="star-on">★★★★</span><span class="star-off">★</span><span class="star-off">★</span></td>
+    <td>鑫准出击候选</td>
+  </tr>
+  <tr>
+    <td><strong>乳业龙头</strong></td><td>600887/600419</td>
+    <td>题材股炒作已结束</td>
+    <td>6月奶牛存栏环比-2.2万头，<strong>真正的产业周期拐点</strong></td>
+    <td class="up"><span class="star-on">★★★★</span><span class="star-off">★</span><span class="star-off">★</span></td>
+    <td>鑫未来新增布局（天润/伊利）</td>
+  </tr>
+  <tr>
+    <td><strong>电网设备</strong></td><td>002498/603556</td>
+    <td>超跌反弹视作短期</td>
+    <td>特高压建设+新能源基建投资加速，订单可见性强，估值低位</td>
+    <td class="up"><span class="star-on">★★★</span><span class="star-off">★</span><span class="star-off">★</span><span class="star-off">★</span></td>
+    <td>鑫准出击短线</td>
+  </tr>
+  <tr>
+    <td><strong>券商板块</strong></td><td>002945/601696</td>
+    <td>题材一日游</td>
+    <td>市场放量（22966亿）+护盘+估值低位+并购重组预期催化</td>
+    <td class="up"><span class="star-on">★★★</span><span class="star-off">★</span><span class="star-off">★</span><span class="star-off">★</span></td>
+    <td>鑫准出击短线博弈</td>
+  </tr>
+  <tr>
+    <td><strong>中际旭创H股</strong></td><td>03308.HK</td>
+    <td>—</td>
+    <td>7/30港股上市，发行价对应H/A折价率将提供A股估值参照</td>
+    <td class="up"><span class="star-on">★★★</span><span class="star-off">★</span><span class="star-off">★</span><span class="star-off">★</span></td>
+    <td>关注H股折溢价</td>
+  </tr>
+  <tr>
+    <td><strong>AI大模型IPv6</strong></td><td>板块</td>
+    <td>政策被忽视</td>
+    <td>中央网信办+5家头部AI企业启动"IPv6能力提升专项行动"</td>
+    <td class="up"><span class="star-on">★★★</span><span class="star-off">★</span><span class="star-off">★</span><span class="star-off">★</span></td>
+    <td>关注光环新网/数据港</td>
+  </tr>
+  <tr>
+    <td><strong>新易盛</strong></td><td>300502</td>
+    <td>与中际旭创同质</td>
+    <td>7/28机构净买入16.3亿，800G光模块弹性更大，AI算力刚需</td>
+    <td class="up"><span class="star-on">★★★★</span><span class="star-off">★</span><span class="star-off">★</span></td>
+    <td>鑫未来核心持有</td>
+  </tr>
+</table>
+
+<h2>📊 组合调整决策 <span class="section-tag" style="background:#1d4ed8;">Layer 8-9</span></h2>
+
+<h3>🟦 鑫未来（中线3月-2年）</h3>
+<p class="data-source">市场评分52分，建议总仓位50%（30-50%上限），CPO+消费+银行三足鼎立</p>
+
+<table>
+  <tr>
+    <th>操作</th><th>股票</th><th>代码</th><th>评分</th><th>评级</th><th>逻辑</th><th>仓位建议</th>
+  </tr>
+  <tr>
+    <td><span class="badge badge-new">新增</span></td><td>三环集团</td><td>300408</td><td>88</td><td><span class="badge badge-a">A</span></td>
+    <td>MLCC涨价龙头，PE合理，机构定价不充分</td><td>5%-8%</td>
+  </tr>
+  <tr>
+    <td><span class="badge badge-new">新增</span></td><td>天润乳业</td><td>600419</td><td>76</td><td><span class="badge badge-b">B</span></td>
+    <td>乳业周期反转，6月奶牛存栏加速去化</td><td>4%-6%</td>
+  </tr>
+  <tr>
+    <td><span class="badge badge-add">加仓</span></td><td>中际旭创</td><td>300308</td><td>90</td><td><span class="badge badge-s">S</span></td>
+    <td>公司回购40-80亿+H股上市，估值锚重塑</td><td>8%→10%</td>
+  </tr>
+  <tr>
+    <td><span class="badge badge-add">加仓</span></td><td>新易盛</td><td>300502</td><td>92</td><td><span class="badge badge-s">S</span></td>
+    <td>7/28机构净买入16.3亿确认底部</td><td>8%→10%</td>
+  </tr>
+  <tr>
+    <td><span class="badge badge-hold">持有</span></td><td>宁德时代</td><td>300750</td><td>86</td><td><span class="badge badge-a">A</span></td>
+    <td>估值合理（PE 21倍），储能+出海双驱动</td><td>6%</td>
+  </tr>
+  <tr>
+    <td><span class="badge badge-hold">持有</span></td><td>比亚迪</td><td>002594</td><td>88</td><td><span class="badge badge-a">A</span></td>
+    <td>人形机器人8月发布+新能源车出口</td><td>6%</td>
+  </tr>
+  <tr>
+    <td><span class="badge badge-hold">持有</span></td><td>贵州茅台</td><td>600519</td><td>74</td><td><span class="badge badge-b">B</span></td>
+    <td>防御底仓，PE 18倍</td><td>5%</td>
+  </tr>
+  <tr>
+    <td><span class="badge badge-hold">持有</span></td><td>建设银行</td><td>601939</td><td>68</td><td><span class="badge badge-b">B</span></td>
+    <td>高股息防御，央国企护盘</td><td>4%</td>
+  </tr>
+  <tr>
+    <td><span class="badge badge-clear">清仓</span></td><td>兆易创新</td><td>603986</td><td>40</td><td><span class="badge badge-c">C</span></td>
+    <td>存储崩盘传导，跌-6.81%</td><td>0%</td>
+  </tr>
+  <tr>
+    <td><span class="badge badge-clear">清仓</span></td><td>通富微电</td><td>002156</td><td>42</td><td><span class="badge badge-c">C</span></td>
+    <td>封测跌停-10%，全球芯片暴跌</td><td>0%</td>
+  </tr>
+  <tr>
+    <td><span class="badge badge-clear">清仓</span></td><td>紫光股份</td><td>000938</td><td>—</td><td>—</td>
+    <td>机构净卖出-4.83亿，趋势破位</td><td>0%</td>
+  </tr>
+  <tr>
+    <td><strong>现金</strong></td><td>—</td><td>—</td><td>—</td><td>—</td><td>灵活配置</td><td><strong>27%-42%</strong></td>
+  </tr>
+</table>
+
+<p style="color:#1d4ed8; font-weight:600; margin: 8px 0 20px;">📌 鑫未来目标总仓位：58%-73%（建议当前取50%，保留灵活度）</p>
+
+<h3>🟧 鑫准出击（短线5-20交易日）</h3>
+<p class="data-source">市场偏弱但结构性机会丰富，只做龙头+严控止损</p>
+
+<table>
+  <tr>
+    <th>股票</th><th>代码</th><th>评分</th><th>评级</th><th>明日触发条件</th><th>仓位</th><th>止损</th>
+  </tr>
+  <tr>
+    <td>国瓷材料</td><td>300285</td><td>78</td><td><span class="badge badge-a">A</span></td>
+    <td>高开不破前低+换手&gt;3%</td><td>3%</td><td class="down">-7%</td>
+  </tr>
+  <tr>
+    <td>华林证券</td><td>002945</td><td>70</td><td><span class="badge badge-b">B</span></td>
+    <td>早盘半小时成交&gt;10亿+突破MA10</td><td>2%</td><td class="down">-7%</td>
+  </tr>
+  <tr>
+    <td>全通教育</td><td>300359</td><td>82</td><td><span class="badge badge-a">A</span></td>
+    <td>政策催化持续+回踩5日线不破</td><td>3%</td><td class="down">-8%</td>
+  </tr>
+  <tr>
+    <td>电魂网络</td><td>603258</td><td>80</td><td><span class="badge badge-a">A</span></td>
+    <td>游戏板块成交持续&gt;30亿+回踩MA5</td><td>3%</td><td class="down">-7%</td>
+  </tr>
+  <tr>
+    <td>巨人网络</td><td>002558</td><td>76</td><td><span class="badge badge-b">B</span></td>
+    <td>机构席位净买+深股通加仓</td><td>2%</td><td class="down">-7%</td>
+  </tr>
+  <tr>
+    <td>汉缆股份</td><td>002498</td><td>68</td><td><span class="badge badge-b">B</span></td>
+    <td>电网板块持续走强+回踩10日线</td><td>2%</td><td class="down">-7%</td>
+  </tr>
+  <tr>
+    <td>永杉锂业</td><td>600884</td><td>66</td><td><span class="badge badge-b">B</span></td>
+    <td>锂矿价格反弹+放量</td><td>2%</td><td class="down">-8%</td>
+  </tr>
+</table>
+
+<p style="color:#c2410c; font-weight:600; margin: 8px 0 20px;">📌 鑫准出击总仓位：建议不超过17%（单票≤3%）</p>
+
+<h3>📦 仓位配置（按市场评分52分）</h3>
+<div class="grid-3">
+  <div class="card">
+    <div class="card-title">鑫未来</div>
+    <div class="card-val" style="color:#1d4ed8;">50%</div>
+    <p style="font-size:0.82rem; color:#57606a; margin:6px 0 0;">CPO+消费+银行防御<br>上限73%</p>
+  </div>
+  <div class="card">
+    <div class="card-title">鑫准出击</div>
+    <div class="card-val" style="color:#c2410c;">≤17%</div>
+    <p style="font-size:0.82rem; color:#57606a; margin:6px 0 0;">龙头+严止损<br>单票≤3%</p>
+  </div>
+  <div class="card">
+    <div class="card-title">现金</div>
+    <div class="card-val" style="color:#1a7f37;">33%-50%</div>
+    <p style="font-size:0.82rem; color:#57606a; margin:6px 0 0;">保留弹药<br>等待右侧</p>
+  </div>
+</div>
+
+<h2>🐉 龙虎榜深度解读 <span class="section-tag" style="background:#9333ea;">7/29</span></h2>
+
+<div class="grid-2">
+  <div>
+    <h3>🏛️ 机构重点布局</h3>
+    <table>
+      <tr><th>排名</th><th>股票</th><th>代码</th><th>净买入</th></tr>
+      <tr><td>1</td><td>巨人网络</td><td>002558</td><td class="up">+1.65亿（5家机构）</td></tr>
+      <tr><td>2</td><td>星网锐捷</td><td>002396</td><td class="up">+1.60亿（6家）</td></tr>
+      <tr><td>3</td><td>昀冢科技</td><td>688260</td><td class="up">+0.91亿（2家）</td></tr>
+      <tr><td>4</td><td>红板科技</td><td>603459</td><td class="up">+0.90亿（2家）</td></tr>
+      <tr><td>5</td><td>恺英网络</td><td>002517</td><td class="up">+0.65亿（4家）</td></tr>
+    </table>
+    <p style="font-size:0.85rem; color:#1f2328; margin:8px 0;"><strong>机构主线：</strong>从"科技硬件"切换至"游戏/教育/消费"（防御+政策催化）</p>
+  </div>
+  <div>
+    <h3>📉 机构净卖出</h3>
+    <table>
+      <tr><th>排名</th><th>股票</th><th>代码</th><th>净卖出</th></tr>
+      <tr><td>1</td><td>通富微电</td><td>002156</td><td class="down">-9.79亿（5家）</td></tr>
+      <tr><td>2</td><td>紫光股份</td><td>000938</td><td class="down">-4.83亿（4家）</td></tr>
+      <tr><td>3</td><td>宏和科技</td><td>603256</td><td class="down">-4.73亿（2家）</td></tr>
+      <tr><td>4</td><td>风华高科</td><td>000636</td><td class="down">-3.96亿（3家）</td></tr>
+      <tr><td>5</td><td>圣阳股份</td><td>002580</td><td class="down">-2.34亿（10家）</td></tr>
+    </table>
+    <p style="font-size:0.85rem; color:#1f2328; margin:8px 0;"><strong>机构分歧：</strong>CPO机构净卖出（7/28数据兑现），但中际旭创/新易盛7/28大买27亿信号仍有效</p>
+  </div>
+</div>
+
+<h3>🎯 游资主攻方向</h3>
+<div class="grid-3">
+  <div class="card">
+    <div class="card-title">桑田路</div>
+    <div class="card-val up">+1.36亿</div>
+    <p style="font-size:0.85rem; margin:6px 0 0;">风华高科</p>
+  </div>
+  <div class="card">
+    <div class="card-title">粉葛</div>
+    <div class="card-val up">+6006万</div>
+    <p style="font-size:0.85rem; margin:6px 0 0;">巨人网络</p>
+  </div>
+  <div class="card">
+    <div class="card-title">成都系</div>
+    <div class="card-val up">+1313万</div>
+    <p style="font-size:0.85rem; margin:6px 0 0;">全通教育</p>
+  </div>
+</div>
+
+<div class="summary-box" style="margin-top: 12px;">
+  <p style="font-size:0.9rem;"><strong>📌 信号解读：</strong>机构防御+游资题材的市场风格，结构性机会存在但需精选龙头。20cm小票+纯题材炒作活跃（兆日/昀冢/天晟/圣阳），连板股情绪升温，但机构卖出大于买入（合计净卖出16.63亿）。</p>
+</div>
+
+<h2>💰 北向+ETF+融资全景 <span class="section-tag" style="background:#0d9488;">资金面</span></h2>
+
+<table>
+  <tr>
+    <th>资金类型</th><th>今日方向</th><th>近5日趋势</th><th>信号解读</th>
+  </tr>
+  <tr>
+    <td><strong>北向资金</strong></td>
+    <td>7/28净流出-111.6亿<br>7/29数据待确认</td>
+    <td>连续多日净流出后有企稳迹象</td>
+    <td>深股通席位净买入+2.42亿、沪股通席位净买入-4.02亿，分化明显</td>
+  </tr>
+  <tr style="background:#fef2f2;">
+    <td><strong>ETF资金（配置型）</strong></td>
+    <td class="up">前一日份额+199亿份</td>
+    <td class="up">7月以来股票型ETF净流入+4151亿</td>
+    <td>✅ <strong>典型底部信号</strong>：配置型资金借道ETF大举抄底</td>
+  </tr>
+  <tr>
+    <td><strong>ETF资金（短线）</strong></td>
+    <td class="down">7/29主力净流出-44.21亿</td>
+    <td>较前一周累计-578.91亿显著收窄</td>
+    <td>短线资金减仓但配置型接盘，市场出现"换手"特征</td>
+  </tr>
+  <tr style="background:#fef2f2;">
+    <td><strong>融资融券</strong></td>
+    <td>7/28融资余额单日-294亿<br>7/29余额26691亿</td>
+    <td>7/28创近两月最大单日流出</td>
+    <td>✅ <strong>融资盘爆仓式流出告一段落</strong>，杠杆压力释放</td>
+  </tr>
+  <tr>
+    <td><strong>MLCC ETF</strong></td>
+    <td>风华高科成交80亿<br>三环集团+8%</td>
+    <td>MLCC板块+5.99%涨幅居首</td>
+    <td>涨价周期+机构定价不充分</td>
+  </tr>
+  <tr>
+    <td><strong>创业板ETF</strong></td>
+    <td>易方达成交124.46亿<br>份额+40.74亿份</td>
+    <td>7月净流入+230亿+</td>
+    <td>创业板最恐慌时ETF大举申购，<strong>底部确认信号</strong></td>
+  </tr>
+</table>
+
+<div class="summary-box">
+  <p style="font-size:0.9rem;"><strong>✅ 关键资金信号：</strong></p>
+  <p style="font-size:0.88rem; margin: 4px 0;">· ETF配置型资金大举入场（7月+4151亿）= 国家队+机构底部确认</p>
+  <p style="font-size:0.88rem; margin: 4px 0;">· 融资余额单日-294亿后企稳 = 杠杆爆仓式出清接近尾声</p>
+  <p style="font-size:0.88rem; margin: 4px 0;">· ⚠️ 北向资金尚未明确转向 = 外资仍观望</p>
+  <p style="font-size:0.88rem; margin: 4px 0;">· ⚠️ 短线ETF主力净流出-44亿 = 短线资金仍谨慎</p>
+</div>
+
+<h2>📰 重要财经新闻汇总</h2>
+<div class="news-list">
+  <ol>
+    <li><strong>商务部</strong>：上半年工业机器人出口同比+18.6%，3D打印机出口+109.3%，AI+智能制造出海亮眼</li>
+    <li><strong>MSCI公告</strong>：长鑫科技（688825）因IPO新股上市纳入MSCI中国全股票指数，<strong>8/10正式生效</strong></li>
+    <li><strong>中际旭创</strong>：拟回购<strong>40-80亿元</strong>股份用于股权激励，A股+H股同步，7/30港交所上市</li>
+    <li><strong>国常会/上海会议</strong>：研究"十五五"推进国际消费中心城市建设、未来产业发展</li>
+    <li><strong>央行</strong>：7/29开展6000亿隔夜逆回购+2065亿7天逆回购，<strong>单日净投放7305亿</strong></li>
+    <li><strong>财政部</strong>：6月彩票销售759.78亿元，同比+39.5%（世界杯竞猜拉动）</li>
+    <li><strong>中央网信办</strong>：联合北京/上海/浙江/深圳网信办+5家头部大模型企业启动"<strong>AI大模型IPv6能力提升专项行动</strong>"</li>
+    <li><strong>乳业数据</strong>：6月奶牛存栏577.2万头环比-2.2万头，散奶价格上涨，<strong>乳业周期反转信号</strong></li>
+    <li><strong>36家公司</strong>：7/28晚间公布股份回购/增持/中期分红计划，<strong>稳市信号密集</strong></li>
+    <li><strong>伊朗</strong>：向约旦美军基地发射导弹，<strong>地缘冲突升级</strong>，但伊朗副外长称"未请求谈判"</li>
+  </ol>
+</div>
+
+<h2>📅 明日财经日历（7月30日）</h2>
+
+<table>
+  <tr>
+    <th>时间</th><th>事件</th><th>影响板块</th><th>关注度</th>
+  </tr>
+  <tr>
+    <td>02:00</td>
+    <td><strong>美联储FOMC利率决议</strong>（已公布：维持4.25-4.50%）</td>
+    <td>全球风险资产</td>
+    <td class="calendar-stars"><span class="star-on">★★★★★</span></td>
+  </tr>
+  <tr>
+    <td>02:30</td>
+    <td><strong>鲍威尔新闻发布会</strong>（鹰派：未释放9月降息信号）</td>
+    <td>美股/A股科技</td>
+    <td class="calendar-stars"><span class="star-on">★★★★★</span></td>
+  </tr>
+  <tr>
+    <td>20:30</td>
+    <td>美国Q2实际GDP年化季率初值</td>
+    <td>美股</td>
+    <td class="calendar-stars"><span class="star-on">★★★★</span><span class="star-off">★</span></td>
+  </tr>
+  <tr>
+    <td>20:30</td>
+    <td><strong>美国6月核心PCE物价指数</strong></td>
+    <td>黄金/美元</td>
+    <td class="calendar-stars"><span class="star-on">★★★★★</span></td>
+  </tr>
+  <tr>
+    <td>21:00</td>
+    <td>英国央行利率决议</td>
+    <td>英镑/A股</td>
+    <td class="calendar-stars"><span class="star-on">★★★</span><span class="star-off">★★</span></td>
+  </tr>
+  <tr>
+    <td>盘后</td>
+    <td><strong>苹果（AAPL）Q3财报</strong></td>
+    <td>苹果链/CPO</td>
+    <td class="calendar-stars"><span class="star-on">★★★★★</span></td>
+  </tr>
+  <tr>
+    <td>盘后</td>
+    <td><strong>亚马逊（AMZN）Q2财报</strong></td>
+    <td>云/AI算力</td>
+    <td class="calendar-stars"><span class="star-on">★★★★★</span></td>
+  </tr>
+  <tr>
+    <td>盘后</td>
+    <td>三星电子Q2财报</td>
+    <td>存储芯片</td>
+    <td class="calendar-stars"><span class="star-on">★★★★</span><span class="star-off">★</span></td>
+  </tr>
+  <tr>
+    <td>盘后</td>
+    <td><strong>中际旭创H股港交所上市</strong>（03308.HK）</td>
+    <td>CPO</td>
+    <td class="calendar-stars"><span class="star-on">★★★★★</span></td>
+  </tr>
+  <tr>
+    <td>全天</td>
+    <td>东鹏饮料/百胜中国财报</td>
+    <td>消费</td>
+    <td class="calendar-stars"><span class="star-on">★★★</span><span class="star-off">★★</span></td>
+  </tr>
+</table>
+
+<h2>🔮 明日开盘前瞻</h2>
+
+<div class="grid-2">
+  <div class="bull">
+    <div class="bull-title">🟥 利多因素（10条）</div>
+    <ol>
+      <li>ETF配置型资金+4151亿底部确认</li>
+      <li>7/28融资盘爆仓式流出-294亿（杠杆压力释放）</li>
+      <li>CPO机构净买入27亿+信号有效</li>
+      <li>7月底政治局会议窗口（扩内需/促消费预期）</li>
+      <li>MSCI纳入长鑫科技8/10生效（被动资金约300-500亿）</li>
+      <li>央行单日净投放7305亿（流动性宽松）</li>
+      <li>三环集团/国瓷材料/汉缆股份等真龙头机构定价不充分</li>
+      <li>乳业产业周期反转（6月奶牛存栏加速去化）</li>
+      <li>券商板块（华林/中银）市场放量+护盘+估值低位</li>
+      <li>油运/航空：WTI两日累跌12%，中下游行业成本端利好</li>
+    </ol>
+  </div>
+  <div class="bear">
+    <div class="bear-title">🟩 利空风险（8条）</div>
+    <ol>
+      <li>美联储鹰派：鲍曼+沃勒罕见同时投反对票要求降息（30年来首次）</li>
+      <li>7/30苹果/亚马逊财报：若Capex指引下调将冲击A股CPO/存储/PCB</li>
+      <li>创业板弱修复仅+1.55%（反弹力度极弱）</li>
+      <li>地缘冲突升级：伊朗导弹袭美军基地+胡塞威胁封锁曼德海峡</li>
+      <li>C长鑫/风华高科等高估值题材股：换手率20%+PE 1676倍</li>
+      <li>科创50仍未企稳（-0.87%）</li>
+      <li>英伟达2500亿担保事件：外资对AI产业链风险偏好骤降</li>
+      <li>主力资金7/28净流出-1089亿（机构资金集中兑现）</li>
+    </ol>
+  </div>
+</div>
+
+<h3>🎯 关键观察点</h3>
+<div class="grid-3">
+  <div class="card">
+    <div class="card-title">① 开盘半小时成交额</div>
+    <div style="font-size:0.88rem; margin-top:4px;">若&gt;5000亿则承接有力，&lt;4000亿则警惕二次探底</div>
+  </div>
+  <div class="card">
+    <div class="card-title">② 北向资金方向</div>
+    <div style="font-size:0.88rem; margin-top:4px;">7/28净流出-111亿后能否企稳是外资态度关键</div>
+  </div>
+  <div class="card">
+    <div class="card-title">③ CPO龙头表现</div>
+    <div style="font-size:0.88rem; margin-top:4px;">中际旭创/新易盛能否延续7/28机构大买27亿后的强势</div>
+  </div>
+  <div class="card">
+    <div class="card-title">④ 创业板指支撑</div>
+    <div style="font-size:0.88rem; margin-top:4px;">守住3378则反弹延续，跌破则二次探底</div>
+  </div>
+  <div class="card">
+    <div class="card-title">⑤ 涨停数量</div>
+    <div style="font-size:0.88rem; margin-top:4px;">能否&gt;80只情绪修复确认（昨日57，今日86）</div>
+  </div>
+  <div class="card">
+    <div class="card-title">⑥ 美国PCE数据</div>
+    <div style="font-size:0.88rem; margin-top:4px;">直接影响美股开盘和A股次日情绪</div>
+  </div>
+</div>
+
+<h3>💡 操作建议</h3>
+<div class="summary-box">
+  <p style="font-size:0.92rem;"><strong>【总仓位】</strong>不超50%（按市场评分52分对应30-50%）</p>
+  <p style="font-size:0.92rem;"><strong>【鑫未来】</strong>50%仓位，CPO+消费+银行防御三足鼎立</p>
+  <p style="font-size:0.92rem;"><strong>【鑫准出击】</strong>≤17%，只做龙头+严止损</p>
+  <p style="font-size:0.92rem;"><strong>【重点持仓】</strong>中际旭创+新易盛（CPO核心）、宁德时代+比亚迪（新能源）、贵州茅台+建设银行（防御）、新增三环集团+天润乳业（预期差）</p>
+  <p style="font-size:0.92rem;"><strong>【重点回避】</strong>C长鑫+风华高科+昀冢科技+兆日科技+天晟新材（高估值题材）、通富微电+紫光股份+宏和科技（破位股）</p>
+  <p style="font-size:0.92rem; color:#1a7f37;"><strong>【加仓信号】</strong>成交额持续&gt;2.3万亿 + 跌停&lt;10只 + 创业板站稳3378 + 北向资金净流入</p>
+  <p style="font-size:0.92rem; color:#cf222e;"><strong>【减仓触发】</strong>成交额&lt;1.8万亿 + 跌停&gt;30只 + 科创50跌破1650 + 地缘冲突重大升级</p>
+</div>
+
+<!-- 底部 -->
+<div class="footer">
+  <p>⚡ <strong>V5.0系统</strong> · 深度复盘Agent · 2026-07-29 20:00</p>
+  <p>AI智能股票组合主理人系统 · 长安鑫工作室</p>
+  <p style="font-size:0.75rem; color:#9ca3af; margin-top:8px;">
+    数据来源：westock-mcp + tdx-connector + WebSearch | 引用15:30正式评分（52分），不重复打分<br>
+    本报告为系统自动生成，仅供研究参考，不构成投资建议
+  </p>
+</div>
+
+</div>
+</body>
+</html>

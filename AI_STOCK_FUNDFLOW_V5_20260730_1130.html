@@ -1,0 +1,525 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>资金异动扫描 | 2026-07-30 11:30</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
+  background: #f6f8fa;
+  color: #1f2328;
+  line-height: 1.6;
+  font-size: 14px;
+}
+.container { max-width: 1200px; margin: 0 auto; padding: 20px; }
+
+/* Header */
+.header {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: #fff;
+  padding: 28px 32px;
+  border-radius: 12px;
+  margin-bottom: 20px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+.header h1 { font-size: 24px; margin-bottom: 6px; }
+.header .meta { display: flex; gap: 16px; align-items: center; font-size: 13px; opacity: 0.9; }
+.tag {
+  display: inline-block;
+  background: rgba(255,255,255,0.2);
+  border: 1px solid rgba(255,255,255,0.3);
+  padding: 2px 10px;
+  border-radius: 4px;
+  font-size: 12px;
+}
+
+/* Validation Bar */
+.validation-bar {
+  background: #fff;
+  border: 1px solid #d0d7de;
+  border-left: 4px solid #1a7f37;
+  border-radius: 8px;
+  padding: 14px 18px;
+  margin-bottom: 20px;
+}
+.validation-bar.warn { border-left-color: #d4a72c; }
+.validation-bar h3 { font-size: 14px; margin-bottom: 8px; color: #1f2328; }
+.validation-bar ul { list-style: none; padding-left: 0; }
+.validation-bar li { font-size: 12px; color: #656d76; padding: 2px 0; }
+.validation-bar li .warn-tag { color: #d4a72c; font-weight: 600; }
+
+/* Section */
+.section {
+  background: #fff;
+  border: 1px solid #d0d7de;
+  border-radius: 8px;
+  padding: 20px;
+  margin-bottom: 16px;
+}
+.section h2 {
+  font-size: 17px;
+  margin-bottom: 14px;
+  padding-bottom: 8px;
+  border-bottom: 2px solid #e1e4e8;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* Index Cards */
+.index-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 12px;
+  margin-bottom: 8px;
+}
+.index-card {
+  background: #f6f8fa;
+  border: 1px solid #d0d7de;
+  border-radius: 8px;
+  padding: 16px;
+  text-align: center;
+}
+.index-card .name { font-size: 13px; color: #656d76; margin-bottom: 6px; }
+.index-card .price { font-size: 22px; font-weight: 700; margin-bottom: 4px; }
+.index-card .change { font-size: 14px; font-weight: 600; }
+.index-card .volume { font-size: 11px; color: #656d76; margin-top: 6px; }
+.red { color: #cf222e; }
+.green { color: #1a7f37; }
+
+/* Tables */
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+th {
+  background: #f6f8fa;
+  padding: 8px 10px;
+  text-align: left;
+  font-weight: 600;
+  color: #656d76;
+  border-bottom: 2px solid #d0d7de;
+  white-space: nowrap;
+}
+td {
+  padding: 8px 10px;
+  border-bottom: 1px solid #e1e4e8;
+}
+tr:hover td { background: #f6f8fa; }
+
+/* Stage Badges */
+.badge {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-size: 11px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+.badge-enter { background: #ddf4ff; color: #0969da; }
+.badge-accel { background: #fff8c5; color: #9a6700; }
+.badge-climax { background: #ffd8d8; color: #cf222e; }
+.badge-exit { background: #e1e4e8; color: #636c76; }
+
+/* Sector Dual Column */
+.dual-col {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+.dual-col .col {
+  border: 1px solid #d0d7de;
+  border-radius: 8px;
+  overflow: hidden;
+}
+.dual-col .col-header {
+  padding: 10px 14px;
+  font-weight: 600;
+  font-size: 13px;
+}
+.col-inflow .col-header { background: #ffebeb; color: #cf222e; border-bottom: 1px solid #ffd0d0; }
+.col-outflow .col-header { background: #ebfaeb; color: #1a7f37; border-bottom: 1px solid #c7ecc7; }
+
+/* North Capital */
+.north-box {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  padding: 16px 20px;
+  background: #f6f8fa;
+  border-radius: 8px;
+  border: 1px solid #d0d7de;
+}
+.north-arrow {
+  font-size: 36px;
+  font-weight: 700;
+}
+.north-detail { flex: 1; }
+.north-detail .label { font-size: 12px; color: #656d76; }
+.north-detail .value { font-size: 18px; font-weight: 700; margin-bottom: 4px; }
+
+/* Sentiment Progress */
+.sentiment-bar {
+  background: #f6f8fa;
+  border: 1px solid #d0d7de;
+  border-radius: 8px;
+  padding: 16px 20px;
+  margin-top: 12px;
+}
+.sentiment-track {
+  height: 24px;
+  border-radius: 12px;
+  background: linear-gradient(90deg, #1a7f37 0%, #94d3a2 25%, #d4a72c 50%, #cf222e 75%, #82071e 100%);
+  position: relative;
+  margin: 12px 0 8px;
+}
+.sentiment-marker {
+  position: absolute;
+  top: -4px;
+  width: 4px;
+  height: 32px;
+  background: #1f2328;
+  border-radius: 2px;
+}
+.sentiment-labels {
+  display: flex;
+  justify-content: space-between;
+  font-size: 11px;
+  color: #656d76;
+}
+
+/* Alert Box */
+.alert-box {
+  border-radius: 8px;
+  padding: 16px 20px;
+  margin-bottom: 12px;
+  border: 1px solid;
+}
+.alert-red {
+  background: #ffebeb;
+  border-color: #ffd0d0;
+}
+.alert-yellow {
+  background: #fff8c5;
+  border-color: #d4a72c;
+}
+.alert-green {
+  background: #ebfaeb;
+  border-color: #c7ecc7;
+}
+.alert-box h4 {
+  font-size: 14px;
+  margin-bottom: 8px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.alert-box ul { list-style: none; padding-left: 0; }
+.alert-box li {
+  font-size: 13px;
+  padding: 3px 0;
+  padding-left: 16px;
+  position: relative;
+}
+.alert-box li::before {
+  content: "▸";
+  position: absolute;
+  left: 0;
+}
+
+/* Summary Box */
+.summary-box {
+  background: linear-gradient(135deg, #f0f4ff 0%, #fce4ec 100%);
+  border: 1px solid #d0d7de;
+  border-radius: 8px;
+  padding: 16px 20px;
+  margin-bottom: 16px;
+}
+.summary-box h3 { font-size: 15px; margin-bottom: 10px; }
+
+/* Footer */
+.footer {
+  text-align: center;
+  padding: 20px;
+  font-size: 12px;
+  color: #656d76;
+  border-top: 1px solid #d0d7de;
+  margin-top: 20px;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .dual-col { grid-template-columns: 1fr; }
+  .index-grid { grid-template-columns: 1fr 1fr; }
+  table { font-size: 12px; }
+  th, td { padding: 6px; }
+}
+
+/* Anomaly tag */
+.anomaly {
+  display: inline-block;
+  background: #fff8c5;
+  color: #9a6700;
+  font-size: 10px;
+  padding: 1px 4px;
+  border-radius: 3px;
+  margin-left: 4px;
+  font-weight: 600;
+}
+</style>
+</head>
+<body>
+<div class="container">
+
+<!-- Header -->
+<div class="header">
+  <h1>💰 资金异动扫描</h1>
+  <div class="meta">
+    <span>📅 2026-07-30</span>
+    <span class="tag">⏰ 11:30 盘中</span>
+    <span class="tag">🤖 Smart Money + Sentiment Agent</span>
+    <span class="tag">⚡ V5.0</span>
+  </div>
+</div>
+
+<!-- Validation Bar -->
+<div class="validation-bar warn">
+  <h3>⚠️ 数据验证报告</h3>
+  <ul>
+    <li>✅ <strong>验证状态</strong>：通过（部分警告）</li>
+    <li>✅ <strong>交叉验证</strong>：TDX指数实时行情（11:30-11:32）与westock板块数据方向一致</li>
+    <li>✅ <strong>资金流数据</strong>：westock EndDate=2026-07-30，时效正常</li>
+    <li>⚠️ <span class="warn-tag">时效警告</span>：westock市场总览(market_overview)为2026-07-29昨日数据，仅作参考</li>
+    <li>⚠️ <span class="warn-tag">[异常]</span>：中际旭创-15.77%、新易盛-16.43%（>±15%触发标记，创业板20%涨跌幅内正常）</li>
+    <li>⚠️ <span class="warn-tag">数据过期</span>：北向资金汇总数据源(2024-08-16)严重过期，改用龙虎榜沪深股通推算</li>
+  </ul>
+</div>
+
+<!-- Section 1: Index Overview -->
+<div class="section">
+  <h2>📊 一、盘中指数概览</h2>
+  <div class="index-grid">
+    <div class="index-card">
+      <div class="name">上证指数</div>
+      <div class="price red">3784.55</div>
+      <div class="change red">-1.15%</div>
+      <div class="volume">半日成交 6,720亿</div>
+    </div>
+    <div class="index-card">
+      <div class="name">深证成指</div>
+      <div class="price red">13141.22</div>
+      <div class="change red">-3.79%</div>
+      <div class="volume">半日成交 7,810亿</div>
+    </div>
+    <div class="index-card">
+      <div class="name">创业板指</div>
+      <div class="price red">3179.58</div>
+      <div class="change red">-5.89%</div>
+      <div class="volume">半日成交 3,710亿</div>
+    </div>
+    <div class="index-card">
+      <div class="name">两市合计</div>
+      <div class="price" style="color:#656d76;">18,240亿</div>
+      <div class="change" style="color:#656d76;font-size:12px;">较昨日全天79%</div>
+      <div class="volume">半日放量明显</div>
+    </div>
+  </div>
+  <p style="margin-top:12px;font-size:12px;color:#656d76;">上证跌幅相对可控（-1.15%），但深证成指（-3.79%）和创业板指（-5.89%）深幅回调，科技成长方向全面杀跌。两市半日成交已达昨日全天79%，放量特征显著。</p>
+</div>
+
+<!-- Section 2: Fund Flow TOP10 -->
+<div class="section">
+  <h2>💸 二、主力资金异动TOP10</h2>
+  
+  <h3 style="font-size:14px;margin-bottom:10px;color:#cf222e;">🔴 主力净流入TOP7</h3>
+  <table>
+    <thead>
+      <tr>
+        <th>#</th><th>股票</th><th>代码</th><th>主力净流入(亿)</th><th>资金阶段</th><th>板块</th><th>建议</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr><td>1</td><td>贵州茅台</td><td>sh600519</td><td class="red">+5.80</td><td><span class="badge badge-accel">加速</span></td><td>白酒</td><td>关注</td></tr>
+      <tr><td>2</td><td>五粮液</td><td>sz000858</td><td class="red">+4.56</td><td><span class="badge badge-accel">加速</span></td><td>白酒</td><td>关注</td></tr>
+      <tr><td>3</td><td>长江电力</td><td>sh600900</td><td class="red">+4.51</td><td><span class="badge badge-enter">进入</span></td><td>电力</td><td>跟踪</td></tr>
+      <tr><td>4</td><td>江淮汽车</td><td>sh600418</td><td class="red">+3.34</td><td><span class="badge badge-accel">加速</span></td><td>乘用车</td><td>关注</td></tr>
+      <tr><td>5</td><td>赛力斯</td><td>sh601127</td><td class="red">+2.77</td><td><span class="badge badge-enter">进入</span></td><td>乘用车</td><td>跟踪</td></tr>
+      <tr><td>6</td><td>工商银行</td><td>sh601398</td><td class="red">+2.01</td><td><span class="badge badge-enter">进入</span></td><td>银行</td><td>防御持有</td></tr>
+      <tr><td>7</td><td>农业银行</td><td>sh601288</td><td class="red">+1.85</td><td><span class="badge badge-enter">进入</span></td><td>银行</td><td>防御持有</td></tr>
+    </tbody>
+  </table>
+
+  <h3 style="font-size:14px;margin:16px 0 10px;color:#1a7f37;">🟢 主力净流出TOP9</h3>
+  <table>
+    <thead>
+      <tr>
+        <th>#</th><th>股票</th><th>代码</th><th>主力净流出(亿)</th><th>资金阶段</th><th>板块</th><th>建议</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr><td>1</td><td>中际旭创<span class="anomaly">异常</span></td><td>sz300308</td><td class="green">-46.63</td><td><span class="badge badge-exit">撤退</span></td><td>通信设备</td><td>远离</td></tr>
+      <tr><td>2</td><td>新易盛<span class="anomaly">异常</span></td><td>sz300502</td><td class="green">-38.04</td><td><span class="badge badge-exit">撤退</span></td><td>通信设备</td><td>远离</td></tr>
+      <tr><td>3</td><td>东山精密</td><td>sz002384</td><td class="green">-19.94</td><td><span class="badge badge-exit">撤退</span></td><td>电子</td><td>回避</td></tr>
+      <tr><td>4</td><td>京东方A</td><td>sz000725</td><td class="green">-15.33</td><td><span class="badge badge-exit">撤退</span></td><td>电子</td><td>回避</td></tr>
+      <tr><td>5</td><td>通富微电</td><td>sz002156</td><td class="green">-10.57</td><td><span class="badge badge-exit">撤退</span></td><td>半导体</td><td>远离</td></tr>
+      <tr><td>6</td><td>长电科技</td><td>sh600584</td><td class="green">-9.92</td><td><span class="badge badge-exit">撤退</span></td><td>半导体</td><td>远离</td></tr>
+      <tr><td>7</td><td>兆易创新</td><td>sh603986</td><td class="green">-8.48</td><td><span class="badge badge-exit">撤退</span></td><td>半导体</td><td>远离</td></tr>
+      <tr><td>8</td><td>华天科技</td><td>sz002185</td><td class="green">-6.79</td><td><span class="badge badge-exit">撤退</span></td><td>半导体</td><td>远离</td></tr>
+      <tr><td>9</td><td>紫光股份</td><td>sz000938</td><td class="green">-3.32</td><td><span class="badge badge-exit">撤退</span></td><td>通信</td><td>回避</td></tr>
+    </tbody>
+  </table>
+  <p style="margin-top:10px;font-size:12px;color:#656d76;">⚠️ 科技板块主力资金系统性撤退，通信设备+半导体合计流出超150亿，单只个股流出超10亿达5只。</p>
+</div>
+
+<!-- Section 3: Sector Rotation -->
+<div class="section">
+  <h2>🔄 三、板块资金轮动</h2>
+  <div class="dual-col">
+    <div class="col col-inflow">
+      <div class="col-header">🔴 加速流入 TOP3</div>
+      <table>
+        <thead><tr><th>板块</th><th>净流入(亿)</th><th>涨跌幅</th><th>阶段</th></tr></thead>
+        <tbody>
+          <tr><td>白酒Ⅱ</td><td class="red">+14.79</td><td class="red">+3.63%</td><td><span class="badge badge-accel">加速</span></td></tr>
+          <tr><td>乘用车</td><td class="red">+6.88</td><td class="red">+1.75%</td><td><span class="badge badge-accel">加速</span></td></tr>
+          <tr><td>股份制银行Ⅱ</td><td class="red">+6.23</td><td class="red">+1.49%</td><td><span class="badge badge-enter">进入</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="col col-outflow">
+      <div class="col-header">🟢 加速流出 TOP3</div>
+      <table>
+        <thead><tr><th>板块</th><th>净流出(亿)</th><th>涨跌幅</th><th>阶段</th></tr></thead>
+        <tbody>
+          <tr><td>通信设备</td><td class="green">-138.18</td><td class="green">-12.10%</td><td><span class="badge badge-exit">撤退</span></td></tr>
+          <tr><td>半导体</td><td class="green">-131.58</td><td class="green">-7.84%</td><td><span class="badge badge-exit">撤退</span></td></tr>
+          <tr><td>元件</td><td class="green">-86.12</td><td class="green">-8.95%</td><td><span class="badge badge-exit">撤退</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+  <div class="summary-box" style="margin-top:14px;">
+    <h3>📌 轮动信号</h3>
+    <p style="font-size:13px;">科技→消费/金融切换第三日加速。通信设备5日跌幅-21.99%、20日跌幅-32.46%，半导体5日跌幅-14.84%、20日跌幅-31.49%，已进入恐慌性出清阶段。白酒5日涨幅+5.81%、20日涨幅+12.93%，资金加速流入。概念层面：大消费+2.13%、白酒概念+2.84% vs 芯片概念-4.82%、TMT-3.04%。</p>
+  </div>
+</div>
+
+<!-- Section 4: North Capital -->
+<div class="section">
+  <h2>🌐 四、北向资金方向</h2>
+  <div class="north-box">
+    <div class="north-arrow green">↓</div>
+    <div class="north-detail">
+      <div class="label">今日截至11:30（龙虎榜推算）</div>
+      <div class="value green">净流出 约1.60亿</div>
+      <div style="font-size:12px;color:#656d76;">
+        沪股通：约+2.42亿（买入华电辽能、宏和科技）<br>
+        深股通：约-4.02亿（卖出巨人网络、恺英网络）
+      </div>
+    </div>
+    <div style="text-align:center;">
+      <div style="font-size:13px;color:#656d76;margin-bottom:4px;">方向判断</div>
+      <div style="font-size:16px;font-weight:700;color:#1a7f37;">偏流出</div>
+      <div style="font-size:11px;color:#656d76;margin-top:4px;">中性偏空</div>
+    </div>
+  </div>
+  <p style="margin-top:10px;font-size:12px;color:#656d76;">⚠️ 北向实时汇总数据源过期，此为龙虎榜沪深股通局部推算，置信度中等。重点买入：电力/基建；重点卖出：科技/游戏。</p>
+</div>
+
+<!-- Section 5: Sentiment -->
+<div class="section">
+  <h2>🎭 五、情绪周期（独立判断）</h2>
+  
+  <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px;margin-bottom:16px;">
+    <div style="text-align:center;background:#f6f8fa;border:1px solid #d0d7de;border-radius:8px;padding:12px;">
+      <div style="font-size:12px;color:#656d76;">涨停数</div>
+      <div style="font-size:20px;font-weight:700;color:#cf222e;">~50</div>
+    </div>
+    <div style="text-align:center;background:#f6f8fa;border:1px solid #d0d7de;border-radius:8px;padding:12px;">
+      <div style="font-size:12px;color:#656d76;">跌停数</div>
+      <div style="font-size:20px;font-weight:700;color:#1a7f37;">~90</div>
+    </div>
+    <div style="text-align:center;background:#f6f8fa;border:1px solid #d0d7de;border-radius:8px;padding:12px;">
+      <div style="font-size:12px;color:#656d76;">连板高度</div>
+      <div style="font-size:20px;font-weight:700;color:#cf222e;">传智教育</div>
+    </div>
+    <div style="text-align:center;background:#f6f8fa;border:1px solid #d0d7de;border-radius:8px;padding:12px;">
+      <div style="font-size:12px;color:#656d76;">涨跌比</div>
+      <div style="font-size:20px;font-weight:700;color:#1a7f37;">35:55</div>
+    </div>
+  </div>
+
+  <div class="sentiment-bar">
+    <div style="font-size:13px;font-weight:600;margin-bottom:8px;">情绪阶段：退潮分化期</div>
+    <div class="sentiment-track">
+      <div class="sentiment-marker" style="left:22%;"></div>
+    </div>
+    <div class="sentiment-labels">
+      <span>冰点</span><span>退潮</span><span>中性</span><span>回暖</span><span>高潮</span>
+    </div>
+    <p style="font-size:13px;margin-top:10px;">
+      科技板块：<strong style="color:#82071e;">冰点/恐慌</strong>（创业板-5.89%，半导体-7.84%，多只个股跌停）<br>
+      消费板块：<strong style="color:#1a7f37;">回暖</strong>（白酒+3.63%，大消费+2.13%）<br>
+      <strong>一句话判断</strong>：科技板块第三日恐慌性出清，消费/银行防御承接，市场情绪严重分化，短线风险尚未释放完毕。
+    </p>
+  </div>
+</div>
+
+<!-- Section 6: Alerts -->
+<div class="section">
+  <h2>🚨 六、异动预警</h2>
+  
+  <div class="alert-box alert-red">
+    <h4>🔴 个股异动 — 科技龙头暴跌</h4>
+    <ul>
+      <li>中际旭创 -15.77%：通信设备龙头暴跌，主力净流出46.63亿，光模块/CPO板块全面崩塌</li>
+      <li>新易盛 -16.43%：通信设备二线龙头跟跌，主力净流出38.04亿</li>
+      <li>通富微电 -10.00%：半导体封测跌停，主力净流出10.57亿</li>
+      <li>东山精密 -10.00%：电子制造跌停，主力净流出19.94亿</li>
+      <li>紫光股份 -9.99%：通信设备跌停，龙虎榜机构净买入但趋势仍向下</li>
+    </ul>
+  </div>
+
+  <div class="alert-box alert-green">
+    <h4>🟢 个股异动 — 消费/汽车逆势走强</h4>
+    <ul>
+      <li>江淮汽车 +10.01%：乘用车涨停，华为汽车概念+4.31%，主力净流入3.34亿</li>
+      <li>贵州茅台 +2.85%：白酒龙头放量上涨，主力净流入5.80亿</li>
+      <li>五粮液 +4.63%：白酒二线龙头跟涨，主力净流入4.56亿</li>
+      <li>工商银行 +2.39%：大行稳健上涨，防御资金进入</li>
+    </ul>
+  </div>
+
+  <div class="alert-box alert-yellow">
+    <h4>⚠️ 板块异动</h4>
+    <ul>
+      <li>通信设备 -12.10%：板块性崩塌，5日跌幅-21.99%，光模块/CPO/铜缆全线下杀</li>
+      <li>半导体 -7.84%：第三日加速下跌，封测/设计/设备无一幸免</li>
+      <li>白酒 +3.63%：板块放量上涨，金徽酒涨停，舍得酒业涨停，资金加速进入</li>
+      <li>商用车 +4.04%：江淮汽车涨停带动，华为汽车股权合作概念活跃</li>
+    </ul>
+  </div>
+
+  <div class="alert-box alert-red">
+    <h4>📋 操作建议</h4>
+    <ul>
+      <li><strong>科技仓位</strong>：立即减仓至最低，半导体/通信设备/元件全面撤退，不抄底</li>
+      <li><strong>消费仓位</strong>：白酒/食品饮料可小仓试探，但注意大盘系统性风险</li>
+      <li><strong>银行/电力</strong>：防御持有，工商银行+2.39%、长江电力+1.87%表现稳健</li>
+      <li><strong>总仓位建议</strong>：降至30-50%，等待科技板块企稳信号</li>
+    </ul>
+  </div>
+</div>
+
+<!-- Footer -->
+<div class="footer">
+  ⚡ V5.0系统 | Smart Money Agent + Sentiment Agent | 2026-07-30 11:30<br>
+  数据源：westock-mcp + tdx-connector | 信息隔离：独立判断，未引用早盘结论
+</div>
+
+</div>
+</body>
+</html>

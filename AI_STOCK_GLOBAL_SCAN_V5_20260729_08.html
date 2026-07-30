@@ -1,0 +1,616 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>全球市场扫描 | 2026-07-29 08:00 | V5.0</title>
+<style>
+  :root {
+    --red: #cf222e;
+    --green: #1a7f37;
+    --bg: #f5f6f8;
+    --card-bg: #ffffff;
+    --text: #1a1a2e;
+    --text-secondary: #586069;
+    --border: #e1e4e8;
+    --accent: #0366d6;
+    --bearish-bg: #fff1f0;
+    --bullish-bg: #f0fff4;
+    --warning-bg: #fff8e1;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', 'Hiragino Sans GB', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.6;
+    font-size: 15px;
+  }
+
+  .container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 24px 20px;
+  }
+
+  /* Header */
+  .header {
+    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+    border-radius: 16px;
+    padding: 32px 40px;
+    margin-bottom: 24px;
+    color: white;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 16px;
+  }
+  .header-left h1 {
+    font-size: 28px;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+  }
+  .header-left .subtitle {
+    font-size: 14px;
+    opacity: 0.75;
+    margin-top: 4px;
+  }
+  .header-badge {
+    background: rgba(255,255,255,0.15);
+    border: 1px solid rgba(255,255,255,0.25);
+    border-radius: 12px;
+    padding: 12px 20px;
+    text-align: center;
+    backdrop-filter: blur(10px);
+  }
+  .header-badge .time {
+    font-size: 22px;
+    font-weight: 700;
+    letter-spacing: 1px;
+  }
+  .header-badge .label {
+    font-size: 11px;
+    opacity: 0.7;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+  }
+
+  /* Score Banner */
+  .score-banner {
+    background: var(--card-bg);
+    border-radius: 16px;
+    padding: 28px 36px;
+    margin-bottom: 24px;
+    display: flex;
+    align-items: center;
+    gap: 32px;
+    border: 1px solid var(--border);
+    box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+    flex-wrap: wrap;
+  }
+  .score-circle {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    background: linear-gradient(135deg, #fff1f0, #ffccc7);
+    border: 4px solid #cf222e;
+    color: #cf222e;
+  }
+  .score-circle .val {
+    font-size: 42px;
+    font-weight: 800;
+    line-height: 1;
+  }
+  .score-circle .unit {
+    font-size: 13px;
+    opacity: 0.8;
+  }
+  .score-detail {
+    flex: 1;
+    min-width: 200px;
+  }
+  .score-detail .status {
+    font-size: 22px;
+    font-weight: 700;
+    color: #cf222e;
+    margin-bottom: 8px;
+  }
+  .score-detail .position {
+    font-size: 15px;
+    color: var(--text-secondary);
+    margin-bottom: 4px;
+  }
+  .score-detail .position strong {
+    color: #cf222e;
+    font-size: 18px;
+  }
+  .score-detail .reasons {
+    margin-top: 8px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+  .score-detail .reason-tag {
+    background: #fff1f0;
+    color: #cf222e;
+    padding: 3px 10px;
+    border-radius: 12px;
+    font-size: 12px;
+  }
+
+  /* Section Cards */
+  .section {
+    background: var(--card-bg);
+    border-radius: 12px;
+    padding: 24px 28px;
+    margin-bottom: 20px;
+    border: 1px solid var(--border);
+    box-shadow: 0 1px 2px rgba(0,0,0,0.03);
+  }
+  .section h2 {
+    font-size: 18px;
+    font-weight: 700;
+    margin-bottom: 16px;
+    padding-bottom: 10px;
+    border-bottom: 2px solid #f0f0f0;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .section h2 .icon { font-size: 20px; }
+
+  /* Card Grid */
+  .card-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 14px;
+  }
+  .card {
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 16px 18px;
+    transition: box-shadow 0.2s;
+  }
+  .card:hover { box-shadow: 0 2px 8px rgba(0,0,0,0.08); }
+  .card .name {
+    font-size: 13px;
+    color: var(--text-secondary);
+    margin-bottom: 4px;
+  }
+  .card .value {
+    font-size: 22px;
+    font-weight: 700;
+  }
+  .card .change {
+    font-size: 15px;
+    font-weight: 600;
+    margin-top: 2px;
+  }
+  .card .signal {
+    font-size: 12px;
+    color: var(--text-secondary);
+    margin-top: 6px;
+    padding-top: 6px;
+    border-top: 1px dashed #eee;
+  }
+
+  .up { color: var(--red); }
+  .down { color: var(--green); }
+
+  /* Tables */
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 14px;
+  }
+  th {
+    text-align: left;
+    padding: 10px 12px;
+    background: #f8f9fa;
+    color: var(--text-secondary);
+    font-weight: 600;
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    border-bottom: 2px solid var(--border);
+  }
+  td {
+    padding: 10px 12px;
+    border-bottom: 1px solid #f0f0f0;
+  }
+  tr:hover td { background: #fafbfc; }
+  .td-up { color: var(--red); font-weight: 600; }
+  .td-down { color: var(--green); font-weight: 600; }
+  .td-signal {
+    font-size: 12px;
+    max-width: 200px;
+  }
+
+  /* Signals */
+  .signal-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+  }
+  @media (max-width: 768px) {
+    .signal-grid { grid-template-columns: 1fr; }
+  }
+  .signal-box {
+    border-radius: 10px;
+    padding: 18px 20px;
+  }
+  .signal-box.bullish {
+    background: #fff5f5;
+    border: 1px solid #ffd4d4;
+  }
+  .signal-box.bearish {
+    background: #f0fff4;
+    border: 1px solid #b7ebc2;
+  }
+  .signal-box h3 {
+    font-size: 15px;
+    font-weight: 700;
+    margin-bottom: 10px;
+  }
+  .signal-box.bullish h3 { color: var(--red); }
+  .signal-box.bearish h3 { color: var(--green); }
+  .signal-box ul {
+    list-style: none;
+    padding: 0;
+  }
+  .signal-box li {
+    padding: 5px 0;
+    font-size: 13.5px;
+    line-height: 1.5;
+    border-bottom: 1px dashed rgba(0,0,0,0.05);
+  }
+  .signal-box li:last-child { border-bottom: none; }
+  .signal-box li .idx {
+    display: inline-block;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    text-align: center;
+    line-height: 18px;
+    font-size: 11px;
+    font-weight: 700;
+    margin-right: 6px;
+  }
+  .bullish .idx { background: var(--red); color: white; }
+  .bearish .idx { background: var(--green); color: white; }
+
+  .focus-box {
+    background: #fffbeb;
+    border: 1px solid #fde68a;
+    border-radius: 10px;
+    padding: 18px 20px;
+    margin-top: 16px;
+  }
+  .focus-box h3 {
+    font-size: 15px;
+    font-weight: 700;
+    color: #92400e;
+    margin-bottom: 8px;
+  }
+  .focus-box p {
+    font-size: 13.5px;
+    margin: 4px 0;
+  }
+  .focus-box .tag {
+    display: inline-block;
+    background: #fef3c7;
+    color: #92400e;
+    padding: 2px 8px;
+    border-radius: 10px;
+    font-size: 12px;
+    font-weight: 600;
+    margin-right: 6px;
+  }
+
+  /* Footer */
+  .footer {
+    text-align: center;
+    color: var(--text-secondary);
+    font-size: 12px;
+    padding: 20px 0 8px;
+    opacity: 0.7;
+  }
+
+  /* Commentary */
+  .commentary {
+    font-size: 13.5px;
+    color: var(--text-secondary);
+    line-height: 1.7;
+    margin-top: 10px;
+    padding: 12px 16px;
+    background: #f8f9fa;
+    border-radius: 8px;
+    border-left: 3px solid var(--accent);
+  }
+</style>
+</head>
+<body>
+<div class="container">
+
+  <!-- Header -->
+  <div class="header">
+    <div class="header-left">
+      <h1>全球市场扫描</h1>
+      <div class="subtitle">AI Stock Portfolio OS V5.0 &middot; Market Intelligence Agent</div>
+    </div>
+    <div class="header-badge">
+      <div class="time">08:00</div>
+      <div class="label">2026-07-29</div>
+    </div>
+  </div>
+
+  <!-- Score Banner -->
+  <div class="score-banner">
+    <div class="score-circle">
+      <span class="val">41</span>
+      <span class="unit">/ 100</span>
+    </div>
+    <div class="score-detail">
+      <div class="status">⚠️ 风险市场</div>
+      <div class="position">建议仓位：<strong>0% - 30%</strong></div>
+      <div style="font-size:13px;color:var(--text-secondary);margin-top:2px;">科技成长板块恐慌性出清，风格极端切换至价值防御</div>
+      <div class="reasons">
+        <span class="reason-tag">全球科技共振暴跌</span>
+        <span class="reason-tag">主力极端反转</span>
+        <span class="reason-tag">北向大幅流出</span>
+        <span class="reason-tag">双创破位</span>
+        <span class="reason-tag">油价暴跌利好被忽视</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Section 1: Overnight Markets -->
+  <div class="section">
+    <h2><span class="icon">🇺🇸</span>一、隔夜外盘</h2>
+    <div class="card-grid">
+      <div class="card">
+        <div class="name">道琼斯工业指数</div>
+        <div class="value up">52,747.32</div>
+        <div class="change up">▲ +1.03%</div>
+        <div class="signal">价值/医疗领涨，资金轮动防御</div>
+      </div>
+      <div class="card">
+        <div class="name">标普500指数</div>
+        <div class="value up">7,428.78</div>
+        <div class="change up">▲ +0.21%</div>
+        <div class="signal">七涨四跌，板块分化加剧</div>
+      </div>
+      <div class="card">
+        <div class="name">纳斯达克指数</div>
+        <div class="value down">24,876.91</div>
+        <div class="change down">▼ -0.22%</div>
+        <div class="signal">五连跌，科技持续承压</div>
+      </div>
+      <div class="card">
+        <div class="name">费城半导体指数</div>
+        <div class="value down">—</div>
+        <div class="change down">▼ -4.49%</div>
+        <div class="signal">存储崩盘：闪迪-14%，SK海力士-9%</div>
+      </div>
+      <div class="card">
+        <div class="name">中概金龙指数</div>
+        <div class="value up">6,325.46</div>
+        <div class="change up">▲ +1.08%</div>
+        <div class="signal">连续两日上涨，理想+4.9%</div>
+      </div>
+      <div class="card">
+        <div class="name">英伟达</div>
+        <div class="value up">—</div>
+        <div class="change up">▲ +0.25%</div>
+        <div class="signal">止跌企稳，此前连续大跌</div>
+      </div>
+      <div class="card">
+        <div class="name">苹果</div>
+        <div class="value up">—</div>
+        <div class="change up">▲ +0.99%</div>
+        <div class="signal">盘中市值一度突破5万亿美元</div>
+      </div>
+    </div>
+    <div class="commentary">
+      美股风格极端分化：道指+1% vs 纳指五连跌。科技/半导体链遭集中抛售，费半-4.5%创5月20日以来新低。资金转向医疗(+2.33%)、必需消费(+1.96%)等防御板块。消费者信心指数90.8低于预期。今晚美联储公布7月议息结果（CME：维持不变64% vs 加息25bp 36%）。
+    </div>
+  </div>
+
+  <!-- Section 2: Commodities & Forex -->
+  <div class="section">
+    <h2><span class="icon">🛢️</span>二、大宗商品与外汇</h2>
+    <table>
+      <thead>
+        <tr><th>品种</th><th>最新</th><th>变动</th><th>对A股影响</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>现货黄金</strong></td>
+          <td>4,028.70 美元/盎司</td>
+          <td class="td-down">-1.17%</td>
+          <td class="td-signal">避险降温，通胀预期回落</td>
+        </tr>
+        <tr>
+          <td><strong>COMEX黄金</strong></td>
+          <td>4,090.40 美元/盎司</td>
+          <td class="td-down">-1.11%</td>
+          <td class="td-signal">高位回撤，风险偏好结构性转变</td>
+        </tr>
+        <tr style="background:#fffbeb;">
+          <td><strong>WTI原油</strong> ⚡</td>
+          <td>77.80 美元/桶</td>
+          <td class="td-down">-5.82%</td>
+          <td class="td-signal"><strong>重大利好</strong>：两日累跌超12%，制造业成本骤降</td>
+        </tr>
+        <tr style="background:#fffbeb;">
+          <td><strong>布伦特原油</strong> ⚡</td>
+          <td>80.70 美元/桶</td>
+          <td class="td-down">-6.02%</td>
+          <td class="td-signal">美伊停火+OPEC增产预期，利好下游</td>
+        </tr>
+        <tr>
+          <td><strong>美元指数</strong></td>
+          <td>101.396</td>
+          <td class="td-down">-0.14%</td>
+          <td class="td-signal">弱美元边际利好人民币资产</td>
+        </tr>
+        <tr>
+          <td><strong>离岸人民币</strong></td>
+          <td>6.7711</td>
+          <td class="td-down">贬56点</td>
+          <td class="td-signal">小幅波动，汇率区间稳定</td>
+        </tr>
+        <tr>
+          <td><strong>在岸人民币（夜盘）</strong></td>
+          <td>6.7710</td>
+          <td class="td-down">贬85点</td>
+          <td class="td-signal">中间价6.7928，整体稳定</td>
+        </tr>
+        <tr>
+          <td><strong>美10年期国债</strong></td>
+          <td>4.639%</td>
+          <td>—</td>
+          <td class="td-signal">高位震荡，对成长股估值构成压制</td>
+        </tr>
+      </tbody>
+    </table>
+    <div class="commentary">
+      油价连续暴跌是核心变量：WTI两日从82.6→77.8，累计跌超12%。美伊停火谈判+OPEC增产预期共同打压。对A股而言，油价暴跌利好航空、化工、物流等下游行业，大幅降低制造业成本，同时缓解国内通胀预期。
+    </div>
+  </div>
+
+  <!-- Section 3: A-Share Indices -->
+  <div class="section">
+    <h2><span class="icon">📊</span>三、A股指数概览</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>指数</th><th>昨收 (7/28)</th><th>当日涨跌</th><th>近5日涨跌</th><th>位置判断</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>上证指数</strong></td>
+          <td>3,813.31</td>
+          <td class="td-down">-1.16%</td>
+          <td class="td-down">-1.64%</td>
+          <td class="td-signal">3800争夺，MA60(~3750)暂获支撑</td>
+        </tr>
+        <tr>
+          <td><strong>沪深300</strong></td>
+          <td>4,569.52</td>
+          <td class="td-down">-2.83%</td>
+          <td class="td-down">-3.35%</td>
+          <td class="td-signal">跌破4600，回吐7月涨幅</td>
+        </tr>
+        <tr>
+          <td><strong>中证500</strong></td>
+          <td>7,443.43</td>
+          <td class="td-down">-3.59%</td>
+          <td class="td-down">-3.95%</td>
+          <td class="td-signal">跌破7500，科技中小盘承压</td>
+        </tr>
+        <tr>
+          <td><strong>中证1000</strong></td>
+          <td>7,026.28</td>
+          <td class="td-down">-2.80%</td>
+          <td class="td-down">-2.35%</td>
+          <td class="td-signal">相对抗跌，微盘优于中盘</td>
+        </tr>
+        <tr style="background:#fff1f0;">
+          <td><strong>创业板指</strong> ⚠️</td>
+          <td>3,327.03</td>
+          <td class="td-down">-7.35%</td>
+          <td class="td-down">-6.95%</td>
+          <td class="td-signal"><strong>创一年最大单日跌幅！恐慌级别</strong></td>
+        </tr>
+        <tr style="background:#fff1f0;">
+          <td><strong>科创50</strong> ⚠️</td>
+          <td>1,693.48</td>
+          <td class="td-down">-6.33%</td>
+          <td class="td-down">-5.38%</td>
+          <td class="td-signal">跌破1700，AI硬件集体重挫</td>
+        </tr>
+      </tbody>
+    </table>
+    <div style="margin-top:16px;display:flex;flex-wrap:wrap;gap:16px;">
+      <div style="flex:1;min-width:180px;">
+        <div style="font-size:12px;color:var(--text-secondary);margin-bottom:4px;">成交额</div>
+        <div style="font-size:20px;font-weight:700;">2.04万亿</div>
+        <div style="font-size:12px;color:var(--green);">缩量508亿</div>
+      </div>
+      <div style="flex:1;min-width:180px;">
+        <div style="font-size:12px;color:var(--text-secondary);margin-bottom:4px;">涨跌分布</div>
+        <div style="font-size:20px;font-weight:700;"><span class="up">2603涨</span> / <span class="down">2769跌</span></div>
+        <div style="font-size:12px;color:var(--text-secondary);">68涨停 / 50跌停</div>
+      </div>
+      <div style="flex:1;min-width:180px;">
+        <div style="font-size:12px;color:var(--text-secondary);margin-bottom:4px;">主力资金</div>
+        <div style="font-size:20px;font-weight:700;color:var(--green);">-1,089.78亿</div>
+        <div style="font-size:12px;color:var(--text-secondary);">前日+1,015亿 → 极端反转</div>
+      </div>
+      <div style="flex:1;min-width:180px;">
+        <div style="font-size:12px;color:var(--text-secondary);margin-bottom:4px;">北向资金</div>
+        <div style="font-size:20px;font-weight:700;color:var(--green);">-111.6亿</div>
+        <div style="font-size:12px;color:var(--text-secondary);">深股通流出 > 沪股通</div>
+      </div>
+    </div>
+    <div style="margin-top:12px;display:flex;flex-wrap:wrap;gap:8px;">
+      <span style="background:#f0fff4;color:var(--green);padding:3px 10px;border-radius:10px;font-size:12px;">通信 -10.88%</span>
+      <span style="background:#f0fff4;color:var(--green);padding:3px 10px;border-radius:10px;font-size:12px;">电子 -7.02%</span>
+      <span style="background:#fff5f5;color:var(--red);padding:3px 10px;border-radius:10px;font-size:12px;">食品饮料 +2.14%</span>
+      <span style="background:#fff5f5;color:var(--red);padding:3px 10px;border-radius:10px;font-size:12px;">银行 +1.51%</span>
+      <span style="background:#fff5f5;color:var(--red);padding:3px 10px;border-radius:10px;font-size:12px;">商贸零售 +1.53%</span>
+    </div>
+  </div>
+
+  <!-- Section 4: Key Signals -->
+  <div class="section">
+    <h2><span class="icon">🔔</span>四、今日关键信号</h2>
+
+    <div class="signal-grid">
+      <div class="signal-box bullish">
+        <h3>利多因素</h3>
+        <ul>
+          <li><span class="idx">1</span><strong>油价连续暴跌</strong>：WTI两日累跌超12%至77.8美元，大幅缓解制造业成本和通胀预期</li>
+          <li><span class="idx">2</span><strong>资金轮动而非全面撤出</strong>：银行+1.51%、消费+2.14%逆势走强，2603只个股上涨</li>
+          <li><span class="idx">3</span><strong>人民币汇率稳定</strong>：6.77区间，弱美元(101.4)边际利好外资回流</li>
+          <li><span class="idx">4</span><strong>中概股连续上涨</strong>：金龙指数+1.08%，外资对中国资产态度边际改善</li>
+          <li><span class="idx">5</span><strong>政治局会议政策预期</strong>：7月底窗口临近，扩内需/促消费或超预期</li>
+        </ul>
+      </div>
+      <div class="signal-box bearish">
+        <h3>利空因素</h3>
+        <ul>
+          <li><span class="idx">1</span><strong>全球科技AI硬件共振暴跌</strong>：费半-4.5%→A股通信-10.88%/电子-7.02%</li>
+          <li><span class="idx">2</span><strong>主力+北向双流出</strong>：主力-1089亿+北向-111.6亿，机构集中兑现科技头寸</li>
+          <li><span class="idx">3</span><strong>美联储今夜议息</strong>：36%概率加息25bp，鹰派将加剧科技股估值压力</li>
+          <li><span class="idx">4</span><strong>纳指五连跌</strong>：美股科技持续承压，AI资本开支回报率存疑</li>
+          <li><span class="idx">5</span><strong>创业板创一年最大跌幅</strong>：-7.35%技术面破位，杠杆平仓风险上升</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="focus-box">
+      <h3>⚡ 重点关注</h3>
+      <p><span class="tag">今夜</span><strong>美联储利率决议（7/29凌晨）</strong>：若维持不变且鹰派信号减弱→全球风险偏好修复；若加息→科技股继续承压。CME显示维持概率64%，加息概率36%。</p>
+      <p><span class="tag">超卖机会</span><strong>A股科技板块超卖反弹</strong>：通信-10.88%/半导体主力-358亿流出，短期超卖严重。关注ETF资金逆向增配信号，若竞价止跌可博弈技术性反弹。</p>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <div class="footer">
+    ⚡ V5.0 系统 &middot; Market Intelligence Agent &middot; 2026-07-29 08:00
+  </div>
+
+</div>
+</body>
+</html>

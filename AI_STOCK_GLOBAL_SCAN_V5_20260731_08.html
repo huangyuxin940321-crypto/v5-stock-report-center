@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🌍 全球市场扫描 | 2026-07-31 08:00（修正版）</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { 
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+            background: #f5f5f5; color: #333; line-height: 1.6; padding: 20px;
+        }
+        .container { max-width: 1200px; margin: 0 auto; background: #fff; border-radius: 12px; overflow: hidden; box-shadow: 0 2px 12px rgba(0,0,0,0.08); }
+        .header { background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%); color: #fff; padding: 30px 40px; }
+        .header h1 { font-size: 28px; margin-bottom: 8px; }
+        .header-meta { display: flex; gap: 20px; font-size: 14px; opacity: 0.9; }
+        .header-meta span { background: rgba(255,255,255,0.15); padding: 4px 12px; border-radius: 20px; }
+        .correction-banner { padding: 12px 40px; font-size: 14px; font-weight: 600; background: #fde2e2; color: #c62828; border-bottom: 2px solid #ef5350; }
+        .validation-bar { padding: 12px 40px; font-size: 14px; font-weight: 600; display: flex; align-items: center; gap: 8px; }
+        .validation-warning { background: #fff3cd; color: #856404; border-bottom: 2px solid #ffc107; }
+        .section { padding: 30px 40px; border-bottom: 1px solid #eee; }
+        .section:last-child { border-bottom: none; }
+        .section h2 { font-size: 20px; margin-bottom: 16px; color: #1a1a2e; border-left: 4px solid #0d6efd; padding-left: 12px; }
+        .card-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 16px; }
+        .card { background: #f8f9fa; border-radius: 8px; padding: 20px; border: 1px solid #e9ecef; }
+        .card-name { font-size: 14px; color: #6c757d; margin-bottom: 8px; }
+        .card-price { font-size: 28px; font-weight: 700; margin-bottom: 4px; }
+        .card-change { font-size: 16px; font-weight: 600; }
+        .red { color: #cf222e; }
+        .green { color: #1a7f37; }
+        .gray { color: #6c757d; }
+        table { width: 100%; border-collapse: collapse; font-size: 14px; }
+        th { background: #f1f3f5; padding: 12px 16px; text-align: left; font-weight: 600; color: #495057; border-bottom: 2px solid #dee2e6; }
+        td { padding: 12px 16px; border-bottom: 1px solid #e9ecef; }
+        tr:hover td { background: #f8f9fa; }
+        .tendency-banner { padding: 20px 40px; text-align: center; font-size: 22px; font-weight: 700; }
+        .tendency-neutral-bearish { background: #ff9800; color: #fff; }
+        .signals-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+        .signal-box { border-radius: 8px; padding: 20px; }
+        .signal-bull { background: #fce8e8; border-left: 4px solid #cf222e; }
+        .signal-bear { background: #e8f5e9; border-left: 4px solid #1a7f37; }
+        .signal-box h3 { font-size: 16px; margin-bottom: 12px; }
+        .signal-bull h3 { color: #cf222e; }
+        .signal-bear h3 { color: #1a7f37; }
+        .signal-box ul { list-style: none; }
+        .signal-box li { padding: 6px 0; font-size: 14px; color: #333; }
+        .signal-box li::before { content: "\25B8 "; font-weight: bold; }
+        .focus-box { background: #fff3cd; border-radius: 8px; padding: 20px; margin-top: 16px; border-left: 4px solid #ffc107; }
+        .focus-box h3 { color: #856404; margin-bottom: 12px; font-size: 16px; }
+        .focus-box ol { padding-left: 20px; }
+        .focus-box li { padding: 4px 0; font-size: 14px; }
+        .footer { background: #1a1a2e; color: #aaa; text-align: center; padding: 20px; font-size: 13px; }
+        .tag { display: inline-block; padding: 2px 8px; border-radius: 4px; font-size: 12px; font-weight: 600; }
+        .tag-warn { background: #fff3cd; color: #856404; }
+        .tag-single { background: #e3f2fd; color: #1565c0; }
+        .tag-corrected { background: #e8f5e9; color: #2e7d32; }
+        .note { font-size: 13px; color: #6c757d; margin-top: 8px; }
+        .info-box { margin-top: 16px; padding: 16px; background: #f8f9fa; border-radius: 8px; font-size: 14px; }
+        .info-box strong { color: #1a1a2e; }
+        @media (max-width: 768px) { .signals-grid { grid-template-columns: 1fr; } .card-grid { grid-template-columns: 1fr; } .header, .section, .tendency-banner, .correction-banner, .validation-bar { padding-left: 20px; padding-right: 20px; } }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="header">
+        <h1>🌍 全球市场扫描</h1>
+        <div class="header-meta">
+            <span>📅 2026-07-31</span>
+            <span>⏰ 08:00（08:29修正）</span>
+            <span>⚡ V5.0 Market Intelligence Agent</span>
+        </div>
+    </div>
+    
+    <div class="correction-banner">
+        ⚠️ 修正声明：原版误用7/29美东收盘（暴跌数据），已更正为7/30美东收盘（反弹数据）。临时倾向由"偏空"上调为"中性偏空"。
+    </div>
+    
+    <div class="validation-bar validation-warning">
+        ⚠️ 数据验证：警告（已修正） — 美股[WebSearch多源✓ 已修正] | 外汇[单源WebSearch] | A股[TDX单源] | 黄金/原油[已修正为结算价]
+    </div>
+    
+    <div class="section">
+        <h2>一、隔夜外盘</h2>
+        <div class="card-grid">
+            <div class="card">
+                <div class="card-name">道琼斯工业指数</div>
+                <div class="card-price">52,208.06</div>
+                <div class="card-change red">▲ +1.19%</div>
+                <div class="note">科技股反弹带动，+613.92点</div>
+            </div>
+            <div class="card">
+                <div class="card-name">标普500指数</div>
+                <div class="card-price">7,437.63</div>
+                <div class="card-change red">▲ +1.66%</div>
+                <div class="note">科技板块+5.24%领涨</div>
+            </div>
+            <div class="card">
+                <div class="card-name">纳斯达克综合指数</div>
+                <div class="card-price">25,122.18</div>
+                <div class="card-change red">▲ +2.78%</div>
+                <div class="note">微软+15.51%，芯片股全线暴涨</div>
+            </div>
+        </div>
+        <div class="info-box">
+            <strong>📌 7/30美股反弹核心驱动：</strong><br>
+            • <strong>微软暴涨+15.51%</strong>（2008年来最大单日涨幅）：Q4营收900.1亿美元(+18%)，Azure云收入同比+43%（超预期39.6%），全年Azure收入首破1000亿美元；资本支出指引从1900亿下调至1750亿美元<br>
+            • <strong>芯片股全线大反攻</strong>：费城半导体指数+8.19%，美光+18.36%，闪迪+25.99%，AMD+13%，英特尔+11%<br>
+            • <strong>Meta逆势-7.95%</strong>：自由现金流下降91%，AI投入回报遭质疑<br>
+            • <strong>经济数据偏鸽</strong>：Q2 GDP年化+1.5%（低于预期2.1%），6月PCE环比-0.1%<br>
+            • <strong>加息预期回落</strong>：FedWatch 9月加息概率降至59%（一周前82%）<br>
+            • <strong>中概股四连涨</strong>：纳斯达克中国金龙指数+1.05%
+        </div>
+        <div class="info-box" style="margin-top:12px; background:#fff8e1;">
+            <strong>📋 美联储决议回顾（7月29日）：</strong>利率维持3.50%-3.75%不变（连续第5次）。投票9:3，3名委员主张加息25bp（2016年来首次三方分歧）。主席沃什删除前瞻指引。30年期美债收益率升至5.24%（19年高点）。7/29收盘暴跌（道指-2.19%）→ 7/30收盘反弹（道指+1.19%），市场消化鹰派信号后企稳。
+        </div>
+    </div>
+    
+    <div class="section">
+        <h2>二、大宗商品与外汇</h2>
+        <table>
+            <thead><tr><th>品种</th><th>最新(7/30结算)</th><th>变动</th><th>对A股影响</th></tr></thead>
+            <tbody>
+                <tr><td>COMEX黄金</td><td>$4,167.5/oz</td><td class="red">+0.17%</td><td>中性偏多（避险需求）</td></tr>
+                <tr><td>WTI原油(9月) <span class="tag tag-corrected">已修正</span></td><td>$83.59/桶</td><td class="green">-1.03%</td><td>中性偏多（通胀压力缓解）</td></tr>
+                <tr><td>布伦特原油(9月) <span class="tag tag-corrected">已修正</span></td><td>$89.03/桶</td><td class="green">-1.88%</td><td>中性偏多（中东溢价回落）</td></tr>
+                <tr><td>美元指数 <span class="tag tag-single">单源</span></td><td>~99.81</td><td class="red">+0.94%</td><td>偏空（人民币承压）</td></tr>
+                <tr><td>离岸人民币(CNH) <span class="tag tag-single">单源</span></td><td>~7.21</td><td class="green">贬值305bp</td><td>偏空</td></tr>
+            </tbody>
+        </table>
+        <div class="note">注：原油已从westock-mcp盘中价修正为NYMEX/ICE结算价（来源：新华社）。布伦特修正幅度较大（$86.94→$89.03）。</div>
+    </div>
+    
+    <div class="section">
+        <h2>三、A股指数概览</h2>
+        <table>
+            <thead><tr><th>指数</th><th>昨收(7/30)</th><th>涨跌幅</th><th>近20日</th><th>年内</th><th>成交额</th><th>位置判断</th></tr></thead>
+            <tbody>
+                <tr><td>上证指数</td><td>3,804.69</td><td class="green">-0.62%</td><td class="green">-5.57%</td><td class="green">-4.14%</td><td>1.11万亿</td><td>中位偏下</td></tr>
+                <tr><td>深证成指</td><td>13,285.80</td><td class="green">-2.73%</td><td class="green">-14.28%</td><td class="green">-1.77%</td><td>1.24万亿</td><td>破位下行</td></tr>
+                <tr><td>创业板指</td><td>3,244.62</td><td class="green">-3.97%</td><td class="green">-19.23%</td><td class="red">+1.29%</td><td>6,018亿</td><td>深度调整</td></tr>
+                <tr><td>沪深300</td><td>4,549.72</td><td class="green">-1.10%</td><td class="green">-5.46%</td><td class="green">-1.73%</td><td>8,037亿</td><td>中位偏下</td></tr>
+                <tr><td>科创50</td><td>1,588.41</td><td class="green">-5.38%</td><td class="green">-20.07%</td><td class="red">+18.17%</td><td>1,518亿</td><td>深度调整</td></tr>
+            </tbody>
+        </table>
+        <div class="note">成交额合计：约2.34万亿 | 主力资金净流出：789.93亿</div>
+    </div>
+    
+    <div class="tendency-banner tendency-neutral-bearish">
+        📊 市场环境临时倾向：中性偏空（原"偏空"，修正后上调）
+    </div>
+    
+    <div class="section">
+        <h2>四、今日关键信号</h2>
+        <div class="signals-grid">
+            <div class="signal-box signal-bull">
+                <h3>🔴 利多因素</h3>
+                <ul>
+                    <li><strong>美股科技股大反弹</strong>：纳指+2.78%，微软+15.51%，费城半导体+8.19%</li>
+                    <li><strong>微软财报验证AI商业化</strong>：Azure破千亿，资本支出指引下调</li>
+                    <li>PCE降温（环比-0.1%）+ GDP放缓（+1.5%），9月加息概率降至59%</li>
+                    <li>油价回落（WTI-1.03%/布伦特-1.88%），中东溢价部分消化</li>
+                    <li>中概股四连涨，纳斯达克中国金龙指数+1.05%</li>
+                    <li>高股息防御板块获资金流入+48.04亿</li>
+                </ul>
+            </div>
+            <div class="signal-box signal-bear">
+                <h3>🟢 利空因素</h3>
+                <ul>
+                    <li>美联储3票反对加息，沃什删除前瞻指引，鹰派信号仍在</li>
+                    <li>30年期美债收益率升至5.24%（19年高点）</li>
+                    <li>A股科技链7/30崩塌：科创50近20日-20%，半导体全线重挫</li>
+                    <li>主力资金净流出789.93亿，电子/通信行业流出居前</li>
+                    <li>人民币贬值压力上升（离岸7.21）</li>
+                    <li>苹果盘后一度跌近10%（iPad收入不及预期）</li>
+                </ul>
+            </div>
+        </div>
+        <div class="focus-box">
+            <h3>🎯 重点关注</h3>
+            <ol>
+                <li><strong>美股芯片股暴涨对A股半导体的传导效应</strong>：费城半导体+8.19%，关注今日A股半导体/科创50能否止跌企稳</li>
+                <li>美联储加息预期变化：9月概率降至59%，关注后续经济数据</li>
+                <li>苹果/亚马逊盘后表现分化，消费电子产业链影响</li>
+            </ol>
+        </div>
+    </div>
+    
+    <div class="footer">
+        ⚡ V5.0系统 | Market Intelligence Agent | 2026-07-31 08:00（08:29修正）
+    </div>
+</div>
+</body>
+</html>

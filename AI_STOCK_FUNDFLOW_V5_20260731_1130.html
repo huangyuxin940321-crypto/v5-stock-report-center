@@ -1,0 +1,667 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>资金异动扫描 | 2026-07-31 11:30</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
+    background: #f5f6f8;
+    color: #1f2328;
+    line-height: 1.6;
+    padding: 20px;
+  }
+  .container { max-width: 1200px; margin: 0 auto; }
+  /* 页头 */
+  .header {
+    background: linear-gradient(135deg, #cf222e 0%, #a40e26 100%);
+    color: #fff;
+    border-radius: 12px;
+    padding: 28px 32px;
+    margin-bottom: 20px;
+    box-shadow: 0 4px 12px rgba(207, 34, 46, 0.2);
+  }
+  .header h1 { font-size: 26px; margin-bottom: 8px; }
+  .header .meta { font-size: 14px; opacity: 0.9; }
+  .header .time-tag {
+    display: inline-block;
+    background: rgba(255,255,255,0.2);
+    padding: 4px 12px;
+    border-radius: 16px;
+    font-size: 12px;
+    margin-top: 8px;
+  }
+  /* 数据验证条 */
+  .validation-bar {
+    background: #fff8c5;
+    border-left: 4px solid #d4a72c;
+    padding: 12px 20px;
+    border-radius: 6px;
+    margin-bottom: 20px;
+    font-size: 14px;
+  }
+  .validation-bar strong { color: #9a6700; }
+  .validation-bar ul { margin-top: 6px; padding-left: 24px; }
+  /* 章节 */
+  .section {
+    background: #fff;
+    border-radius: 10px;
+    padding: 24px;
+    margin-bottom: 20px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+  }
+  .section h2 {
+    font-size: 20px;
+    color: #1f2328;
+    padding-bottom: 10px;
+    border-bottom: 2px solid #cf222e;
+    margin-bottom: 16px;
+  }
+  /* 指数卡片 */
+  .index-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 12px;
+  }
+  .index-card {
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    padding: 14px 16px;
+    background: #fafbfc;
+  }
+  .index-card .name { font-size: 13px; color: #6b7280; margin-bottom: 4px; }
+  .index-card .price { font-size: 22px; font-weight: 600; }
+  .index-card .change { font-size: 14px; font-weight: 500; margin-top: 4px; }
+  .up { color: #cf222e; }
+  .down { color: #1a7f37; }
+  .index-card .vol { font-size: 11px; color: #9ca3af; margin-top: 4px; }
+  /* 表格 */
+  table { width: 100%; border-collapse: collapse; font-size: 14px; }
+  th, td { padding: 10px 12px; text-align: left; border-bottom: 1px solid #e5e7eb; }
+  th { background: #f3f4f6; color: #4b5563; font-weight: 600; font-size: 13px; }
+  tr:hover { background: #f9fafb; }
+  .stage-tag {
+    display: inline-block;
+    padding: 2px 10px;
+    border-radius: 4px;
+    font-size: 12px;
+    font-weight: 500;
+  }
+  .stage-enter { background: #dbeafe; color: #1e40af; }
+  .stage-accelerate { background: #fed7aa; color: #c2410c; }
+  .stage-climax { background: #fee2e2; color: #b91c1c; }
+  .stage-retreat { background: #e5e7eb; color: #4b5563; }
+  .stage-slight { background: #fef3c7; color: #92400e; }
+  /* 双栏 */
+  .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+  @media (max-width: 768px) { .two-col { grid-template-columns: 1fr; } }
+  .col-in { border-top: 4px solid #cf222e; padding-top: 12px; }
+  .col-out { border-top: 4px solid #1a7f37; padding-top: 12px; }
+  /* 北向指示器 */
+  .north-box {
+    background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+    border: 1px solid #7dd3fc;
+    border-radius: 8px;
+    padding: 16px 20px;
+    margin: 12px 0;
+  }
+  .arrow {
+    display: inline-block;
+    font-size: 24px;
+    color: #cf222e;
+    vertical-align: middle;
+    margin-right: 8px;
+  }
+  .north-box .amount { font-size: 18px; font-weight: 600; }
+  /* 情绪进度条 */
+  .emotion-bar {
+    background: #e5e7eb;
+    border-radius: 8px;
+    height: 30px;
+    position: relative;
+    overflow: hidden;
+    margin: 12px 0;
+  }
+  .emotion-fill {
+    background: linear-gradient(90deg, #fbbf24 0%, #f97316 50%, #cf222e 100%);
+    height: 100%;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    padding-right: 12px;
+    color: #fff;
+    font-weight: 600;
+    font-size: 14px;
+  }
+  .emotion-stage {
+    display: flex;
+    justify-content: space-between;
+    font-size: 11px;
+    color: #6b7280;
+    margin-top: 4px;
+  }
+  /* 预警区块 */
+  .alert-box {
+    border-radius: 8px;
+    padding: 16px 20px;
+    margin: 12px 0;
+  }
+  .alert-red { background: #fef2f2; border-left: 4px solid #cf222e; }
+  .alert-yellow { background: #fffbeb; border-left: 4px solid #d4a72c; }
+  .alert-green { background: #f0fdf4; border-left: 4px solid #1a7f37; }
+  .alert-box h4 { margin-bottom: 8px; font-size: 15px; }
+  .alert-red h4 { color: #cf222e; }
+  .alert-yellow h4 { color: #9a6700; }
+  .alert-green h4 { color: #1a7f37; }
+  .alert-box ul { padding-left: 24px; }
+  .alert-box li { margin: 4px 0; font-size: 14px; }
+  .summary-quote {
+    background: #f9fafb;
+    border-left: 4px solid #6b7280;
+    padding: 12px 16px;
+    border-radius: 4px;
+    font-style: italic;
+    color: #4b5563;
+    margin: 12px 0;
+  }
+  .high-num { color: #cf222e; font-weight: 600; }
+  .low-num { color: #1a7f37; font-weight: 600; }
+  .footer {
+    text-align: center;
+    color: #9ca3af;
+    font-size: 13px;
+    margin-top: 32px;
+    padding: 16px;
+  }
+  .footer strong { color: #cf222e; }
+  .stat-row {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 12px;
+    margin-bottom: 16px;
+  }
+  .stat-cell {
+    background: #f9fafb;
+    border: 1px solid #e5e7eb;
+    border-radius: 6px;
+    padding: 10px 14px;
+    text-align: center;
+  }
+  .stat-cell .label { font-size: 12px; color: #6b7280; }
+  .stat-cell .value { font-size: 20px; font-weight: 600; margin-top: 2px; }
+  .stat-cell .value.up { color: #cf222e; }
+  .stat-cell .value.down { color: #1a7f37; }
+</style>
+</head>
+<body>
+<div class="container">
+
+<!-- 页头 -->
+<div class="header">
+  <h1>💰 资金异动扫描 | V5.0 盘中监控</h1>
+  <div class="meta">日期：2026-07-31（周五） | 扫描时点：11:30 | Smart Money + Sentiment Agent</div>
+  <div class="time-tag">⏰ 11:30 半日资金异动</div>
+</div>
+
+<!-- 数据验证条 -->
+<div class="validation-bar">
+  <strong>⚠️ 数据验证报告：</strong>通过（部分警告）
+  <ul>
+    <li>数据源1：westock-mcp（板块/资金流/热搜，实时11:25 ✓）</li>
+    <li>数据源2：tdx-connector（指数实时行情，时间11:26-11:27 ✓）</li>
+    <li>交叉验证：TDX实时指数与westock板块方向一致</li>
+    <li>时效警告：westock市场总览数据仍为2026-07-30（昨日），当日指标以TDX实时为准</li>
+    <li>北向资金接口需code参数，今日实时未取到，以龙虎榜沪深股通席位辅助</li>
+  </ul>
+</div>
+
+<!-- 一、盘中指数概览 -->
+<div class="section">
+  <h2>一、盘中指数概览（11:26-11:27 实时）</h2>
+  <div class="stat-row">
+    <div class="stat-cell">
+      <div class="label">上证指数</div>
+      <div class="value up">3832.59</div>
+      <div class="label" style="color:#cf222e;">+0.73%</div>
+    </div>
+    <div class="stat-cell">
+      <div class="label">深证成指</div>
+      <div class="value up">13685.07</div>
+      <div class="label" style="color:#cf222e;">+3.01%</div>
+    </div>
+    <div class="stat-cell">
+      <div class="label">创业板指</div>
+      <div class="value up">3399.55</div>
+      <div class="label" style="color:#cf222e;">+4.77%</div>
+    </div>
+    <div class="stat-cell">
+      <div class="label">科创50</div>
+      <div class="value up">1676.84</div>
+      <div class="label" style="color:#cf222e;">+5.57%</div>
+    </div>
+  </div>
+
+  <div class="index-grid">
+    <div class="index-card">
+      <div class="name">沪深300</div>
+      <div class="price">4600.54</div>
+      <div class="change up">+1.12%</div>
+      <div class="vol">成交5850亿</div>
+    </div>
+    <div class="index-card">
+      <div class="name">上证50</div>
+      <div class="price">2924.09</div>
+      <div class="change down">-0.08%</div>
+      <div class="vol">成交1668亿</div>
+    </div>
+    <div class="index-card">
+      <div class="name">中证500</div>
+      <div class="price">7548.08</div>
+      <div class="change up">+3.26%</div>
+      <div class="vol">成交3605亿</div>
+    </div>
+    <div class="index-card">
+      <div class="name">中证1000</div>
+      <div class="price">7134.44</div>
+      <div class="change up">+3.39%</div>
+      <div class="vol">成交3469亿</div>
+    </div>
+  </div>
+
+  <div class="summary-quote" style="margin-top:16px;">
+    <strong>关键反转信号</strong>：两市半日成交约 <span class="high-num">2.3万亿</span>，已超昨日全天2.34万亿。
+    昨日科创50-3.60%、创业板-3.97%，今日转为科创50+5.57%、创业板+4.77%——"科创双杀"转为"科技大反攻"。
+  </div>
+</div>
+
+<!-- 二、主力资金异动TOP10 -->
+<div class="section">
+  <h2>二、主力资金异动TOP10</h2>
+
+  <h3 style="margin-top:12px; color:#cf222e;">🟢 主力净流入TOP10</h3>
+  <table>
+    <thead>
+      <tr>
+        <th>排名</th>
+        <th>股票</th>
+        <th>代码</th>
+        <th>主力净流入</th>
+        <th>资金阶段</th>
+        <th>所属板块</th>
+        <th>操作建议</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><strong>1</strong></td>
+        <td><strong>兆易创新</strong></td>
+        <td>sh603986</td>
+        <td class="up"><strong>+15.91亿</strong></td>
+        <td><span class="stage-tag stage-accelerate">加速</span></td>
+        <td>半导体存储</td>
+        <td>龙头跟进</td>
+      </tr>
+      <tr>
+        <td>2</td>
+        <td>寒武纪</td>
+        <td>sh688256</td>
+        <td class="up">+0.70亿</td>
+        <td><span class="stage-tag stage-accelerate">持续流入</span></td>
+        <td>AI芯片</td>
+        <td>持有</td>
+      </tr>
+      <tr>
+        <td>3</td>
+        <td>豪威集团</td>
+        <td>sh603501</td>
+        <td class="up">+0.38亿</td>
+        <td><span class="stage-tag stage-enter">进入</span></td>
+        <td>半导体设计</td>
+        <td>关注</td>
+      </tr>
+      <tr>
+        <td>4</td>
+        <td>澜起科技</td>
+        <td>sh688008</td>
+        <td class="up">+0.21亿</td>
+        <td><span class="stage-tag stage-accelerate">加速</span></td>
+        <td>半导体</td>
+        <td>关注</td>
+      </tr>
+      <tr>
+        <td>5</td>
+        <td>紫光股份</td>
+        <td>sz000938</td>
+        <td class="up">+1.82亿（龙虎榜）</td>
+        <td><span class="stage-tag stage-enter">进入</span></td>
+        <td>AI算力</td>
+        <td>关注</td>
+      </tr>
+      <tr>
+        <td>6</td>
+        <td>东山精密</td>
+        <td>sz002384</td>
+        <td class="up">+12.20亿（3日）</td>
+        <td><span class="stage-tag stage-accelerate">加速</span></td>
+        <td>PCB</td>
+        <td>关注</td>
+      </tr>
+      <tr>
+        <td>7</td>
+        <td>飞龙股份</td>
+        <td>sz002536</td>
+        <td class="up">+4.76亿（3日）</td>
+        <td><span class="stage-tag stage-accelerate">加速</span></td>
+        <td>汽车零部件</td>
+        <td>关注</td>
+      </tr>
+      <tr>
+        <td>8</td>
+        <td>麦格米特</td>
+        <td>sz002851</td>
+        <td class="up">+9.77亿（3日）</td>
+        <td><span class="stage-tag stage-accelerate">加速</span></td>
+        <td>电源</td>
+        <td>关注</td>
+      </tr>
+      <tr>
+        <td>9</td>
+        <td>普联软件</td>
+        <td>sz300996</td>
+        <td class="up">+4.05亿</td>
+        <td><span class="stage-tag stage-enter">进入</span></td>
+        <td>软件</td>
+        <td>关注</td>
+      </tr>
+      <tr>
+        <td>10</td>
+        <td>久其软件</td>
+        <td>sz002279</td>
+        <td class="up">+3.60亿（3日）</td>
+        <td><span class="stage-tag stage-enter">进入</span></td>
+        <td>软件</td>
+        <td>关注</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h3 style="margin-top:24px; color:#1a7f37;">🔴 主力净流出TOP5</h3>
+  <table>
+    <thead>
+      <tr>
+        <th>排名</th>
+        <th>股票</th>
+        <th>代码</th>
+        <th>主力净流出</th>
+        <th>资金阶段</th>
+        <th>所属板块</th>
+        <th>操作建议</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><strong>1</strong></td>
+        <td><strong>宁德时代</strong></td>
+        <td>sz300750</td>
+        <td class="down"><strong>-9.16亿</strong></td>
+        <td><span class="stage-tag stage-retreat">撤退</span></td>
+        <td>电池</td>
+        <td>电池流出</td>
+      </tr>
+      <tr>
+        <td>2</td>
+        <td>贵州茅台</td>
+        <td>sh600519</td>
+        <td class="down">-4.40亿</td>
+        <td><span class="stage-tag stage-retreat">撤退</span></td>
+        <td>白酒</td>
+        <td>白酒流出</td>
+      </tr>
+      <tr>
+        <td>3</td>
+        <td>工商银行</td>
+        <td>sh601398</td>
+        <td class="down">-1.82亿</td>
+        <td><span class="stage-tag stage-retreat">撤退</span></td>
+        <td>银行</td>
+        <td>银行流出</td>
+      </tr>
+      <tr>
+        <td>4</td>
+        <td>中微公司</td>
+        <td>sh688012</td>
+        <td class="down">-2.45亿</td>
+        <td><span class="stage-tag stage-slight">略撤退</span></td>
+        <td>半导体设备</td>
+        <td>短线兑现</td>
+      </tr>
+      <tr>
+        <td>5</td>
+        <td>中芯国际</td>
+        <td>sh688981</td>
+        <td class="down">-1.03亿</td>
+        <td><span class="stage-tag stage-slight">略撤退</span></td>
+        <td>半导体代工</td>
+        <td>跟跌不跟涨</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="summary-quote" style="margin-top:16px;">
+    <strong>资金阶段判断标准</strong>：进入（连续3日+，单日&lt;1亿）→ 加速（单日&gt;1亿，5日累计翻正）→ 高潮（单日&gt;10亿）→ 撤退（5/10/20日累计为负且单日大额流出）
+    <br><strong>兆易创新单日主力净流入15.91亿是2026年以来罕见量级</strong>，但10/20日累计仍为净流出（-89.77亿/-325.37亿），属典型"暴跌后大资金抄底+超跌反弹"。
+  </div>
+</div>
+
+<!-- 三、板块资金轮动 -->
+<div class="section">
+  <h2>三、板块资金轮动</h2>
+  <div class="two-col">
+    <div class="col-in">
+      <h3 style="color:#cf222e; margin-bottom:12px;">🟥 加速流入TOP3</h3>
+      <table>
+        <thead>
+          <tr>
+            <th>板块</th>
+            <th>涨幅</th>
+            <th>资金阶段</th>
+            <th>代表个股</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>半导体</strong></td>
+            <td class="up">+6.13%</td>
+            <td><span class="stage-tag stage-accelerate">加速</span></td>
+            <td>兆易创新、寒武纪、澜起、海光</td>
+          </tr>
+          <tr>
+            <td><strong>AI应用/软件开发</strong></td>
+            <td class="up">+7.04%~+8.14%</td>
+            <td><span class="stage-tag stage-accelerate">加速</span></td>
+            <td>蓝色光标、中文在线、金山办公</td>
+          </tr>
+          <tr>
+            <td><strong>元件/通信设备</strong></td>
+            <td class="up">+7.18%~+7.40%</td>
+            <td><span class="stage-tag stage-accelerate">加速</span></td>
+            <td>紫光股份、东山精密</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="col-out">
+      <h3 style="color:#1a7f37; margin-bottom:12px;">🟩 加速流出TOP3</h3>
+      <table>
+        <thead>
+          <tr>
+            <th>板块</th>
+            <th>涨幅</th>
+            <th>资金阶段</th>
+            <th>代表个股</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>国有大型银行</strong></td>
+            <td class="down">-3.41%</td>
+            <td><span class="stage-tag stage-retreat">撤退</span></td>
+            <td>工商银行、农业银行</td>
+          </tr>
+          <tr>
+            <td><strong>白酒/电池</strong></td>
+            <td class="down">-1.46%/+0.19%</td>
+            <td><span class="stage-tag stage-retreat">撤退</span></td>
+            <td>贵州茅台、宁德时代</td>
+          </tr>
+          <tr>
+            <td><strong>乘用车/电力</strong></td>
+            <td class="down">-0.53%/-0.44%</td>
+            <td><span class="stage-tag stage-slight">略撤退</span></td>
+            <td>江淮汽车、长江电力</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="alert-box alert-red" style="margin-top:16px;">
+    <h4>🔥 板块轮动信号</h4>
+    <ul>
+      <li><strong>资金从防御（银行/白酒/电池/电力）大规模切换到科技（半导体/AI/元件）</strong></li>
+      <li>银行3日累计跌幅扩大（从-1%到-3.41%），白酒跟随走弱</li>
+      <li>半导体从昨日-7.84%深跌转为今日+6.13%暴涨，<strong>典型"暴跌-暴力反弹"修复行情</strong></li>
+      <li>AI应用/数字媒体/广告营销全线爆发（蓝色光标、中文在线、昆仑万维等20%涨停）</li>
+    </ul>
+  </div>
+</div>
+
+<!-- 四、北向资金方向 -->
+<div class="section">
+  <h2>四、北向资金方向</h2>
+  <div class="north-box">
+    <div>
+      <span class="arrow">→</span><span class="amount">偏流入（科技股方向）</span>
+    </div>
+    <div style="margin-top:8px; font-size:14px; color:#4b5563;">
+      <strong>沪股通席位</strong>：净买入源杰科技4.51亿、万通发展、有研硅等科技股<br>
+      <strong>深股通席位</strong>：净买入紫光股份9.50千万、东山精密、星宸科技<br>
+      <strong>重点买入板块</strong>：半导体/AI芯片（沪股通偏好科创板）
+    </div>
+  </div>
+  <div class="alert-box alert-yellow">
+    <h4>⚠️ 数据说明</h4>
+    <ul>
+      <li>今日实时北向资金接口需传code参数，本节点未取到今日净流入总额</li>
+      <li>上述判断基于<strong>龙虎榜沪深股通席位数据</strong>辅助推算</li>
+      <li><strong>正式北向数据需待15:30确认</strong></li>
+    </ul>
+  </div>
+</div>
+
+<!-- 五、情绪周期 -->
+<div class="section">
+  <h2>五、情绪周期（独立判断，截至11:30）</h2>
+
+  <div class="stat-row">
+    <div class="stat-cell">
+      <div class="label">半日涨停数（推算）</div>
+      <div class="value up">80-100</div>
+      <div class="label" style="color:#cf222e;">科技股20%涨停潮</div>
+    </div>
+    <div class="stat-cell">
+      <div class="label">半日跌停数（推算）</div>
+      <div class="value down">5-10</div>
+      <div class="label" style="color:#1a7f37;">银行/白酒少量跌停</div>
+    </div>
+    <div class="stat-cell">
+      <div class="label">连板高度</div>
+      <div class="value up">7-8板</div>
+      <div class="label">待15:30确认</div>
+    </div>
+    <div class="stat-cell">
+      <div class="label">情绪阶段</div>
+      <div class="value up" style="font-size:16px;">修复高潮初期</div>
+      <div class="label">从恐慌冰点切换</div>
+    </div>
+  </div>
+
+  <div style="margin-top:8px;">
+    <div style="display:flex; justify-content:space-between; font-size:12px; margin-bottom:4px;">
+      <span>情绪阶段：冰点 → 退潮 → <strong style="color:#cf222e;">修复高潮</strong> → 亢奋 → 顶背离</span>
+    </div>
+    <div class="emotion-bar">
+      <div class="emotion-fill" style="width:75%;">75 / 100 情绪强度</div>
+    </div>
+  </div>
+
+  <div class="summary-quote" style="margin-top:16px;">
+    <strong>情绪一句话</strong>：昨日情绪"恐慌出清-极致冰点"，今日强势修复，科技板块涨停潮、量能配合、龙头领涨，<strong>情绪从"恐慌-退潮"切换为"修复-爆发"</strong>。但需警惕"暴跌次日大阳"的获利回吐风险，半日已大涨+5%级别的科创50/创业板，追高性价比下降。
+  </div>
+</div>
+
+<!-- 六、异动预警 -->
+<div class="section">
+  <h2>六、异动预警与操作建议</h2>
+
+  <div class="alert-box alert-green">
+    <h4>🟢 可适度参与（科技修复行情，量能配合）</h4>
+    <ul>
+      <li><strong>半导体设备/存储</strong>：兆易创新、寒武纪、澜起科技 — 资金阶段：加速</li>
+      <li><strong>AI应用/数字媒体</strong>：蓝色光标、中文在线、昆仑万维 — 资金阶段：加速</li>
+      <li><strong>软件开发</strong>：金山办公、久其软件、普联软件 — 资金阶段：进入</li>
+    </ul>
+  </div>
+
+  <div class="alert-box alert-yellow">
+    <h4>🟡 谨慎追高（已大涨+5%以上）</h4>
+    <ul>
+      <li><strong>科创50/创业板指</strong>（半日已+5.57%/+4.77%）</li>
+      <li><strong>半导体ETF</strong>（+7.13%）</li>
+      <li><strong>中文在线/易点天下</strong>等20cm涨停股（次日溢价空间有限）</li>
+    </ul>
+  </div>
+
+  <div class="alert-box alert-red">
+    <h4>🔴 远离/减仓（防御板块持续撤退）</h4>
+    <ul>
+      <li><strong>国有大行</strong>：连续3日走弱，今日-3.41%</li>
+      <li><strong>白酒</strong>：贵州茅台主力净流出4.40亿</li>
+      <li><strong>电池</strong>：宁德时代主力净流出9.16亿</li>
+    </ul>
+  </div>
+
+  <h3 style="margin-top:20px; color:#1f2328;">📋 整体仓位建议</h3>
+  <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-top:8px;">
+    <div style="background:#f9fafb; padding:14px; border-radius:6px; border:1px solid #e5e7eb;">
+      <strong style="color:#cf222e;">鑫未来（中线成长）</strong>
+      <p style="margin-top:6px; font-size:14px;">维持 <strong>50-60%</strong> 仓位<br>重点加仓：半导体设备/AI芯片龙头</p>
+    </div>
+    <div style="background:#f9fafb; padding:14px; border-radius:6px; border:1px solid #e5e7eb;">
+      <strong style="color:#cf222e;">鑫准出击（短线波段）</strong>
+      <p style="margin-top:6px; font-size:14px;">可恢复至 <strong>60-70%</strong> 仓位<br>今日早盘是绝佳的低吸窗口<br>半日大涨后转为<strong>T+0不追高</strong></p>
+    </div>
+  </div>
+
+  <h3 style="margin-top:20px; color:#cf222e;">⚠️ 风险提示</h3>
+  <div class="alert-box alert-red">
+    <ul>
+      <li>暴跌次日大阳线，历史上60%概率后续1-2日震荡消化</li>
+      <li>兆易创新单日主力净流入15.91亿属"超跌反弹"性质，10/20日累计仍净流出，<strong>不可作为趋势反转信号</strong></li>
+      <li>银行/白酒持续走弱说明资金腾挪非"全面增仓"，需警惕下午资金兑现</li>
+    </ul>
+  </div>
+</div>
+
+<!-- 底栏 -->
+<div class="footer">
+  <strong>⚡ V5.0 系统</strong> | Smart Money Agent + Sentiment Agent | 2026-07-31 11:30<br>
+  <span style="font-size:11px;">数据源：westock-mcp + tdx-connector | 验证状态：通过（部分警告）</span>
+</div>
+
+</div>
+</body>
+</html>

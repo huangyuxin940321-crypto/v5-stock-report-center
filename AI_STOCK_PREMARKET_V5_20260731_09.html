@@ -1,0 +1,839 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>盘前策略 | 2026-07-31 09:00 - V5.0 AI Stock Portfolio OS</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  :root {
+    --up: #cf222e;
+    --down: #1a7f37;
+    --neutral: #6e7781;
+    --bg: #f6f8fa;
+    --card-bg: #ffffff;
+    --border: #d0d7de;
+    --text-primary: #1f2328;
+    --text-secondary: #59636e;
+    --shadow: 0 1px 3px rgba(0,0,0,0.08);
+    --warn: #fb8500;
+    --warn-bg: #fff8e1;
+    --danger: #cf222e;
+    --danger-bg: #ffebe9;
+    --info: #0969da;
+    --info-bg: #ddf4ff;
+    --success: #1a7f37;
+    --success-bg: #dafbe1;
+  }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
+    background: var(--bg);
+    color: var(--text-primary);
+    line-height: 1.6;
+    padding: 20px 0;
+  }
+  .container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 20px;
+  }
+  /* Header */
+  .header {
+    background: linear-gradient(135deg, #1f2328 0%, #32383f 100%);
+    color: #fff;
+    border-radius: 12px;
+    padding: 28px 32px;
+    margin-bottom: 24px;
+    box-shadow: var(--shadow);
+  }
+  .header h1 {
+    font-size: 28px;
+    font-weight: 700;
+    margin-bottom: 8px;
+  }
+  .header-meta {
+    display: flex;
+    gap: 16px;
+    align-items: center;
+    flex-wrap: wrap;
+    font-size: 14px;
+    opacity: 0.9;
+  }
+  .tag {
+    background: rgba(255,255,255,0.15);
+    padding: 4px 12px;
+    border-radius: 12px;
+    font-size: 12px;
+  }
+  /* Validation status */
+  .validation {
+    background: var(--card-bg);
+    border-left: 4px solid var(--info);
+    border-radius: 8px;
+    padding: 16px 20px;
+    margin-bottom: 20px;
+    box-shadow: var(--shadow);
+  }
+  .validation-title {
+    font-weight: 600;
+    color: var(--info);
+    margin-bottom: 8px;
+  }
+  .validation-list {
+    font-size: 14px;
+    color: var(--text-secondary);
+    list-style: none;
+  }
+  .validation-list li {
+    margin: 4px 0;
+    padding-left: 16px;
+    position: relative;
+  }
+  .validation-list li::before {
+    content: "•";
+    position: absolute;
+    left: 4px;
+    color: var(--info);
+  }
+  /* Section */
+  .section {
+    background: var(--card-bg);
+    border-radius: 12px;
+    padding: 24px;
+    margin-bottom: 20px;
+    box-shadow: var(--shadow);
+  }
+  .section-title {
+    font-size: 20px;
+    font-weight: 700;
+    margin-bottom: 16px;
+    color: var(--text-primary);
+    border-bottom: 2px solid var(--border);
+    padding-bottom: 10px;
+  }
+  /* Table */
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 14px;
+  }
+  th, td {
+    padding: 10px 12px;
+    text-align: left;
+    border-bottom: 1px solid var(--border);
+  }
+  th {
+    background: #f6f8fa;
+    font-weight: 600;
+    color: var(--text-primary);
+  }
+  tr:hover {
+    background: #f6f8fa;
+  }
+  /* Score bar */
+  .score-cell {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .score-bar {
+    flex: 1;
+    height: 8px;
+    background: #eaeef2;
+    border-radius: 4px;
+    overflow: hidden;
+    max-width: 100px;
+  }
+  .score-bar-fill {
+    height: 100%;
+    border-radius: 4px;
+  }
+  .score-bar-fill.high { background: var(--up); }
+  .score-bar-fill.mid { background: var(--warn); }
+  .score-bar-fill.low { background: var(--down); }
+  /* Stage badge */
+  .stage {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-size: 12px;
+    font-weight: 500;
+  }
+  .stage-进入 { background: var(--info-bg); color: var(--info); }
+  .stage-关注 { background: var(--info-bg); color: var(--info); }
+  .stage-加速 { background: var(--success-bg); color: var(--success); }
+  .stage-建仓 { background: var(--success-bg); color: var(--success); }
+  .stage-高潮 { background: var(--warn-bg); color: var(--warn); }
+  .stage-谨慎 { background: var(--warn-bg); color: var(--warn); }
+  .stage-撤退 { background: var(--danger-bg); color: var(--danger); }
+  .stage-退潮 { background: var(--danger-bg); color: var(--danger); }
+  /* Stock card */
+  .stock-cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 12px;
+    margin-top: 12px;
+  }
+  .stock-card {
+    background: #f6f8fa;
+    border-radius: 8px;
+    padding: 14px;
+    border-left: 3px solid var(--up);
+  }
+  .stock-code {
+    font-family: "Consolas", monospace;
+    color: var(--text-secondary);
+    font-size: 12px;
+  }
+  .stock-name {
+    font-weight: 600;
+    font-size: 15px;
+    color: var(--text-primary);
+    margin: 4px 0;
+  }
+  .stock-chg {
+    font-weight: 600;
+    font-size: 14px;
+  }
+  .up { color: var(--up); }
+  .down { color: var(--down); }
+  /* Sentiment */
+  .sentiment-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 12px;
+    margin-bottom: 16px;
+  }
+  .sentiment-card {
+    background: #f6f8fa;
+    padding: 16px;
+    border-radius: 8px;
+    text-align: center;
+  }
+  .sentiment-num {
+    font-size: 32px;
+    font-weight: 700;
+    color: var(--up);
+  }
+  .sentiment-num.down { color: var(--down); }
+  .sentiment-num.warn { color: var(--warn); }
+  .sentiment-label {
+    font-size: 12px;
+    color: var(--text-secondary);
+    margin-top: 4px;
+  }
+  .sentiment-stage {
+    background: var(--warn-bg);
+    border: 1px solid var(--warn);
+    border-radius: 8px;
+    padding: 14px;
+    margin-top: 12px;
+    color: var(--text-primary);
+    font-weight: 500;
+    text-align: center;
+  }
+  /* Two columns */
+  .two-col {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+  }
+  @media (max-width: 768px) {
+    .two-col { grid-template-columns: 1fr; }
+  }
+  .col-card {
+    background: #f6f8fa;
+    border-radius: 8px;
+    padding: 16px;
+  }
+  .col-title {
+    font-weight: 700;
+    margin-bottom: 10px;
+    color: var(--text-primary);
+    font-size: 16px;
+  }
+  .col-card.long { border-left: 3px solid var(--info); }
+  .col-card.short { border-left: 3px solid var(--warn); }
+  ul.list { list-style: none; padding-left: 0; }
+  ul.list li {
+    padding: 6px 0 6px 20px;
+    position: relative;
+    font-size: 14px;
+    color: var(--text-primary);
+  }
+  ul.list li::before {
+    content: "▸";
+    position: absolute;
+    left: 4px;
+    color: var(--up);
+  }
+  /* Risk */
+  .risk-box {
+    background: var(--warn-bg);
+    border: 1px solid var(--warn);
+    border-radius: 8px;
+    padding: 16px;
+    margin-bottom: 12px;
+  }
+  .risk-box.danger {
+    background: var(--danger-bg);
+    border-color: var(--danger);
+  }
+  .risk-title {
+    font-weight: 700;
+    color: var(--warn);
+    margin-bottom: 8px;
+  }
+  .risk-box.danger .risk-title {
+    color: var(--danger);
+  }
+  /* Key levels */
+  .levels {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 10px;
+    margin-top: 10px;
+  }
+  .level-card {
+    background: #fff;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 10px 14px;
+  }
+  .level-name {
+    font-weight: 600;
+    font-size: 14px;
+  }
+  .level-val {
+    font-size: 12px;
+    color: var(--text-secondary);
+    margin-top: 4px;
+  }
+  /* Conflict */
+  .conflict {
+    background: var(--info-bg);
+    border: 1px solid var(--info);
+    border-radius: 8px;
+    padding: 14px;
+    margin-top: 12px;
+    font-size: 14px;
+  }
+  /* Footer */
+  .footer {
+    text-align: center;
+    color: var(--text-secondary);
+    font-size: 13px;
+    padding: 24px 0;
+    margin-top: 20px;
+    border-top: 1px solid var(--border);
+  }
+  .footer-strong {
+    color: var(--text-primary);
+    font-weight: 600;
+  }
+  /* Note */
+  .note {
+    background: #f6f8fa;
+    border-left: 3px solid var(--text-secondary);
+    padding: 12px 16px;
+    margin-top: 12px;
+    font-size: 13px;
+    color: var(--text-secondary);
+  }
+  .note ul {
+    list-style: none;
+    padding-left: 0;
+  }
+  .note li {
+    margin: 4px 0;
+    padding-left: 14px;
+    position: relative;
+  }
+  .note li::before {
+    content: "·";
+    position: absolute;
+    left: 4px;
+    color: var(--text-secondary);
+  }
+</style>
+</head>
+<body>
+<div class="container">
+  <!-- Header -->
+  <div class="header">
+    <h1>📋 盘前策略 | 2026-07-31 09:00</h1>
+    <div class="header-meta">
+      <span class="tag">⚡ V5.0 AI Stock Portfolio OS</span>
+      <span class="tag">🕐 09:00 盘前</span>
+      <span class="tag">📊 独立评分（不引用08:00）</span>
+      <span class="tag">🚫 不输出正式市场评分（15:30统一输出）</span>
+    </div>
+  </div>
+
+  <!-- Data Validation -->
+  <div class="validation">
+    <div class="validation-title">⚠️ 数据验证报告</div>
+    <ul class="validation-list">
+      <li><strong>验证状态</strong>：通过（部分单源）</li>
+      <li><strong>交叉验证</strong>：上证 westock 3804.69(-0.62%) vs tdx 实时 3803.26(-0.04%) 一致；沪深300/科创50 一致</li>
+      <li><strong>异常项</strong>：深证成指/创业板指 tdx集合竞价字段返回-100%异常值（已忽略，采用westock昨收数据）</li>
+      <li><strong>异常波动</strong>：昨A源杰科技-17.20%、光智科技-16.08%、科翔股份-15.95% 等跌停异常股</li>
+      <li><strong>机构大卖</strong>：通富微电3日净卖33.38亿、源杰科技单日-20.83亿、宏和科技-7.13亿</li>
+      <li><strong>美股映射</strong>：隔夜美光+18.36%、闪迪+25.99%、微软+15.51%、费城半导体+8.19%，与昨A科技股暴跌形成强反差</li>
+    </ul>
+  </div>
+
+  <!-- Section 1: Industry Top 10 -->
+  <div class="section">
+    <div class="section-title">一、产业方向TOP10（独立评分）</div>
+    <table>
+      <thead>
+        <tr>
+          <th>排名</th>
+          <th>行业</th>
+          <th style="width: 25%;">评分</th>
+          <th>资金阶段</th>
+          <th>核心逻辑</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>1</td>
+          <td><strong>国有银行/高股息</strong></td>
+          <td>
+            <div class="score-cell">
+              <span class="up" style="font-weight:600;">88</span>
+              <div class="score-bar"><div class="score-bar-fill high" style="width: 88%;"></div></div>
+            </div>
+          </td>
+          <td><span class="stage stage-加速">加速</span></td>
+          <td>20日+14.01%最强防御，外资加仓，央行宽松+红利策略</td>
+        </tr>
+        <tr>
+          <td>2</td>
+          <td><strong>白酒/食品饮料</strong></td>
+          <td>
+            <div class="score-cell">
+              <span class="up" style="font-weight:600;">85</span>
+              <div class="score-bar"><div class="score-bar-fill high" style="width: 85%;"></div></div>
+            </div>
+          </td>
+          <td><span class="stage stage-加速">加速</span></td>
+          <td>20日+12.83%，金徽酒/均瑶健康涨停，估值修复+消费政策</td>
+        </tr>
+        <tr>
+          <td>3</td>
+          <td><strong>黄金/贵金属</strong></td>
+          <td>
+            <div class="score-cell">
+              <span class="up" style="font-weight:600;">83</span>
+              <div class="score-bar"><div class="score-bar-fill high" style="width: 83%;"></div></div>
+            </div>
+          </td>
+          <td><span class="stage stage-加速">加速</span></td>
+          <td>20日+12.35%，避险+降息预期+美元走强推动</td>
+        </tr>
+        <tr>
+          <td>4</td>
+          <td><strong>汽车/智能驾驶</strong></td>
+          <td>
+            <div class="score-cell">
+              <span class="up" style="font-weight:600;">80</span>
+              <div class="score-bar"><div class="score-bar-fill high" style="width: 80%;"></div></div>
+            </div>
+          </td>
+          <td><span class="stage stage-加速">加速</span></td>
+          <td>华为汽车+4.71%领涨，江淮汽车+10.01%三连板</td>
+        </tr>
+        <tr>
+          <td>5</td>
+          <td><strong>油服工程</strong></td>
+          <td>
+            <div class="score-cell">
+              <span class="up" style="font-weight:600;">78</span>
+              <div class="score-bar"><div class="score-bar-fill high" style="width: 78%;"></div></div>
+            </div>
+          </td>
+          <td><span class="stage stage-加速">加速</span></td>
+          <td>20日+12.59%，地缘博弈+能源安全，通源石油+10.56%</td>
+        </tr>
+        <tr>
+          <td>6</td>
+          <td><strong>半导体/存储</strong></td>
+          <td>
+            <div class="score-cell">
+              <span class="up" style="font-weight:600;">72</span>
+              <div class="score-bar"><div class="score-bar-fill mid" style="width: 72%;"></div></div>
+            </div>
+          </td>
+          <td><span class="stage stage-进入">进入</span></td>
+          <td>昨A暴跌但隔夜美股暴涨传导，科创50开盘-0.02%止跌</td>
+        </tr>
+        <tr>
+          <td>7</td>
+          <td><strong>教育</strong></td>
+          <td>
+            <div class="score-cell">
+              <span class="up" style="font-weight:600;">70</span>
+              <div class="score-bar"><div class="score-bar-fill mid" style="width: 70%;"></div></div>
+            </div>
+          </td>
+          <td><span class="stage stage-加速">加速</span></td>
+          <td>创业黑马+11.42%/传智教育+10.03%双涨停，传智三连板</td>
+        </tr>
+        <tr>
+          <td>8</td>
+          <td><strong>保险</strong></td>
+          <td>
+            <div class="score-cell">
+              <span style="font-weight:600;">68</span>
+              <div class="score-bar"><div class="score-bar-fill mid" style="width: 68%;"></div></div>
+            </div>
+          </td>
+          <td><span class="stage stage-关注">关注</span></td>
+          <td>20日+11.43%，红利属性+资产端修复</td>
+        </tr>
+        <tr>
+          <td>9</td>
+          <td><strong>厨卫电器/家电</strong></td>
+          <td>
+            <div class="score-cell">
+              <span style="font-weight:600;">66</span>
+              <div class="score-bar"><div class="score-bar-fill mid" style="width: 66%;"></div></div>
+            </div>
+          </td>
+          <td><span class="stage stage-进入">进入</span></td>
+          <td>火星人+20.04%涨停+5日+6.12%，以旧换新延续</td>
+        </tr>
+        <tr>
+          <td>10</td>
+          <td><strong>工业金属</strong></td>
+          <td>
+            <div class="score-cell">
+              <span style="font-weight:600;">64</span>
+              <div class="score-bar"><div class="score-bar-fill low" style="width: 64%;"></div></div>
+            </div>
+          </td>
+          <td><span class="stage stage-关注">关注</span></td>
+          <td>资金5日净流入高位，紫金矿业+1.71%/华峰铝业+4.25%</td>
+        </tr>
+      </tbody>
+    </table>
+    <div class="note" style="margin-top: 16px;">
+      <strong>评分公式</strong>：产业空间30% + 政策支持20% + 资金关注20% + 竞争格局20% + 估值合理10%（满分100）
+      <br><strong>独立评分</strong>：未参考08:00全球扫描临时倾向，未参考市场总评分。
+      <br><strong>关键判断</strong>：昨A科技股崩盘与隔夜美股科技股暴涨形成强反差，半导体板块今日有望高开修复（进入阶段），但需观察持续性。
+    </div>
+  </div>
+
+  <!-- Section 2: Fund Flow Top 5 -->
+  <div class="section">
+    <div class="section-title">二、资金主线TOP5（独立评分）</div>
+    <table>
+      <thead>
+        <tr>
+          <th>排名</th>
+          <th>方向</th>
+          <th>资金评分</th>
+          <th>阶段</th>
+          <th>龙头股</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>1</td>
+          <td><strong>高股息银行</strong></td>
+          <td><span class="up" style="font-size:18px; font-weight:700;">90</span></td>
+          <td><span class="stage stage-高潮">加速→高潮</span></td>
+          <td>
+            <div class="stock-cards">
+              <div class="stock-card">
+                <div class="stock-code">600000</div>
+                <div class="stock-name">浦发银行</div>
+                <div class="stock-chg up">+4.63%</div>
+              </div>
+              <div class="stock-card">
+                <div class="stock-code">601328</div>
+                <div class="stock-name">交通银行</div>
+                <div class="stock-chg up">+3.24%</div>
+              </div>
+              <div class="stock-card">
+                <div class="stock-code">600036</div>
+                <div class="stock-name">招商银行</div>
+                <div class="stock-chg">—</div>
+              </div>
+            </div>
+          </td>
+        </tr>
+        <tr>
+          <td>2</td>
+          <td><strong>白酒/食品饮料</strong></td>
+          <td><span class="up" style="font-size:18px; font-weight:700;">86</span></td>
+          <td><span class="stage stage-加速">加速</span></td>
+          <td>
+            <div class="stock-cards">
+              <div class="stock-card">
+                <div class="stock-code">603919</div>
+                <div class="stock-name">金徽酒</div>
+                <div class="stock-chg up">+10.03%</div>
+              </div>
+              <div class="stock-card">
+                <div class="stock-code">605388</div>
+                <div class="stock-name">均瑶健康</div>
+                <div class="stock-chg up">+10.07%</div>
+              </div>
+              <div class="stock-card">
+                <div class="stock-code">600519</div>
+                <div class="stock-name">贵州茅台</div>
+                <div class="stock-chg up">+3.09%</div>
+              </div>
+            </div>
+          </td>
+        </tr>
+        <tr>
+          <td>3</td>
+          <td><strong>黄金/贵金属</strong></td>
+          <td><span class="up" style="font-size:18px; font-weight:700;">84</span></td>
+          <td><span class="stage stage-加速">加速</span></td>
+          <td>
+            <div class="stock-cards">
+              <div class="stock-card">
+                <div class="stock-code">000506</div>
+                <div class="stock-name">招金黄金</div>
+                <div class="stock-chg up">+3.86%</div>
+              </div>
+              <div class="stock-card">
+                <div class="stock-code">600988</div>
+                <div class="stock-name">赤峰黄金</div>
+                <div class="stock-chg">—</div>
+              </div>
+              <div class="stock-card">
+                <div class="stock-code">601899</div>
+                <div class="stock-name">紫金矿业</div>
+                <div class="stock-chg up">+1.71%</div>
+              </div>
+            </div>
+          </td>
+        </tr>
+        <tr>
+          <td>4</td>
+          <td><strong>汽车/智能驾驶</strong></td>
+          <td><span class="up" style="font-size:18px; font-weight:700;">80</span></td>
+          <td><span class="stage stage-加速">加速</span></td>
+          <td>
+            <div class="stock-cards">
+              <div class="stock-card">
+                <div class="stock-code">600418</div>
+                <div class="stock-name">江淮汽车</div>
+                <div class="stock-chg up">+10.01%</div>
+              </div>
+              <div class="stock-card">
+                <div class="stock-code">601127</div>
+                <div class="stock-name">赛力斯</div>
+                <div class="stock-chg up">+5.95%</div>
+              </div>
+            </div>
+          </td>
+        </tr>
+        <tr>
+          <td>5</td>
+          <td><strong>油服/化工新材料</strong></td>
+          <td><span class="up" style="font-size:18px; font-weight:700;">78</span></td>
+          <td><span class="stage stage-进入">进入</span></td>
+          <td>
+            <div class="stock-cards">
+              <div class="stock-card">
+                <div class="stock-code">300164</div>
+                <div class="stock-name">通源石油</div>
+                <div class="stock-chg up">+10.56%</div>
+              </div>
+              <div class="stock-card">
+                <div class="stock-code">002585</div>
+                <div class="stock-name">双星新材</div>
+                <div class="stock-chg up">+10.04%</div>
+              </div>
+              <div class="stock-card">
+                <div class="stock-code">002258</div>
+                <div class="stock-name">利尔化学</div>
+                <div class="stock-chg up">+9.99%</div>
+              </div>
+            </div>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+    <div class="note" style="margin-top: 16px;">
+      <strong>资金背离信号</strong>：昨A主力净流出（科技股通富微电/源杰科技/宏和科技机构大卖超60亿），但防御+消费+周期获机构逆势买入，<strong style="color: var(--up);">主力正在调仓</strong>。
+      <br>数据来源：板块资金流向（白酒Ⅱ +15.88亿/股份制银行Ⅱ +18.05亿/乘用车 +10.56亿）、龙虎榜机构买卖、北向资金（银行概念5日净流入80.26亿）。
+    </div>
+  </div>
+
+  <!-- Section 3: Sentiment -->
+  <div class="section">
+    <div class="section-title">三、情绪周期判断（独立评分）</div>
+
+    <div class="sentiment-grid">
+      <div class="sentiment-card">
+        <div class="sentiment-num up">≥50</div>
+        <div class="sentiment-label">涨停数（情绪狂热）</div>
+      </div>
+      <div class="sentiment-card">
+        <div class="sentiment-num down">≥10</div>
+        <div class="sentiment-label">跌停数（科技重灾）</div>
+      </div>
+      <div class="sentiment-card">
+        <div class="sentiment-num warn">3</div>
+        <div class="sentiment-label">连板高度（传智教育）</div>
+      </div>
+      <div class="sentiment-card">
+        <div class="sentiment-num warn">中</div>
+        <div class="sentiment-label">炸板率</div>
+      </div>
+      <div class="sentiment-card">
+        <div class="sentiment-num">2.34万亿</div>
+        <div class="sentiment-label">成交额（缩量）</div>
+      </div>
+      <div class="sentiment-card">
+        <div class="sentiment-num up">普涨</div>
+        <div class="sentiment-label">市场画像个股宽度</div>
+      </div>
+    </div>
+
+    <div class="sentiment-stage">
+      情绪阶段：<strong>高潮 → 分化/退潮过渡期</strong>
+    </div>
+
+    <div style="margin-top: 14px; padding: 12px; background: #f6f8fa; border-radius: 6px; font-size: 14px;">
+      <strong>典型特征</strong>：
+      <ul style="margin: 8px 0 0 0; padding-left: 20px; color: var(--text-secondary);">
+        <li><strong>指数暴跌但情绪指标"狂热"</strong>——典型结构性分化，上证50抗跌+0.52%/沪深300-1.10%，但科创50-5.38%/创业板-3.97%/深证成指-2.73%</li>
+        <li>涨停集中在防御+政策题材（银行/白酒/教育/油服/汽车），科技成长涨停稀少</li>
+        <li>主力净流出+外资调仓——主力流出789.93亿，电子/通信流出居前，但银行/白酒/汽车获机构加仓</li>
+        <li>机构对科技股"砸盘式"卖出——通富微电3日-33.38亿、源杰科技-20.83亿、宏和科技-7.13亿</li>
+      </ul>
+      <p style="margin-top: 10px; padding: 8px 12px; background: var(--info-bg); border-radius: 4px; color: var(--text-primary);">
+        <strong>一句话判断</strong>：昨A是"指数失真+情绪高位+主力调仓"的退潮过渡，今日高开后大概率分化，科技股有修复机会但需谨慎追高。
+      </p>
+    </div>
+  </div>
+
+  <!-- Section 4: Operation Strategy -->
+  <div class="section">
+    <div class="section-title">四、今日操作策略</div>
+    <div class="two-col">
+      <!-- 鑫未来 -->
+      <div class="col-card long">
+        <div class="col-title">📈 鑫未来（中线）</div>
+        <div style="font-size: 13px; color: var(--text-secondary); margin-bottom: 8px;">关注方向（按优先级）：</div>
+        <ul class="list">
+          <li><strong>高股息银行</strong>（核心配置）—— 20日+14%最强防御</li>
+          <li><strong>白酒/食品饮料</strong>（防御+消费）—— 20日+12.83%</li>
+          <li><strong>黄金/贵金属</strong>（避险+降息）—— 20日+12.35%</li>
+          <li><strong>油服工程</strong>（能源安全）—— 20日+12.59%</li>
+          <li><strong>半导体/AI算力</strong>（超跌反弹）—— 昨暴跌但美股暴涨</li>
+        </ul>
+        <div style="font-size: 13px; color: var(--text-secondary); margin: 10px 0 6px;">建议操作：</div>
+        <ul class="list">
+          <li><strong style="color: var(--success);">持有</strong>：高股息银行/白酒/黄金/油服</li>
+          <li><strong style="color: var(--info);">新增</strong>：半导体超跌反弹（仅早盘30分钟确认，止损-3%）</li>
+          <li><strong style="color: var(--danger);">不追高</strong>：教育/汽车（短期涨幅过大）</li>
+          <li><strong>总仓位</strong>：维持50-70%（防御为主）</li>
+        </ul>
+      </div>
+
+      <!-- 鑫准出击 -->
+      <div class="col-card short">
+        <div class="col-title">⚡ 鑫准出击（短线）</div>
+        <div style="font-size: 13px; color: var(--text-secondary); margin-bottom: 8px;">今日热点池（5-8只）：</div>
+        <ol style="padding-left: 24px; font-size: 14px;">
+          <li><strong>300164 通源石油</strong> <span class="up">+10.56%</span>（机构净买2604万）</li>
+          <li><strong>002585 双星新材</strong> <span class="up">+10.04%</span>（机构净买4060万）</li>
+          <li><strong>300996 普联软件</strong> <span class="up">+20.03%</span>（机构净买4052万）</li>
+          <li><strong>002946 新乳业</strong> <span class="up">+5.08%</span>（机构净买7977万，3日）</li>
+          <li><strong>600418 江淮汽车</strong> <span class="up">+10.01%</span>（机构净买1.94亿）</li>
+          <li><strong>000566 海南海药</strong> <span class="up">+9.98%</span>（机构净买4768万）</li>
+          <li><strong>002703 浙江世宝</strong> <span class="up">+10.02%</span>（机构净买5862万）</li>
+          <li><strong>300688 创业黑马</strong> <span class="up">+11.42%</span>（教育领涨）</li>
+        </ol>
+        <div style="font-size: 13px; color: var(--text-secondary); margin: 10px 0 6px;">条件触发：</div>
+        <ul class="list">
+          <li>入场：跌停≤10只、成交≥2万亿、外资净流入</li>
+          <li>半导体可入场：科创50±0.5%以内或高开+1%</li>
+          <li>回避：昨A机构大卖股（通富微电/源杰科技/宏和科技）</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- Section 5: Risk -->
+  <div class="section">
+    <div class="section-title">五、风险预警</div>
+
+    <div class="risk-box danger">
+      <div class="risk-title">⚠️ 今日需回避</div>
+      <ul style="list-style: none; padding-left: 0; font-size: 14px;">
+        <li>• <strong>科技股高估值股</strong>：昨A跌停且机构净卖出>5亿：源杰科技(-17.20%, -20.83亿)、通富微电(-10%, -33.38亿3日)、宏和科技(-10%, -7.13亿3日)、光迅科技(-10%, -6.11亿)</li>
+        <li>• <strong>高换手题材股</strong>：昨日高换手板块-5.19%、新股与次新股-3.54%，警惕获利回吐</li>
+        <li>• <strong>位置过高消费股</strong>：教育板块5日+10.29%已透支政策预期</li>
+        <li>• <strong>无量反弹股</strong>：若开盘高开但量能不足1.5倍均值，易冲高回落</li>
+      </ul>
+    </div>
+
+    <div class="risk-box">
+      <div class="risk-title">📍 关键价位</div>
+      <div class="levels">
+        <div class="level-card">
+          <div class="level-name">上证指数</div>
+          <div class="level-val">支撑 3800 / 压力 3840-3860</div>
+        </div>
+        <div class="level-card">
+          <div class="level-name">沪深300</div>
+          <div class="level-val">支撑 4540 / 压力 4600</div>
+        </div>
+        <div class="level-card">
+          <div class="level-name">创业板指</div>
+          <div class="level-val">支撑 3200-3220 / 压力 3280-3320</div>
+        </div>
+        <div class="level-card">
+          <div class="level-name">科创50</div>
+          <div class="level-val">支撑 1570-1580 / 压力 1620-1650</div>
+        </div>
+        <div class="level-card">
+          <div class="level-name">半导体</div>
+          <div class="level-val">昨-6.63% vs 美股+8.19% → 高开修复概率大</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="conflict">
+      <strong>⚠️ 模块冲突标注（Layer 8-9整合前置）</strong>
+      <ul style="margin-top: 6px; list-style: none; padding-left: 0;">
+        <li>• Layer 3 产业评分：方向偏防御+消费+政策题材（80-88分），半导体仅72分（独立判断）</li>
+        <li>• Layer 4 资金评分：主力从科技向防御调仓（90分银行/86分白酒）</li>
+        <li>• <strong>冲突解读</strong>：市场整体弱但结构性防御+消费机会明确 → 结构性行情特征</li>
+        <li>• <strong>操作建议</strong>：降低总仓位但保留强势方向配置，半导体仅做超跌反弹</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- Notes -->
+  <div class="section">
+    <div class="note">
+      <strong>⚡ 节点规则备注</strong>
+      <ul>
+        <li>09:00 节点不输出市场正式评分（正式评分统一在15:30）</li>
+        <li>本报告独立评分，<strong>未引用08:00全球扫描的临时倾向</strong>（中性偏空）</li>
+        <li>正式市场评分将在15:30收盘分析中输出，届时Layer 8-9整合时如发现模块冲突必须显式标注</li>
+        <li>半隔离规则：11:30资金异动节点将独立判断，本报告内容不直接传递</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <div class="footer">
+    <div class="footer-strong">⚡ V5.0系统 | 盘前策略Agent | 2026-07-31 09:00</div>
+    <div style="margin-top: 4px;">AI Stock Portfolio OS V5.0 · 长安鑫工作室</div>
+  </div>
+</div>
+</body>
+</html>

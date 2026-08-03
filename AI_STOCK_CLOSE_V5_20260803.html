@@ -1,0 +1,522 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>V5.0 收盘分析 — 2026-08-03</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    background: #f5f7fa;
+    color: #1a1a2e;
+    line-height: 1.6;
+  }
+  .container { max-width: 1200px; margin: 0 auto; padding: 20px; }
+  .header {
+    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+    color: white;
+    padding: 30px;
+    border-radius: 12px;
+    margin-bottom: 20px;
+    text-align: center;
+  }
+  .header h1 { font-size: 28px; margin-bottom: 8px; }
+  .header .meta { opacity: 0.8; font-size: 14px; }
+
+  /* 数据验证状态条 */
+  .validation-bar {
+    background: white;
+    border-radius: 12px;
+    padding: 20px;
+    margin-bottom: 20px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+  }
+  .validation-bar h2 { font-size: 18px; margin-bottom: 12px; color: #1a1a2e; }
+  .val-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 10px; }
+  .val-item {
+    display: flex; align-items: center; gap: 8px;
+    padding: 8px 12px; border-radius: 8px; font-size: 13px;
+  }
+  .val-pass { background: #e8f5e9; color: #2e7d32; }
+  .val-warn { background: #fff3e0; color: #e65100; }
+  .val-error { background: #ffebee; color: #c62828; }
+  .val-icon { font-weight: bold; font-size: 16px; }
+
+  /* 评分Banner */
+  .score-banner {
+    background: white;
+    border-radius: 12px;
+    padding: 30px;
+    margin-bottom: 20px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+    text-align: center;
+  }
+  .score-circle {
+    width: 140px; height: 140px; border-radius: 50%;
+    margin: 0 auto 16px;
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    font-weight: bold;
+    border: 6px solid;
+  }
+  .score-value { font-size: 42px; }
+  .score-label { font-size: 13px; }
+  .score-yellow { border-color: #f9a825; color: #f9a825; }
+  .score-green { border-color: #43a047; color: #43a047; }
+  .score-red { border-color: #e53935; color: #e53935; }
+  .score-orange { border-color: #fb8c00; color: #fb8c00; }
+  .score-desc { font-size: 18px; color: #555; margin-bottom: 8px; }
+  .score-position { font-size: 24px; color: #1a1a2e; font-weight: bold; }
+
+  /* 指数卡片 */
+  .index-cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+    gap: 12px;
+    margin-bottom: 20px;
+  }
+  .index-card {
+    background: white;
+    border-radius: 12px;
+    padding: 16px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+    text-align: center;
+  }
+  .index-name { font-size: 13px; color: #888; margin-bottom: 4px; }
+  .index-price { font-size: 22px; font-weight: bold; color: #1a1a2e; }
+  .index-change { font-size: 14px; font-weight: bold; margin-top: 4px; }
+  .up { color: #e53935; }
+  .down { color: #43a047; }
+
+  /* 板块/概念区块 */
+  .section {
+    background: white;
+    border-radius: 12px;
+    padding: 24px;
+    margin-bottom: 20px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+  }
+  .section h2 {
+    font-size: 20px;
+    margin-bottom: 16px;
+    padding-bottom: 10px;
+    border-bottom: 2px solid #eee;
+  }
+  .section h3 { font-size: 16px; margin: 16px 0 10px; color: #444; }
+
+  /* 表格 */
+  table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  th, td { padding: 10px 8px; text-align: left; border-bottom: 1px solid #f0f0f0; }
+  th { background: #f8f9fa; font-weight: 600; color: #555; }
+  tr:hover { background: #f8f9fa; }
+
+  /* 评级色标 */
+  .badge {
+    display: inline-block;
+    padding: 3px 10px;
+    border-radius: 12px;
+    font-size: 12px;
+    font-weight: bold;
+  }
+  .badge-splusplus { background: #ffd700; color: #333; }
+  .badge-s { background: #ff9800; color: white; }
+  .badge-a { background: #4caf50; color: white; }
+  .badge-b { background: #2196f3; color: white; }
+  .badge-c { background: #9e9e9e; color: white; }
+
+  /* 资金阶段 */
+  .phase {
+    display: inline-block;
+    padding: 3px 10px;
+    border-radius: 12px;
+    font-size: 12px;
+    font-weight: bold;
+  }
+  .phase-enter { background: #e3f2fd; color: #1565c0; }
+  .phase-accel { background: #fff3e0; color: #e65100; }
+  .phase-peak { background: #ffebee; color: #c62828; }
+  .phase-exit { background: #f3e5f5; color: #6a1b9a; }
+  .phase-cautious { background: #e8f5e9; color: #2e7d32; }
+
+  /* 模块冲突标注 */
+  .conflict-box {
+    background: linear-gradient(135deg, #fff8e1 0%, #ffecb3 100%);
+    border-left: 4px solid #f9a825;
+    padding: 20px;
+    border-radius: 8px;
+    margin: 16px 0;
+  }
+  .conflict-box h4 { color: #e65100; margin-bottom: 10px; }
+  .conflict-box ul { margin-left: 20px; }
+  .conflict-box li { margin-bottom: 6px; }
+
+  /* 组合双栏 */
+  .portfolio-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+  }
+  .portfolio-card {
+    background: #f8f9fa;
+    border-radius: 10px;
+    padding: 20px;
+  }
+  .portfolio-card h3 {
+    font-size: 16px;
+    margin-bottom: 12px;
+    color: #1a1a2e;
+  }
+  .portfolio-card .tag {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-size: 11px;
+    background: #1a1a2e;
+    color: white;
+    margin-bottom: 10px;
+  }
+
+  /* 风险区块 */
+  .risk-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 12px;
+  }
+  .risk-card {
+    padding: 16px;
+    border-radius: 10px;
+    font-size: 13px;
+  }
+  .risk-red { background: #ffebee; border-left: 4px solid #e53935; }
+  .risk-yellow { background: #fff8e1; border-left: 4px solid #f9a825; }
+  .risk-green { background: #e8f5e9; border-left: 4px solid #43a047; }
+  .risk-title { font-weight: bold; margin-bottom: 6px; }
+
+  /* 市场数据 */
+  .data-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 12px;
+  }
+  .data-item {
+    background: #f8f9fa;
+    padding: 14px;
+    border-radius: 8px;
+    text-align: center;
+  }
+  .data-label { font-size: 12px; color: #888; }
+  .data-value { font-size: 20px; font-weight: bold; color: #1a1a2e; margin-top: 4px; }
+
+  @media (max-width: 768px) {
+    .portfolio-grid { grid-template-columns: 1fr; }
+    .index-cards { grid-template-columns: repeat(2, 1fr); }
+  }
+</style>
+</head>
+<body>
+<div class="container">
+
+  <!-- Header -->
+  <div class="header">
+    <h1>AI智能股票组合主理人系统 V5.0</h1>
+    <div class="meta">收盘完整分析报告 | 2026-08-03（周一）15:30 | 长安鑫工作室</div>
+  </div>
+
+  <!-- 数据验证状态条 -->
+  <div class="validation-bar">
+    <h2>⚠️ 数据验证报告</h2>
+    <div class="val-grid">
+      <div class="val-item val-pass"><span class="val-icon">✓</span> 交叉验证：上证指数 westock vs tdx 差异0.00%</div>
+      <div class="val-item val-pass"><span class="val-icon">✓</span> 交叉验证：沪深300 westock vs tdx 差异0.00%</div>
+      <div class="val-item val-pass"><span class="val-icon">✓</span> 交叉验证：创业板指 westock vs tdx 差异0.00%</div>
+      <div class="val-item val-pass"><span class="val-icon">✓</span> 交叉验证：科创50 westock vs tdx 差异0.00%</div>
+      <div class="val-item val-warn"><span class="val-icon">!</span> 异常检测：科创50跌-5.08%，半导体-5.84%</div>
+      <div class="val-item val-warn"><span class="val-icon">!</span> 异常检测：成交额19974亿，较周五缩量21.4%</div>
+      <div class="val-item val-warn"><span class="val-icon">!</span> 时效警告：market_overview返回T-1数据(7/31)</div>
+      <div class="val-item val-pass"><span class="val-icon">✓</span> 逻辑校验：涨跌分布与指数表现逻辑自洽</div>
+    </div>
+  </div>
+
+  <!-- 评分Banner -->
+  <div class="score-banner">
+    <div class="score-circle score-yellow">
+      <div class="score-value">56</div>
+      <div class="score-label">MARKET</div>
+    </div>
+    <div class="score-desc">市场状态：震荡偏弱（结构性分化）</div>
+    <div class="score-position">建议仓位：30% - 50%</div>
+    <div style="margin-top:12px;font-size:13px;color:#888;">较昨日55分微升1分 | 风险市场边缘 | 全天唯一正式评分</div>
+  </div>
+
+  <!-- 指数卡片 -->
+  <div class="index-cards">
+    <div class="index-card">
+      <div class="index-name">上证指数</div>
+      <div class="index-price">3809.66</div>
+      <div class="index-change down">-0.59%</div>
+    </div>
+    <div class="index-card">
+      <div class="index-name">沪深300</div>
+      <div class="index-price">4543.18</div>
+      <div class="index-change down">-0.98%</div>
+    </div>
+    <div class="index-card">
+      <div class="index-name">深证成指</div>
+      <div class="index-price">13448.29</div>
+      <div class="index-change down">-0.96%</div>
+    </div>
+    <div class="index-card">
+      <div class="index-name">创业板指</div>
+      <div class="index-price">3302.55</div>
+      <div class="index-change down">-1.24%</div>
+    </div>
+    <div class="index-card">
+      <div class="index-name">科创50</div>
+      <div class="index-price">1552.89</div>
+      <div class="index-change down">-5.08%</div>
+    </div>
+    <div class="index-card">
+      <div class="index-name">中证500</div>
+      <div class="index-price">7414.52</div>
+      <div class="index-change down">-1.06%</div>
+    </div>
+  </div>
+
+  <!-- 涨跌分布 -->
+  <div class="section">
+    <h2>📊 市场宽度</h2>
+    <div class="data-grid">
+      <div class="data-item">
+        <div class="data-label">上涨家数</div>
+        <div class="data-value" style="color:#e53935;">4005</div>
+      </div>
+      <div class="data-item">
+        <div class="data-label">下跌家数</div>
+        <div class="data-value" style="color:#43a047;">1466</div>
+      </div>
+      <div class="data-item">
+        <div class="data-label">涨停</div>
+        <div class="data-value" style="color:#e53935;">83</div>
+      </div>
+      <div class="data-item">
+        <div class="data-label">跌停</div>
+        <div class="data-value" style="color:#43a047;">9</div>
+      </div>
+      <div class="data-item">
+        <div class="data-label">成交额</div>
+        <div class="data-value">19974亿</div>
+      </div>
+      <div class="data-item">
+        <div class="data-label">上涨占比</div>
+        <div class="data-value" style="color:#e53935;">72%</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 产业方向TOP10 -->
+  <div class="section">
+    <h2>🎯 核心产业方向 TOP10</h2>
+    <table>
+      <tr>
+        <th>排名</th><th>产业方向</th><th>产业评分</th><th>核心逻辑</th><th>资金阶段</th>
+      </tr>
+      <tr><td>1</td><td><b>AI应用/广告营销</b></td><td>85</td><td>机构大买昆仑万维/蓝色光标，AI商业化加速</td><td><span class="phase phase-accel">加速</span></td></tr>
+      <tr><td>2</td><td><b>核电/电网设备</b></td><td>82</td><td>政策密集支持，电网资金流入+16亿</td><td><span class="phase phase-enter">进入</span></td></tr>
+      <tr><td>3</td><td><b>商业航天/航天装备</b></td><td>80</td><td>中核工业集团概念涨4.93%，政策+事件催化</td><td><span class="phase phase-enter">进入</span></td></tr>
+      <tr><td>4</td><td><b>风电设备</b></td><td>78</td><td>超跌反弹，新能源政策预期</td><td><span class="phase phase-enter">进入</span></td></tr>
+      <tr><td>5</td><td><b>电机/机器人</b></td><td>75</td><td>宇树科技概念活跃，产业趋势明确</td><td><span class="phase phase-enter">关注</span></td></tr>
+      <tr><td>6</td><td>白酒</td><td>72</td><td>20日涨11.35%，防御属性+消费复苏</td><td><span class="phase phase-cautious">谨慎</span></td></tr>
+      <tr><td>7</td><td>银行</td><td>70</td><td>国有大行20日涨10.27%，高股息防御</td><td><span class="phase phase-cautious">谨慎</span></td></tr>
+      <tr><td>8</td><td>教育</td><td>68</td><td>5日涨14.80%，传智教育5连板</td><td><span class="phase phase-peak">高潮</span></td></tr>
+      <tr><td>9</td><td>游戏</td><td>66</td><td>5日涨10.39%，AI游戏催化</td><td><span class="phase phase-enter">关注</span></td></tr>
+      <tr><td>10</td><td>电力</td><td>65</td><td>资金流入+14.2亿，夏季用电高峰</td><td><span class="phase phase-enter">进入</span></td></tr>
+    </table>
+  </div>
+
+  <!-- 综合评分TOP30 -->
+  <div class="section">
+    <h2>🏆 综合评分 TOP30</h2>
+    <table>
+      <tr>
+        <th>排名</th><th>代码</th><th>名称</th><th>评分</th><th>评级</th><th>操作</th><th>资金阶段</th><th>行业</th>
+      </tr>
+      <tr><td>1</td><td>sz300418</td><td>昆仑万维</td><td>102</td><td><span class="badge badge-s">S</span></td><td>关注</td><td><span class="phase phase-accel">加速</span></td><td>AI应用</td></tr>
+      <tr><td>2</td><td>sz300058</td><td>蓝色光标</td><td>98</td><td><span class="badge badge-s">S</span></td><td>关注</td><td><span class="phase phase-accel">加速</span></td><td>AI营销</td></tr>
+      <tr><td>3</td><td>sh600438</td><td>通威股份</td><td>95</td><td><span class="badge badge-s">S</span></td><td>回踩建仓</td><td><span class="phase phase-enter">进入</span></td><td>光伏</td></tr>
+      <tr><td>4</td><td>sz301082</td><td>久盛电气</td><td>93</td><td><span class="badge badge-s">S</span></td><td>关注</td><td><span class="phase phase-accel">加速</span></td><td>核电/电网</td></tr>
+      <tr><td>5</td><td>sz300364</td><td>中文在线</td><td>92</td><td><span class="badge badge-s">S</span></td><td>关注</td><td><span class="phase phase-accel">加速</span></td><td>AI应用</td></tr>
+      <tr><td>6</td><td>sz002851</td><td>麦格米特</td><td>90</td><td><span class="badge badge-a">A</span></td><td>回踩建仓</td><td><span class="phase phase-accel">加速</span></td><td>电力电子</td></tr>
+      <tr><td>7</td><td>sh601611</td><td>中国核建</td><td>88</td><td><span class="badge badge-a">A</span></td><td>回踩建仓</td><td><span class="phase phase-enter">进入</span></td><td>核电</td></tr>
+      <tr><td>8</td><td>sz301171</td><td>易点天下</td><td>87</td><td><span class="badge badge-a">A</span></td><td>关注</td><td><span class="phase phase-accel">加速</span></td><td>AI营销</td></tr>
+      <tr><td>9</td><td>sh600580</td><td>卧龙电驱</td><td>86</td><td><span class="badge badge-a">A</span></td><td>持有</td><td><span class="phase phase-enter">进入</span></td><td>电机</td></tr>
+      <tr><td>10</td><td>sz002176</td><td>江特电机</td><td>85</td><td><span class="badge badge-a">A</span></td><td>关注</td><td><span class="phase phase-accel">加速</span></td><td>电机</td></tr>
+      <tr><td>11</td><td>sh688523</td><td>航天环宇</td><td>84</td><td><span class="badge badge-a">A</span></td><td>关注</td><td><span class="phase phase-enter">进入</span></td><td>航天装备</td></tr>
+      <tr><td>12</td><td>sz300308</td><td>中际旭创</td><td>83</td><td><span class="badge badge-a">A</span></td><td>持有</td><td><span class="phase phase-exit">撤退</span></td><td>CPO</td></tr>
+      <tr><td>13</td><td>sz002354</td><td>天娱数科</td><td>82</td><td><span class="badge badge-a">A</span></td><td>关注</td><td><span class="phase phase-accel">加速</span></td><td>AI营销</td></tr>
+      <tr><td>14</td><td>sz301040</td><td>中环海陆</td><td>81</td><td><span class="badge badge-a">A</span></td><td>关注</td><td><span class="phase phase-enter">进入</span></td><td>风电设备</td></tr>
+      <tr><td>15</td><td>sh600468</td><td>百利电气</td><td>80</td><td><span class="badge badge-a">A</span></td><td>关注</td><td><span class="phase phase-enter">进入</span></td><td>核电设备</td></tr>
+      <tr><td>16</td><td>sz002792</td><td>通宇通讯</td><td>79</td><td><span class="badge badge-a">A</span></td><td>关注</td><td><span class="phase phase-enter">进入</span></td><td>卫星通信</td></tr>
+      <tr><td>17</td><td>sh605179</td><td>一鸣食品</td><td>78</td><td><span class="badge badge-a">A</span></td><td>减仓</td><td><span class="phase phase-peak">高潮</span></td><td>食品饮料</td></tr>
+      <tr><td>18</td><td>sz003032</td><td>传智教育</td><td>77</td><td><span class="badge badge-a">A</span></td><td>减仓</td><td><span class="phase phase-peak">高潮</span></td><td>教育</td></tr>
+      <tr><td>19</td><td>sz301596</td><td>瑞迪智驱</td><td>76</td><td><span class="badge badge-a">A</span></td><td>关注</td><td><span class="phase phase-accel">加速</span></td><td>机器人</td></tr>
+      <tr><td>20</td><td>sh601012</td><td>隆基绿能</td><td>75</td><td><span class="badge badge-a">A</span></td><td>持有</td><td><span class="phase phase-enter">进入</span></td><td>光伏</td></tr>
+      <tr><td>21</td><td>sz002646</td><td>天佑德酒</td><td>74</td><td><span class="badge badge-b">B</span></td><td>持有</td><td><span class="phase phase-cautious">谨慎</span></td><td>白酒</td></tr>
+      <tr><td>22</td><td>sh601328</td><td>交通银行</td><td>73</td><td><span class="badge badge-b">B</span></td><td>持有</td><td><span class="phase phase-cautious">谨慎</span></td><td>银行</td></tr>
+      <tr><td>23</td><td>sz301137</td><td>哈焊华通</td><td>72</td><td><span class="badge badge-b">B</span></td><td>关注</td><td><span class="phase phase-enter">进入</span></td><td>高端合金</td></tr>
+      <tr><td>24</td><td>sz000725</td><td>京东方A</td><td>71</td><td><span class="badge badge-b">B</span></td><td>持有</td><td><span class="phase phase-exit">撤退</span></td><td>面板</td></tr>
+      <tr><td>25</td><td>sh600036</td><td>招商银行</td><td>70</td><td><span class="badge badge-b">B</span></td><td>持有</td><td><span class="phase phase-cautious">谨慎</span></td><td>银行</td></tr>
+      <tr><td>26</td><td>sz002882</td><td>金龙羽</td><td>69</td><td><span class="badge badge-b">B</span></td><td>关注</td><td><span class="phase phase-enter">进入</span></td><td>固态电池</td></tr>
+      <tr><td>27</td><td>sh600396</td><td>华电辽能</td><td>68</td><td><span class="badge badge-b">B</span></td><td>关注</td><td><span class="phase phase-enter">进入</span></td><td>电力</td></tr>
+      <tr><td>28</td><td>sh600584</td><td>长电科技</td><td>66</td><td><span class="badge badge-b">B</span></td><td>减仓</td><td><span class="phase phase-exit">撤退</span></td><td>半导体封测</td></tr>
+      <tr><td>29</td><td>sh603986</td><td>兆易创新</td><td>65</td><td><span class="badge badge-b">B</span></td><td>减仓</td><td><span class="phase phase-exit">撤退</span></td><td>半导体存储</td></tr>
+      <tr><td>30</td><td>sz001309</td><td>德明利</td><td>64</td><td><span class="badge badge-b">B</span></td><td>清仓</td><td><span class="phase phase-exit">撤退</span></td><td>存储</td></tr>
+    </table>
+  </div>
+
+  <!-- 模块冲突标注 -->
+  <div class="section">
+    <h2>⚠️ 模块冲突标注</h2>
+    <div class="conflict-box">
+      <h4>冲突发现：市场整体弱 vs 部分产业方向强</h4>
+      <ul>
+        <li><b>Layer 1 市场评分：</b>56分（偏弱）— 六大指数全线收跌，科创50暴跌-5.08%</li>
+        <li><b>Layer 3 产业评分：</b>AI应用85分（偏多）、核电82分（偏多）— 新方向崛起</li>
+        <li><b>Layer 4 资金评分：</b>AI应用85分（加速）、核电80分（进入）— 资金抢跑新方向</li>
+        <li><b>Layer 7 情绪评分：</b>55分（分化/退潮初期）— 涨停83只但指数跌，情绪分化</li>
+      </ul>
+      <p style="margin-top:10px;"><b>冲突解读：</b>大盘处于"指数弱、个股活"的结构性行情，科技主线（半导体）崩塌但AI应用/核电等新方向活跃。市场处于"新旧切换"期，资金从旧主线撤离、向新方向抢跑，但信心不足导致量能萎缩。</p>
+      <p><b>操作建议：</b>降低总仓位至30-50%，清仓半导体相关持仓，保留AI应用/核电等强势方向轻仓配置，短线操作快进快出。</p>
+    </div>
+  </div>
+
+  <!-- 组合双栏 -->
+  <div class="section">
+    <h2>💼 组合管理建议</h2>
+    <div class="portfolio-grid">
+      <div class="portfolio-card">
+        <span class="tag">鑫未来 · 中线3月-2年</span>
+        <h3>建议仓位：35%-45%</h3>
+        <table>
+          <tr><th>股票</th><th>仓位</th><th>操作</th></tr>
+          <tr><td>中际旭创</td><td>5%-8%</td><td>持有</td></tr>
+          <tr><td>通威股份</td><td>5%-8%</td><td>新增</td></tr>
+          <tr><td>卧龙电驱</td><td>4%-6%</td><td>持有</td></tr>
+          <tr><td>中国核建</td><td>3%-5%</td><td>新增</td></tr>
+          <tr><td>隆基绿能</td><td>3%-5%</td><td>持有</td></tr>
+        </table>
+        <p style="margin-top:10px;font-size:12px;color:#888;">调出：兆易创新（存储崩盘，清仓）；长电科技（资金撤退，减仓）</p>
+      </div>
+      <div class="portfolio-card">
+        <span class="tag">鑫准出击 · 短线5-20日</span>
+        <h3>建议仓位：30%-40%</h3>
+        <table>
+          <tr><th>股票</th><th>仓位</th><th>操作</th></tr>
+          <tr><td>昆仑万维</td><td>5%-8%</td><td>新建</td></tr>
+          <tr><td>蓝色光标</td><td>4%-6%</td><td>新建</td></tr>
+          <tr><td>久盛电气</td><td>3%-5%</td><td>新建</td></tr>
+          <tr><td>麦格米特</td><td>3%-5%</td><td>新建</td></tr>
+          <tr><td>一鸣食品</td><td>2%-3%</td><td>减仓</td></tr>
+        </table>
+        <p style="margin-top:10px;font-size:12px;color:#888;">纪律：单票止损-8%，盈利10%减仓一半，20%清仓</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- 风险控制 -->
+  <div class="section">
+    <h2>🛡️ 风险委员会扫描</h2>
+    <div style="text-align:center;margin-bottom:16px;">
+      <span style="font-size:24px;font-weight:bold;color:#f9a825;">风险等级：黄色预警</span>
+    </div>
+    <div class="risk-grid">
+      <div class="risk-card risk-yellow">
+        <div class="risk-title">🟡 市场风险</div>
+        <div>科创50暴跌-5.08%，科技主线持续崩塌，大盘技术破位。建议降低总仓位，回避科技股。</div>
+      </div>
+      <div class="risk-card risk-red">
+        <div class="risk-title">🔴 行业集中风险</div>
+        <div>半导体板块-5.84%，5日累计-17.50%，资金连续大幅流出。建议清仓半导体相关持仓。</div>
+      </div>
+      <div class="risk-card risk-yellow">
+        <div class="risk-title">🟡 个股风险</div>
+        <div>兆易创新跌停、德明利-9.56%、中国巨石-9.99%。止损持仓科技股，控制单票仓位。</div>
+      </div>
+      <div class="risk-card risk-green">
+        <div class="risk-title">🟢 情绪过热风险</div>
+        <div>涨停83只，连板股存在（一鸣食品、传智教育），但分化明显。连板股减仓锁定利润。</div>
+      </div>
+      <div class="risk-card risk-yellow">
+        <div class="risk-title">🟡 外围风险</div>
+        <div>美债收益率飙升至4.74%，伊朗局势反复，日韩汇市波动。关注美联储政策变化。</div>
+      </div>
+      <div class="risk-card risk-yellow">
+        <div class="risk-title">🟡 量能风险</div>
+        <div>成交额较周五缩量21%，反弹持续性存疑。等待放量确认（25000亿+）。</div>
+      </div>
+    </div>
+    <div style="margin-top:16px;padding:14px;background:#ffebee;border-radius:8px;font-size:13px;">
+      <b>🔴 最大单一风险：全球存储/芯片崩盘传导</b><br>
+      美股存储板块7月暴跌：铠侠-53%、闪迪-46%、美光-28%。A股传导：兆易创新跌停、德明利-9.56%、通富微电-9.50%。风险尚未完全释放，短期回避所有存储/半导体/芯片概念股。
+    </div>
+  </div>
+
+  <!-- 持仓调整 -->
+  <div class="section">
+    <h2>🔄 持仓调整建议</h2>
+    <table>
+      <tr><th>持仓类型</th><th>调整建议</th><th>说明</th></tr>
+      <tr><td>半导体/存储/CPO</td><td><b style="color:#c62828;">清仓/大幅减仓</b></td><td>全球存储崩盘传导，科创50暴跌，机构大幅流出</td></tr>
+      <tr><td>白酒/银行</td><td>持有/减仓</td><td>防御属性仍在，但今日银行走弱，持仓降至标配</td></tr>
+      <tr><td>AI应用/广告营销</td><td><b style="color:#2e7d32;">加仓/新建</b></td><td>机构大买方向，新主线萌芽，可轻仓参与</td></tr>
+      <tr><td>核电/电网</td><td><b style="color:#2e7d32;">新建</b></td><td>政策催化+资金流入，中长期产业方向</td></tr>
+      <tr><td>光伏/新能源</td><td>持有</td><td>通威涨停，超跌反弹，持有观察</td></tr>
+      <tr><td>机器人/电机</td><td>持有</td><td>产业趋势明确，卧龙电驱资金流入</td></tr>
+    </table>
+  </div>
+
+  <!-- 全球市场 -->
+  <div class="section">
+    <h2>🌍 全球市场参考（2026-07-31）</h2>
+    <div class="index-cards">
+      <div class="index-card">
+        <div class="index-name">道琼斯</div>
+        <div class="index-price">52485.03</div>
+        <div class="index-change up">+0.53%</div>
+      </div>
+      <div class="index-card">
+        <div class="index-name">纳斯达克</div>
+        <div class="index-price">25373.85</div>
+        <div class="index-change up">+1.00%</div>
+      </div>
+      <div class="index-card">
+        <div class="index-name">标普500</div>
+        <div class="index-price">7489.72</div>
+        <div class="index-change up">+0.70%</div>
+      </div>
+      <div class="index-card">
+        <div class="index-name">10Y美债收益率</div>
+        <div class="index-price">4.74%</div>
+        <div class="index-change up">+6bp</div>
+      </div>
+      <div class="index-card">
+        <div class="index-name">现货黄金</div>
+        <div class="index-price">4051.30</div>
+        <div class="index-change down">-1.27%</div>
+      </div>
+      <div class="index-card">
+        <div class="index-name">WTI原油</div>
+        <div class="index-price">84.67</div>
+        <div class="index-change up">+1.29%</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <div style="text-align:center;padding:20px;color:#888;font-size:12px;">
+    <p>报告生成时间：2026-08-03 15:30 | 数据来源：westock-mcp / tdx-connector / WebSearch</p>
+    <p>长安鑫工作室 | AI智能股票组合主理人系统 V5.0 | 下次更新：20:00 深度复盘</p>
+  </div>
+
+</div>
+</body>
+</html>

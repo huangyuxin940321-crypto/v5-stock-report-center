@@ -1,0 +1,449 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>V5.0 收盘分析 — 2026年8月5日</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif; background: #0f1117; color: #d1d4dc; line-height: 1.6; }
+  .container { max-width: 1200px; margin: 0 auto; padding: 20px; }
+  
+  /* Header */
+  .header { text-align: center; padding: 30px 0 20px; border-bottom: 2px solid #2a2e39; margin-bottom: 20px; }
+  .header h1 { font-size: 28px; color: #fff; margin-bottom: 8px; }
+  .header .meta { color: #787b86; font-size: 14px; }
+  .header .meta span { margin: 0 10px; }
+  
+  /* Data Validation Bar */
+  .validation-bar { background: #1a1d24; border: 1px solid #2a2e39; border-radius: 8px; padding: 12px 16px; margin-bottom: 20px; display: flex; align-items: center; gap: 16px; flex-wrap: wrap; }
+  .validation-item { display: flex; align-items: center; gap: 6px; font-size: 13px; }
+  .validation-item .icon { font-size: 16px; }
+  .validation-pass { color: #26a69a; }
+  .validation-warn { color: #ffb74d; }
+  .validation-fail { color: #ef5350; }
+  
+  /* Score Banner */
+  .score-banner { background: linear-gradient(135deg, #1a2a3a, #1a3a2a); border: 2px solid #2a4a3a; border-radius: 12px; padding: 24px; margin-bottom: 20px; text-align: center; }
+  .score-banner .score { font-size: 56px; font-weight: bold; color: #4caf50; line-height: 1; }
+  .score-banner .score-label { font-size: 14px; color: #787b86; margin-top: 8px; }
+  .score-banner .score-detail { display: flex; justify-content: center; gap: 30px; margin-top: 16px; flex-wrap: wrap; }
+  .score-banner .score-detail div { font-size: 14px; }
+  .score-banner .score-detail span { color: #4caf50; font-weight: bold; }
+  
+  /* Index Cards */
+  .index-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 12px; margin-bottom: 20px; }
+  .index-card { background: #1a1d24; border: 1px solid #2a2e39; border-radius: 8px; padding: 14px; text-align: center; }
+  .index-card .name { font-size: 13px; color: #787b86; margin-bottom: 6px; }
+  .index-card .price { font-size: 20px; font-weight: bold; color: #fff; margin-bottom: 4px; }
+  .index-card .change { font-size: 14px; font-weight: bold; }
+  .index-card .change.red { color: #ef5350; }
+  .index-card .change.green { color: #26a69a; }
+  .index-card .vol { font-size: 11px; color: #787b86; margin-top: 4px; }
+  
+  /* Section */
+  .section { background: #1a1d24; border: 1px solid #2a2e39; border-radius: 8px; padding: 20px; margin-bottom: 20px; }
+  .section h2 { font-size: 18px; color: #fff; margin-bottom: 16px; padding-bottom: 8px; border-bottom: 1px solid #2a2e39; }
+  .section h3 { font-size: 15px; color: #d1d4dc; margin: 16px 0 8px; }
+  
+  /* Tables */
+  table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  th { background: #2a2e39; color: #787b86; padding: 8px 10px; text-align: left; font-weight: 500; white-space: nowrap; }
+  td { padding: 8px 10px; border-bottom: 1px solid #2a2e39; }
+  tr:hover { background: #1e222d; }
+  .red { color: #ef5350; }
+  .green { color: #26a69a; }
+  .yellow { color: #ffb74d; }
+  
+  /* Rating Badges */
+  .badge { display: inline-block; padding: 2px 8px; border-radius: 4px; font-size: 11px; font-weight: bold; }
+  .badge-s-plus { background: #d32f2f; color: #fff; }
+  .badge-s { background: #e53935; color: #fff; }
+  .badge-a { background: #fb8c00; color: #fff; }
+  .badge-b { background: #43a047; color: #fff; }
+  .badge-c { background: #757575; color: #fff; }
+  
+  /* Fund Stage */
+  .stage { display: inline-block; padding: 2px 8px; border-radius: 4px; font-size: 11px; }
+  .stage-enter { background: #1b5e20; color: #a5d6a7; }
+  .stage-accel { background: #e65100; color: #ffcc80; }
+  .stage-peak { background: #b71c1c; color: #ef9a9a; }
+  .stage-exit { background: #4a148c; color: #ce93d8; }
+  
+  /* Conflict Box */
+  .conflict-box { background: #2a1a1a; border: 2px solid #ef5350; border-radius: 8px; padding: 16px; margin-bottom: 16px; }
+  .conflict-box h3 { color: #ef5350; margin-top: 0; }
+  .conflict-box ul { list-style: none; padding-left: 0; }
+  .conflict-box li { padding: 4px 0; font-size: 13px; }
+  
+  /* Dual Column */
+  .dual-col { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  @media (max-width: 768px) { .dual-col { grid-template-columns: 1fr; } }
+  
+  /* Risk Block */
+  .risk-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 12px; }
+  .risk-card { border-radius: 8px; padding: 12px; border-left: 4px solid; }
+  .risk-red { background: #2a1515; border-color: #ef5350; }
+  .risk-yellow { background: #2a2515; border-color: #ffb74d; }
+  .risk-green { background: #152a15; border-color: #26a69a; }
+  .risk-card .title { font-weight: bold; margin-bottom: 4px; }
+  .risk-card .desc { font-size: 12px; color: #787b86; }
+  
+  /* Global Market */
+  .global-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 10px; margin-bottom: 16px; }
+  .global-card { background: #1e222d; border-radius: 6px; padding: 10px; text-align: center; }
+  .global-card .name { font-size: 11px; color: #787b86; }
+  .global-card .val { font-size: 16px; font-weight: bold; color: #fff; margin: 4px 0; }
+  
+  /* Score Breakdown */
+  .score-breakdown { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; margin-top: 12px; }
+  .score-item { background: #2a2e39; padding: 4px 10px; border-radius: 4px; font-size: 12px; }
+  .score-item span { color: #4caf50; font-weight: bold; }
+  
+  /* Emotion Gauge */
+  .emotion-bar { display: flex; align-items: center; gap: 4px; margin: 12px 0; }
+  .emotion-step { flex: 1; text-align: center; padding: 8px 4px; border-radius: 4px; font-size: 12px; background: #2a2e39; color: #787b86; }
+  .emotion-step.active { background: #e65100; color: #fff; font-weight: bold; }
+  
+  /* Warning Box */
+  .warning-box { background: #2a1515; border: 1px solid #ef5350; border-radius: 8px; padding: 14px; margin-bottom: 12px; }
+  .warning-box h3 { color: #ef5350; margin: 0 0 8px; font-size: 14px; }
+  .warning-box p { font-size: 13px; color: #d1d4dc; }
+  
+  .footer { text-align: center; padding: 20px 0; color: #787b86; font-size: 12px; }
+</style>
+</head>
+<body>
+<div class="container">
+
+<!-- Header -->
+<div class="header">
+  <h1>AI智能股票组合主理人系统 V5.0 — 收盘完整分析</h1>
+  <div class="meta">
+    <span>📅 2026年8月5日（周三）</span>
+    <span>⏰ 15:30</span>
+    <span>📊 收盘分析（全天唯一正式评分）</span>
+  </div>
+</div>
+
+<!-- Data Validation Bar -->
+<div class="validation-bar">
+  <span style="color:#4caf50;font-weight:bold;font-size:14px;">✅ 数据验证通过</span>
+  <div class="validation-item validation-pass"><span class="icon">✅</span> 关1交叉验证: westock与tdx一致(0.00%)</div>
+  <div class="validation-item validation-warn"><span class="icon">⚠️</span> 关2异常: 胜宏科技+17%/有研硅+17.62%已确认</div>
+  <div class="validation-item validation-pass"><span class="icon">✅</span> 关3逻辑校验: 通过</div>
+  <div class="validation-item validation-warn"><span class="icon">⚠️</span> market_overview为T-1数据</div>
+  <div class="validation-item validation-warn"><span class="icon">⚠️</span> 北向资金数据缺失</div>
+</div>
+
+<!-- Score Banner -->
+<div class="score-banner">
+  <div class="score">68</div>
+  <div class="score-label">当前A股市场评分 / 100 — 震荡偏强 · 科技主线回归</div>
+  <div class="score-detail">
+    <div>建议仓位: <span>30% - 50%</span></div>
+    <div>较昨日: <span>+8分</span> (60→68)</div>
+    <div>成交额: <span>26,596亿</span> (+20.2%)</div>
+    <div>涨停: <span>105只</span></div>
+  </div>
+  <div class="score-breakdown">
+    <div class="score-item">技术形态 <span>13/20</span></div>
+    <div class="score-item">量能 <span>13/15</span></div>
+    <div class="score-item">涨跌比 <span>9/10</span></div>
+    <div class="score-item">外部环境 <span>9/15</span></div>
+    <div class="score-item">趋势方向 <span>5/10</span></div>
+    <div class="score-item">估值压力 <span>5/10</span></div>
+    <div class="score-item">资金流向 <span>8/10</span></div>
+    <div class="score-item">情绪 <span>6/10</span></div>
+  </div>
+</div>
+
+<!-- Index Cards -->
+<div class="section">
+  <h2>📈 A股七大指数收盘</h2>
+  <div class="index-grid">
+    <div class="index-card">
+      <div class="name">上证指数</div>
+      <div class="price">3878.43</div>
+      <div class="change red">+1.47%</div>
+      <div class="vol">12087亿 | 5日+1.30% | 60日-7.97%</div>
+    </div>
+    <div class="index-card">
+      <div class="name">沪深300</div>
+      <div class="price">4658.15</div>
+      <div class="change red">+1.24%</div>
+      <div class="vol">8792亿 | 5日+1.26% | 60日-5.86%</div>
+    </div>
+    <div class="index-card">
+      <div class="name">中证500</div>
+      <div class="price">7809.21</div>
+      <div class="change red">+2.65%</div>
+      <div class="vol">5269亿 | 5日+3.78%</div>
+    </div>
+    <div class="index-card">
+      <div class="name">中证1000</div>
+      <div class="price">7493.05</div>
+      <div class="change red">+2.94%</div>
+      <div class="vol">5116亿 | 5日+5.61%</div>
+    </div>
+    <div class="index-card">
+      <div class="name">创业板指</div>
+      <div class="price">3535.14</div>
+      <div class="change red">+1.32%</div>
+      <div class="vol">7205亿 | 5日+4.63%</div>
+    </div>
+    <div class="index-card">
+      <div class="name">科创50</div>
+      <div class="price">1693.67</div>
+      <div class="change red">+4.78%</div>
+      <div class="vol">半导体爆发驱动</div>
+    </div>
+    <div class="index-card">
+      <div class="name">深证成指</div>
+      <div class="price">14144.2</div>
+      <div class="change red">+1.86%</div>
+      <div class="vol">14509亿 | 5日+3.56%</div>
+    </div>
+  </div>
+  <div style="text-align:center;margin-top:12px;">
+    <span style="color:#ef5350;font-size:14px;">🔴 上涨3725家(67%) | 涨停105只 | 跌停1只 | 总成交26596亿(+4460亿)</span>
+  </div>
+</div>
+
+<!-- Global Market -->
+<div class="section">
+  <h2>🌍 全球市场环境（8/4美股收盘 + 8/5亚盘）</h2>
+  <div class="global-grid">
+    <div class="global-card"><div class="name">道琼斯</div><div class="val red">54085.88</div><div class="red">+1.71% 🆕历史新高</div></div>
+    <div class="global-card"><div class="name">标普500</div><div class="val red">7736.52</div><div class="red">+1.79% 🆕历史新高</div></div>
+    <div class="global-card"><div class="name">纳斯达克</div><div class="val red">26584.99</div><div class="red">+2.59%</div></div>
+    <div class="global-card"><div class="name">费城半导体</div><div class="val red">—</div><div class="red">+6.6% 连续4日收高</div></div>
+    <div class="global-card"><div class="name">现货黄金</div><div class="val red">$4167</div><div class="red">+2.21% 突破4100</div></div>
+    <div class="global-card"><div class="name">WTI原油</div><div class="val green">$74.41</div><div class="green">-5.51% 创新低</div></div>
+    <div class="global-card"><div class="name">美元指数</div><div class="val green">99.87</div><div class="green">-0.09%</div></div>
+    <div class="global-card"><div class="name">美债10Y</div><div class="val green">4.616%</div><div class="green">-5.08bp</div></div>
+  </div>
+  <div style="background:#152a15;border-radius:6px;padding:12px;margin-top:8px;">
+    <p style="font-size:13px;color:#a5d6a7;">
+      <strong>三重外部催化：</strong>① 美股创新高+芯片股暴涨(ARM+17%/英特尔+10%/美光+7.6%/Palantir+29.5%) 
+      ② 中东缓和(霍尔木兹海峡有望重开)→油价暴跌5%+ 
+      ③ 加息预期回落(9月加息概率67.2%→56.9%)
+    </p>
+  </div>
+</div>
+
+<!-- Conflict Box -->
+<div class="conflict-box">
+  <h3>⚠️ 模块冲突标注</h3>
+  <ul>
+    <li><strong>Layer 1-2 市场评分：</strong>68分（震荡偏强）</li>
+    <li><strong>Layer 3 产业评分：</strong>半导体90分 / 有色88分（偏多）</li>
+    <li><strong>Layer 4 资金评分：</strong>半导体88分加速 / 有色85分加速（偏多）</li>
+    <li><strong>Layer 7 情绪评分：</strong>75分加速（偏多）</li>
+    <li><strong>冲突解读：</strong>市场整体68分（震荡）但产业/资金/情绪均75-90分（偏多）→ 典型"指数震荡、科技强者恒强"格局</li>
+    <li><strong>冲突加剧点：</strong>中际旭创-7.27% vs 中巨芯+20.01% → 科技板块内部严重分化</li>
+    <li><strong>操作建议：</strong>维持30-50%仓位，重点配置半导体材料/有色方向，回避CPO光模块禁令风险标的</li>
+  </ul>
+</div>
+
+<!-- Layer 3: Industry TOP10 -->
+<div class="section">
+  <h2>🏭 Layer 3 产业趋势 — 行业TOP10（独立评分）</h2>
+  <table>
+    <thead>
+      <tr><th>#</th><th>产业方向</th><th>评分</th><th>涨幅</th><th>核心逻辑</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>1</td><td><strong>半导体/芯片材料</strong></td><td class="red">90</td><td class="red">+5.80%~+9.75%</td><td>SEMI预测设备销售$1659亿(+23.2%)；DRAM/HBM供不应求至2027</td></tr>
+      <tr><td>2</td><td><strong>贵金属/有色金属</strong></td><td class="red">88</td><td class="red">+5.03%~+7.72%</td><td>黄金突破$4167创新高；美元走弱+降息预期</td></tr>
+      <tr><td>3</td><td><strong>AI算力/服务器</strong></td><td class="red">86</td><td class="red">+1.73%~+9.99%</td><td>工业富联涨停；AMD Q2+50%验证AI需求</td></tr>
+      <tr><td>4</td><td><strong>AI应用/营销</strong></td><td>83</td><td class="red">+0.06%~+10%</td><td>Palantir+29.5%验证AI变现；广告营销5日+16.10%</td></tr>
+      <tr><td>5</td><td><strong>消费电子/面板</strong></td><td>81</td><td class="red">+4.34%~+6.04%</td><td>京东方+6.04%；华为/苹果新品周期</td></tr>
+      <tr><td>6</td><td><strong>PCB/电子元件</strong></td><td>80</td><td class="red">+6.57%~+17.12%</td><td>胜宏科技+17.12%；东山精密龙虎榜12.19亿</td></tr>
+      <tr><td>7</td><td><strong>机器人/自动化</strong></td><td>78</td><td class="red">+1.73%~+6.10%</td><td>宇树科技IPO催化；人形机器人产业化加速</td></tr>
+      <tr><td>8</td><td><strong>玻璃玻纤/新材料</strong></td><td>76</td><td class="red">+7.90%</td><td>板块+7.90%领涨；中国巨石+8.54%</td></tr>
+      <tr><td>9</td><td><strong>教育/IT培训</strong></td><td>75</td><td class="red">+3.46%~+10%</td><td>传智教育涨停；AI培训需求</td></tr>
+      <tr><td>10</td><td><strong>核电/清洁能源</strong></td><td>72</td><td class="green">-1.03%~+4.79%</td><td>电网设备逆势-1.03%；核电审批加速但短期偏弱</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- Layer 4: Fund Flow TOP5 -->
+<div class="section">
+  <h2>💰 Layer 4 资金方向 — 资金主线TOP5（独立评分）</h2>
+  <table>
+    <thead>
+      <tr><th>#</th><th>资金主线</th><th>评分</th><th>资金阶段</th><th>当日净流入(万)</th><th>5日(万)</th><th>20日(万)</th><th>核心标的</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>1</td><td><strong>半导体/芯片材料</strong></td><td class="red">88</td><td><span class="stage stage-accel">加速</span></td><td class="red">+1,367,368</td><td class="red">+602,190</td><td class="green">-17,195,167</td><td>中巨芯、有研硅、兆易创新</td></tr>
+      <tr><td>2</td><td><strong>有色金属/贵金属</strong></td><td class="red">85</td><td><span class="stage stage-accel">加速</span></td><td class="red">+650,206</td><td class="red">+523,321</td><td class="red">+1,385,594</td><td>紫金矿业、云南锗业</td></tr>
+      <tr><td>3</td><td><strong>PCB/AI硬件</strong></td><td>82</td><td><span class="stage stage-enter">进入</span></td><td>—</td><td>—</td><td>—</td><td>东山精密(12.19亿)、胜宏科技</td></tr>
+      <tr><td>4</td><td><strong>消费电子</strong></td><td>78</td><td><span class="stage stage-enter">进入</span></td><td class="red">+610,465</td><td class="red">+181,396</td><td class="green">-2,320,103</td><td>京东方A、风华高科</td></tr>
+      <tr><td>5</td><td><strong>AI应用/营销</strong></td><td>75</td><td><span class="stage stage-enter">进入</span></td><td>—</td><td>—</td><td>—</td><td>新开普、蓝色光标、易点天下</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- Layer 5-6: TOP30 Stocks -->
+<div class="section">
+  <h2>🏆 Layer 5-6 综合评分TOP30股票（120分体系）</h2>
+  <table>
+    <thead>
+      <tr><th>#</th><th>代码</th><th>名称</th><th>评分</th><th>评级</th><th>涨跌幅</th><th>推荐操作</th><th>资金阶段</th><th>所属行业</th><th>买入逻辑</th><th>风险点</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>1</td><td>sz002384</td><td>东山精密</td><td class="red">93</td><td><span class="badge badge-s">S</span></td><td class="red">+5.44%</td><td>优先建仓</td><td><span class="stage stage-accel">加速</span></td><td>PCB/消费电子</td><td>龙虎榜净买12.19亿，知春路3.8亿抢筹</td><td>高位波动大</td></tr>
+      <tr><td>2</td><td>sh601899</td><td>紫金矿业</td><td class="red">92</td><td><span class="badge badge-s">S</span></td><td class="red">+6.16%</td><td>优先建仓</td><td><span class="stage stage-accel">加速</span></td><td>有色金属</td><td>黄金$4167+铜价；1/5/20日资金全正</td><td>金价回调风险</td></tr>
+      <tr><td>3</td><td>sh600584</td><td>长电科技</td><td>89</td><td><span class="badge badge-a">A</span></td><td class="red">+5.44%</td><td>回踩建仓</td><td><span class="stage stage-accel">加速</span></td><td>半导体封测</td><td>封测龙头；设备需求+23.2%</td><td>估值偏高</td></tr>
+      <tr><td>4</td><td>sh601138</td><td>工业富联</td><td>88</td><td><span class="badge badge-a">A</span></td><td class="red">+9.99%</td><td>关注</td><td><span class="stage stage-peak">高潮</span></td><td>AI服务器</td><td>万亿巨头涨停；AMD Q2+50%</td><td>涨停后追高风险</td></tr>
+      <tr><td>5</td><td>sh603986</td><td>兆易创新</td><td>88</td><td><span class="badge badge-a">A</span></td><td class="red">+8.26%</td><td>回踩建仓</td><td><span class="stage stage-accel">加速</span></td><td>存储/MCU</td><td>DRAM供不应求至2027</td><td>高估值PE>100</td></tr>
+      <tr><td>6</td><td>sz002281</td><td>光迅科技</td><td>87</td><td><span class="badge badge-a">A</span></td><td class="red">+10.00%</td><td>关注</td><td><span class="stage stage-enter">进入</span></td><td>光模块</td><td>涨停；龙虎榜净买1.29亿</td><td>光模块禁令传闻</td></tr>
+      <tr><td>7</td><td>sz300476</td><td>胜宏科技</td><td>86</td><td><span class="badge badge-a">A</span></td><td class="red">+17.12%</td><td>关注</td><td><span class="stage stage-accel">加速</span></td><td>PCB/HDI</td><td>[异常]AI服务器PCB需求爆发</td><td>涨幅过大回调风险</td></tr>
+      <tr><td>8</td><td>sz000636</td><td>风华高科</td><td>86</td><td><span class="badge badge-a">A</span></td><td class="red">+6.39%</td><td>回踩建仓</td><td><span class="stage stage-accel">加速</span></td><td>被动元件</td><td>MLCC龙头；龙虎榜净买4.51亿</td><td>周期性波动</td></tr>
+      <tr><td>9</td><td>sz002185</td><td>华天科技</td><td>86</td><td><span class="badge badge-a">A</span></td><td class="red">+6.83%</td><td>回踩建仓</td><td><span class="stage stage-accel">加速</span></td><td>半导体封测</td><td>AI芯片封装需求</td><td>估值偏高</td></tr>
+      <tr><td>10</td><td>sh600487</td><td>亨通光电</td><td>85</td><td><span class="badge badge-a">A</span></td><td class="red">+8.24%</td><td>优先建仓</td><td><span class="stage stage-enter">进入</span></td><td>光纤/铜连接</td><td>铜连接+光纤；AI数据中心</td><td>CPO板块拖累</td></tr>
+      <tr><td>11</td><td>sz000725</td><td>京东方A</td><td>85</td><td><span class="badge badge-a">A</span></td><td class="red">+6.04%</td><td>回踩建仓</td><td><span class="stage stage-enter">进入</span></td><td>面板</td><td>面板龙头；AI显示+车载</td><td>面板周期性</td></tr>
+      <tr><td>12</td><td>sz000938</td><td>紫光股份</td><td>84</td><td><span class="badge badge-a">A</span></td><td class="red">+7.63%</td><td>关注</td><td><span class="stage stage-enter">进入</span></td><td>通信/云计算</td><td>国产算力催化</td><td>涨幅已大</td></tr>
+      <tr><td>13</td><td>sh688432</td><td>有研硅</td><td>84</td><td><span class="badge badge-a">A</span></td><td class="red">+17.62%</td><td>关注</td><td><span class="stage stage-accel">加速</span></td><td>大硅片</td><td>[异常]半导体硅片国产替代</td><td>科创板高波动</td></tr>
+      <tr><td>14</td><td>sh600667</td><td>太极实业</td><td>84</td><td><span class="badge badge-a">A</span></td><td class="red">+7.58%</td><td>关注</td><td><span class="stage stage-enter">进入</span></td><td>半导体工程</td><td>设备需求+23.2%</td><td>业绩波动大</td></tr>
+      <tr><td>15</td><td>sz002050</td><td>三花智控</td><td>83</td><td><span class="badge badge-a">A</span></td><td class="red">+1.73%</td><td>回踩建仓</td><td><span class="stage stage-enter">进入</span></td><td>机器人/热管理</td><td>基本面扎实</td><td>涨幅温和</td></tr>
+      <tr><td>16</td><td>sh600206</td><td>有研新材</td><td>83</td><td><span class="badge badge-a">A</span></td><td class="red">+10.00%</td><td>关注</td><td><span class="stage stage-accel">加速</span></td><td>半导体材料</td><td>涨停；靶材国产替代</td><td>高位涨停</td></tr>
+      <tr><td>17</td><td>sz002428</td><td>云南锗业</td><td>83</td><td><span class="badge badge-a">A</span></td><td class="red">+10.00%</td><td>关注</td><td><span class="stage stage-accel">加速</span></td><td>小金属/锗</td><td>锗镓5日+15.32%</td><td>涨幅已大</td></tr>
+      <tr><td>18</td><td>sh688808</td><td>联讯仪器</td><td>82</td><td><span class="badge badge-a">A</span></td><td>—</td><td>关注</td><td><span class="stage stage-enter">进入</span></td><td>半导体测试</td><td>龙虎榜机构买4.26亿</td><td>科创板流动性</td></tr>
+      <tr><td>19</td><td>sh688668</td><td>鼎通科技</td><td>81</td><td><span class="badge badge-a">A</span></td><td>—</td><td>关注</td><td><span class="stage stage-enter">进入</span></td><td>连接器</td><td>龙虎榜机构买4.47亿</td><td>科创板高波动</td></tr>
+      <tr><td>20</td><td>sh688549</td><td>中巨芯-U</td><td>80</td><td><span class="badge badge-a">A</span></td><td class="red">+20.01%</td><td>关注</td><td><span class="stage stage-accel">加速</span></td><td>电子特气</td><td>[异常]20CM涨停；板块+7.86%</td><td>新股+高波动</td></tr>
+      <tr><td>21</td><td>sh688313</td><td>仕佳光子</td><td>80</td><td><span class="badge badge-a">A</span></td><td>—</td><td>关注</td><td><span class="stage stage-enter">进入</span></td><td>光芯片</td><td>龙虎榜机构买8.29亿(最高)</td><td>光模块禁令</td></tr>
+      <tr><td>22</td><td>sz002747</td><td>埃斯顿</td><td>79</td><td><span class="badge badge-b">B</span></td><td class="red">+6.10%</td><td>关注</td><td><span class="stage stage-enter">进入</span></td><td>工业机器人</td><td>宇树科技IPO催化</td><td>基本面亏损</td></tr>
+      <tr><td>23</td><td>sz300058</td><td>蓝色光标</td><td>78</td><td><span class="badge badge-b">B</span></td><td class="red">+0.06%</td><td>关注</td><td><span class="stage stage-enter">进入</span></td><td>AI营销</td><td>广告营销5日+16.10%</td><td>涨幅滞后</td></tr>
+      <tr><td>24</td><td>sz002896</td><td>中大力德</td><td>78</td><td><span class="badge badge-b">B</span></td><td class="red">+3.69%</td><td>关注</td><td><span class="stage stage-enter">进入</span></td><td>机器人减速器</td><td>龙虎榜活跃</td><td>高位+估值高</td></tr>
+      <tr><td>25</td><td>sh600580</td><td>卧龙电驱</td><td>78</td><td><span class="badge badge-b">B</span></td><td class="red">+3.34%</td><td>关注</td><td><span class="stage stage-enter">进入</span></td><td>电机/机器人</td><td>机器人关节电机</td><td>涨幅温和</td></tr>
+      <tr><td>26</td><td>sh601611</td><td>中国核建</td><td>77</td><td><span class="badge badge-b">B</span></td><td class="red">+4.79%</td><td>持有</td><td><span class="stage stage-enter">进入</span></td><td>核电工程</td><td>核电审批加速</td><td>板块资金流出</td></tr>
+      <tr><td>27</td><td>sz002354</td><td>天娱数科</td><td>76</td><td><span class="badge badge-b">B</span></td><td class="red">+0.51%</td><td>关注</td><td><span class="stage stage-enter">进入</span></td><td>AI应用</td><td>龙虎榜3日净买1.99亿</td><td>业绩不确定</td></tr>
+      <tr><td>28</td><td>sz003032</td><td>传智教育</td><td>75</td><td><span class="badge badge-b">B</span></td><td class="red">+10.04%</td><td>关注</td><td><span class="stage stage-enter">进入</span></td><td>IT教育</td><td>涨停；AI培训需求</td><td>基本面弱</td></tr>
+      <tr><td>29</td><td>sz300308</td><td>中际旭创</td><td>75</td><td><span class="badge badge-b">B</span></td><td class="green">-7.27%</td><td>观察</td><td><span class="stage stage-exit">撤退</span></td><td>CPO龙头</td><td>成交675亿天量</td><td>⚠️光模块禁令传闻；技术破位</td></tr>
+      <tr><td>30</td><td>sz300502</td><td>新易盛</td><td>73</td><td><span class="badge badge-b">B</span></td><td class="green">-5.29%</td><td>观察</td><td><span class="stage stage-exit">撤退</span></td><td>CPO</td><td>800G光模块</td><td>⚠️光模块禁令传闻；技术破位</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- Layer 7: Sentiment -->
+<div class="section">
+  <h2>📊 Layer 7 市场情绪 — 情绪周期判断（独立评分）</h2>
+  <div class="emotion-bar">
+    <div class="emotion-step">冰点</div>
+    <div class="emotion-step">启动</div>
+    <div class="emotion-step active">加速 ← 当前</div>
+    <div class="emotion-step">高潮</div>
+    <div class="emotion-step">退潮</div>
+  </div>
+  <table>
+    <tr><th>指标</th><th>数值</th><th>判读</th></tr>
+    <tr><td>涨停数</td><td class="red">105只</td><td>偏热（>50为狂热）</td></tr>
+    <tr><td>跌停数</td><td>1只</td><td>极度安全</td></tr>
+    <tr><td>成交额</td><td class="red">26,596亿 (+20.2%)</td><td>放量明显</td></tr>
+    <tr><td>上涨占比</td><td>67%</td><td>偏热</td></tr>
+    <tr><td>昨日连板指数</td><td class="red">+5.13% (5日+22.33%)</td><td>赚钱效应强</td></tr>
+  </table>
+  <p style="margin-top:12px;font-size:13px;"><strong>情绪评分：75/100 — 加速阶段</strong>。从"启动"进入"加速"，但尚未到"高潮"。<span class="red">⚠️ 风险信号：中际旭创成交675亿天量暴跌，若禁令传闻升级可能引发科技板块退潮。</span></p>
+</div>
+
+<!-- Layer 8: Portfolio -->
+<div class="section">
+  <h2>💼 Layer 8 组合管理 — 鑫未来 + 鑫准出击</h2>
+  <div class="dual-col">
+    <div>
+      <h3 style="color:#4caf50;">🟢 鑫未来核心组合（中线 3月-2年）</h3>
+      <table>
+        <tr><th>代码</th><th>名称</th><th>评分</th><th>评级</th><th>仓位</th><th>操作</th></tr>
+        <tr><td>sh601899</td><td>紫金矿业</td><td class="red">92</td><td><span class="badge badge-s">S</span></td><td>8-12%</td><td>优先建仓</td></tr>
+        <tr><td>sz002384</td><td>东山精密</td><td class="red">93</td><td><span class="badge badge-s">S</span></td><td>8-10%</td><td>优先建仓</td></tr>
+        <tr><td>sh600584</td><td>长电科技</td><td>89</td><td><span class="badge badge-a">A</span></td><td>5-8%</td><td>回踩建仓</td></tr>
+        <tr><td>sh603986</td><td>兆易创新</td><td>88</td><td><span class="badge badge-a">A</span></td><td>5-8%</td><td>回踩建仓</td></tr>
+        <tr><td>sz000725</td><td>京东方A</td><td>85</td><td><span class="badge badge-a">A</span></td><td>5-8%</td><td>回踩建仓</td></tr>
+        <tr><td>sh600487</td><td>亨通光电</td><td>85</td><td><span class="badge badge-a">A</span></td><td>5-8%</td><td>优先建仓</td></tr>
+        <tr><td>sz002050</td><td>三花智控</td><td>83</td><td><span class="badge badge-a">A</span></td><td>5%</td><td>回踩建仓</td></tr>
+        <tr><td>sh601611</td><td>中国核建</td><td>77</td><td><span class="badge badge-b">B</span></td><td>3-5%</td><td>持有</td></tr>
+      </table>
+      <p style="font-size:12px;color:#787b86;margin-top:8px;">组合总仓位：44-64%（含持有）</p>
+    </div>
+    <div>
+      <h3 style="color:#ffb74d;">🟡 鑫准出击短线池（5-20日）</h3>
+      <table>
+        <tr><th>代码</th><th>名称</th><th>评分</th><th>评级</th><th>仓位</th><th>操作</th></tr>
+        <tr><td>sh601138</td><td>工业富联</td><td>88</td><td><span class="badge badge-a">A</span></td><td>5-8%</td><td>关注次日</td></tr>
+        <tr><td>sz300476</td><td>胜宏科技</td><td>86</td><td><span class="badge badge-a">A</span></td><td>3-5%</td><td>关注</td></tr>
+        <tr><td>sh688549</td><td>中巨芯-U</td><td>80</td><td><span class="badge badge-a">A</span></td><td>3-5%</td><td>关注</td></tr>
+        <tr><td>sh600206</td><td>有研新材</td><td>83</td><td><span class="badge badge-a">A</span></td><td>3-5%</td><td>关注</td></tr>
+        <tr><td>sz002428</td><td>云南锗业</td><td>83</td><td><span class="badge badge-a">A</span></td><td>3-5%</td><td>关注</td></tr>
+        <tr><td>sz002281</td><td>光迅科技</td><td>87</td><td><span class="badge badge-a">A</span></td><td>3-5%</td><td>关注</td></tr>
+      </table>
+      <p style="font-size:12px;color:#787b86;margin-top:8px;">短线总仓位：20-33%，严格执行5-20日止盈止损</p>
+    </div>
+  </div>
+</div>
+
+<!-- Layer 9: Risk -->
+<div class="section">
+  <h2>🛡️ Layer 9 风险控制 — 风险委员会扫描</h2>
+  <div style="text-align:center;margin-bottom:16px;">
+    <span style="font-size:24px;font-weight:bold;color:#ffb74d;">🟡 黄色预警</span>
+  </div>
+  <div class="risk-grid">
+    <div class="risk-card risk-yellow">
+      <div class="title yellow">🟡 市场风险</div>
+      <div class="desc">60日仍跌8-15%，中期趋势未修复。控制总仓位50%以内。</div>
+    </div>
+    <div class="risk-card risk-yellow">
+      <div class="title yellow">🟡 行业集中风险</div>
+      <div class="desc">科技板块拥挤度上升。单一行业不超过25%。</div>
+    </div>
+    <div class="risk-card risk-red">
+      <div class="title red">🔴 个股风险</div>
+      <div class="desc">中际旭创675亿天量暴跌-7.27%，光模块禁令传闻若实锤将引发CPO坍塌。回避CPO龙头。</div>
+    </div>
+    <div class="risk-card risk-yellow">
+      <div class="title yellow">🟡 情绪过热风险</div>
+      <div class="desc">涨停105只+成交2.66万亿，接近高潮。短线仓位严格止盈。</div>
+    </div>
+    <div class="risk-card risk-green">
+      <div class="title" style="color:#26a69a;">🟢 外部风险</div>
+      <div class="desc">中东缓和+油价暴跌+美债回落，外部环境为近月最优。</div>
+    </div>
+    <div class="risk-card risk-yellow">
+      <div class="title yellow">🟡 估值风险</div>
+      <div class="desc">PE分位70-90%偏高，创业板PE 61.56。高估值标的严格执行回踩买入。</div>
+    </div>
+  </div>
+  
+  <div class="warning-box" style="margin-top:16px;">
+    <h3>⚠️ 最大风险：美国光模块禁令传闻</h3>
+    <p>中际旭创单日成交675亿天量（刷新历史纪录），暴跌7.27%，新易盛-5.29%。若传闻实锤：CPO/光模块板块将面临20-30%估值杀。<strong>产业分析认为禁令可能性较小</strong>（美国AI建设离不开中国光模块，中国厂商占全球70%出货量）。<strong>应对</strong>：CPO龙头暂不介入，转向半导体材料/有色/AI应用。</p>
+  </div>
+  <div class="warning-box">
+    <h3>⚠️ 次要风险：60日趋势仍为负</h3>
+    <p>上证60日-7.97%，创业板-10.16%，中证1000-15.06%。短期反弹强劲但中期趋势未修复。<strong>应对</strong>：严格执行30-50%仓位上限，逢急涨减仓而非追涨。</p>
+  </div>
+</div>
+
+<!-- Tomorrow Watch -->
+<div class="section">
+  <h2>📋 明日关注</h2>
+  <table>
+    <tr><td>1</td><td><strong>光模块禁令传闻澄清</strong>：中际旭创/新易盛/天孚通信是否企稳，FCC是否发布正式文件</td></tr>
+    <tr><td>2</td><td><strong>半导体持续性</strong>：中巨芯/有研硅/兆易创新是否延续涨势</td></tr>
+    <tr><td>3</td><td><strong>金价走势</strong>：现货黄金$4167能否站稳$4100，美元指数能否跌破99.5</td></tr>
+    <tr><td>4</td><td><strong>成交额</strong>：能否维持2.5万亿+，缩量至2万亿以下则反弹存疑</td></tr>
+    <tr><td>5</td><td><strong>美国非农数据</strong>（周五）：弱于预期将进一步降低加息概率</td></tr>
+    <tr><td>6</td><td><strong>宇树科技IPO进展</strong>：机器人板块催化</td></tr>
+  </table>
+</div>
+
+<div class="footer">
+  <p>AI智能股票组合主理人系统 V5.0 | 2026-08-05 15:30 | 仅供研究参考，不构成投资建议</p>
+  <p>系统规则：AI_STOCK_PORTFOLIO_OS_V5.md | 数据验证：V5_DATA_VALIDATION_RULES.md</p>
+</div>
+
+</div>
+</body>
+</html>

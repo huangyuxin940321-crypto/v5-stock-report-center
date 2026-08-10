@@ -1,0 +1,425 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>全球市场扫描 V5 | 2026-08-10 08:00</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: -apple-system, "PingFang SC", "Microsoft YaHei", sans-serif; background: #f6f8fa; color: #1f2328; line-height: 1.6; padding: 20px; }
+.container { max-width: 1200px; margin: 0 auto; background: #fff; border-radius: 12px; box-shadow: 0 2px 12px rgba(0,0,0,0.06); overflow: hidden; }
+.header { background: linear-gradient(135deg, #cf222e 0%, #a40e26 100%); color: #fff; padding: 28px 36px; }
+.header h1 { font-size: 24px; margin-bottom: 8px; font-weight: 600; }
+.header .subtitle { font-size: 14px; opacity: 0.92; }
+.header .meta { display: inline-block; background: rgba(255,255,255,0.18); padding: 4px 12px; border-radius: 12px; font-size: 12px; margin-top: 10px; }
+.content { padding: 28px 36px 40px; }
+.section { margin-bottom: 30px; }
+.section h2 { font-size: 18px; color: #1f2328; border-left: 4px solid #cf222e; padding-left: 12px; margin-bottom: 16px; font-weight: 600; }
+.section h3 { font-size: 15px; color: #444; margin: 16px 0 10px; font-weight: 600; }
+
+/* 数据验证状态条 */
+.verify-bar { padding: 14px 20px; border-radius: 8px; margin-bottom: 24px; display: flex; align-items: center; gap: 12px; font-size: 14px; }
+.verify-warn { background: #fff8c5; color: #6e4901; border-left: 4px solid #d4a72c; }
+.verify-warn::before { content: "⚠️"; font-size: 18px; }
+.verify-pass { background: #dafbe1; color: #116329; border-left: 4px solid #1a7f37; }
+.verify-pass::before { content: "✅"; font-size: 18px; }
+.verify-fail { background: #ffebe9; color: #b35947; border-left: 4px solid #cf222e; }
+.verify-fail::before { content: "❌"; font-size: 18px; }
+
+/* 隔夜外盘卡片 */
+.market-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 14px; }
+.market-card { background: #f6f8fa; border: 1px solid #d0d7de; border-radius: 8px; padding: 16px; transition: all 0.2s; }
+.market-card:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,0,0,0.08); }
+.market-card .name { font-size: 13px; color: #656d76; margin-bottom: 6px; }
+.market-card .price { font-size: 20px; font-weight: 700; color: #1f2328; margin-bottom: 4px; }
+.market-card .change { font-size: 14px; font-weight: 600; padding: 2px 8px; border-radius: 4px; display: inline-block; }
+.market-card .week { font-size: 12px; color: #656d76; margin-top: 4px; }
+.up { color: #cf222e; background: #ffebe9; }
+.down { color: #1a7f37; background: #dafbe1; }
+.flat { color: #656d76; background: #eaeef2; }
+.signal-tag { display: inline-block; padding: 2px 8px; border-radius: 10px; font-size: 11px; margin-top: 6px; }
+.signal-green { background: #dafbe1; color: #1a7f37; }
+.signal-yellow { background: #fff8c5; color: #6e4901; }
+.signal-red { background: #ffebe9; color: #cf222e; }
+
+/* 表格 */
+table { width: 100%; border-collapse: collapse; margin-bottom: 16px; font-size: 13px; }
+th { background: #f6f8fa; padding: 10px 12px; text-align: left; font-weight: 600; color: #1f2328; border-bottom: 1px solid #d0d7de; }
+td { padding: 10px 12px; border-bottom: 1px solid #eaeef2; }
+tr:hover { background: #f6f8fa; }
+
+/* 倾向Banner */
+.tendency-banner { padding: 22px 28px; border-radius: 12px; margin-bottom: 24px; text-align: center; }
+.tend-bull { background: linear-gradient(135deg, #fff5f5 0%, #ffebe9 100%); border: 2px solid #cf222e; }
+.tend-flat { background: linear-gradient(135deg, #f6f8fa 0%, #eaeef2 100%); border: 2px solid #656d76; }
+.tend-bear { background: linear-gradient(135deg, #f0fdf4 0%, #dafbe1 100%); border: 2px solid #1a7f37; }
+.tendency-banner .label { font-size: 12px; color: #656d76; margin-bottom: 4px; }
+.tendency-banner .value { font-size: 28px; font-weight: 700; }
+.bull-text { color: #cf222e; }
+.bear-text { color: #1a7f37; }
+.flat-text { color: #656d76; }
+
+/* 信号区 */
+.signal-area { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 20px; }
+.signal-box { padding: 16px 20px; border-radius: 8px; }
+.bull-box { background: #ffebe9; border-left: 4px solid #cf222e; }
+.bear-box { background: #dafbe1; border-left: 4px solid #1a7f37; }
+.signal-box h4 { font-size: 14px; margin-bottom: 10px; font-weight: 600; }
+.bull-box h4 { color: #cf222e; }
+.bear-box h4 { color: #1a7f37; }
+.signal-box ol { padding-left: 20px; font-size: 13px; }
+.signal-box li { margin-bottom: 6px; }
+
+/* 列表 */
+ul.bullets { padding-left: 22px; font-size: 14px; }
+ul.bullets li { margin-bottom: 8px; color: #1f2328; }
+
+/* 日历 */
+.calendar-table { width: 100%; border-collapse: collapse; margin-top: 12px; }
+.calendar-table td, .calendar-table th { padding: 10px 12px; border: 1px solid #eaeef2; font-size: 13px; text-align: center; }
+.calendar-table th { background: #f6f8fa; font-weight: 600; }
+.warn-row { background: #fff8c5 !important; }
+.warn-row td { font-weight: 600; }
+
+/* 风险提示 */
+.risk-note { font-size: 13px; color: #656d76; background: #f6f8fa; padding: 14px 18px; border-radius: 8px; border-left: 3px solid #656d76; margin-top: 20px; }
+
+/* 隔离提醒条 */
+.isolation-note { background: #fff8c5; border: 1px dashed #d4a72c; padding: 12px 16px; border-radius: 6px; font-size: 13px; color: #6e4901; margin-top: 12px; }
+
+footer { text-align: center; padding: 20px; color: #656d76; font-size: 12px; border-top: 1px solid #eaeef2; background: #f6f8fa; }
+
+@media (max-width: 768px) {
+  body { padding: 12px; }
+  .header { padding: 20px 24px; }
+  .content { padding: 20px 24px; }
+  .signal-area { grid-template-columns: 1fr; }
+  .market-grid { grid-template-columns: 1fr 1fr; }
+  table { font-size: 12px; }
+}
+</style>
+</head>
+<body>
+<div class="container">
+
+<!-- 页头 -->
+<div class="header">
+  <h1>🌍 全球市场扫描 V5.0</h1>
+  <div class="subtitle">Market Intelligence Agent · 全球资产多源交叉验证</div>
+  <div class="meta">📅 2026-08-10 周一 08:00 · 信息隔离：临时倾向（不输出正式评分）</div>
+</div>
+
+<div class="content">
+
+<!-- 数据验证状态条 -->
+<div class="verify-bar verify-warn">
+  <div><strong>数据验证：⚠️ 警告</strong><br>
+  westock-mcp/tdx-connector 本次会话未能成功调用，全部依赖WebSearch多源交叉验证；A股8/10尚未开盘，所有展望基于8/7收盘+周末海外信息推演。</div>
+</div>
+
+<!-- 一、隔夜外盘 -->
+<div class="section">
+<h2>一、隔夜外盘（美股 8/7 美东收盘）</h2>
+<div class="market-grid">
+  <div class="market-card">
+    <div class="name">道琼斯</div>
+    <div class="price">54,036.93</div>
+    <div class="change up">+0.28%</div>
+    <div class="week">本周：<span class="bull-text">+2.96%</span></div>
+    <span class="signal-tag signal-green">4月中以来最大周涨</span>
+  </div>
+  <div class="market-card">
+    <div class="name">标普500</div>
+    <div class="price">7,757.64</div>
+    <div class="change up">+0.62%</div>
+    <div class="week">本周：<span class="bull-text">+3.58%</span></div>
+    <span class="signal-tag signal-red">📈 收盘历史新高</span>
+  </div>
+  <div class="market-card">
+    <div class="name">纳斯达克</div>
+    <div class="price">26,690.62</div>
+    <div class="change up">+1.30%</div>
+    <div class="week">本周：<span class="bull-text">+5.19%</span></div>
+    <span class="signal-tag signal-green">4月中以来最大周涨</span>
+  </div>
+  <div class="market-card">
+    <div class="name">费城半导体</div>
+    <div class="price">指数走强</div>
+    <div class="change up">两连阳</div>
+    <div class="week">本周：<span class="bull-text">+9%</span>（+英伟达+10%）</div>
+    <span class="signal-tag signal-green">海外映射强</span>
+  </div>
+  <div class="market-card">
+    <div class="name">中国金龙指数</div>
+    <div class="price">— </div>
+    <div class="change up">+0.77%</div>
+    <div class="week">中概回暖</div>
+    <span class="signal-tag signal-green">再鼎+11% / 禾赛+8%</span>
+  </div>
+  <div class="market-card">
+    <div class="name">标普材料板块</div>
+    <div class="price">— </div>
+    <div class="change up">+1.52%</div>
+    <div class="week">板块领涨</div>
+    <span class="signal-tag signal-green">黄金股映射</span>
+  </div>
+</div>
+
+<div style="margin-top: 14px; font-size: 13px; color: #444;">
+<strong>🔥 美股主线（8/7）：</strong>光通信集体爆发（Coherent +13% / Credo +8% / Lumentum +6% / 康宁 +5%）<strong>·</strong> 太空概念大涨（SpaceX +16% / Redwire +14%）<strong>·</strong> 大型科技普涨（英伟达/特斯拉 +2% / 谷歌 -1% 唯一下跌）<strong>·</strong> 存储芯片续跌（闪迪/西部数据 -4%）
+</div>
+</div>
+
+<!-- 二、大宗商品与外汇 -->
+<div class="section">
+<h2>二、大宗商品与外汇</h2>
+<table>
+  <thead>
+    <tr><th style="width: 22%;">品种</th><th style="width: 18%;">最新</th><th>变动</th><th>对A股影响</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>COMEX黄金（8/7结算）</td>
+      <td><strong>$4,401.30/oz</strong></td>
+      <td class="bull-text"><strong>+7.20%（本周）</strong> · 创1月23日以来最大周涨</td>
+      <td>🔴 利多黄金股业绩弹性</td>
+    </tr>
+    <tr>
+      <td>现货黄金（8/10亚市）</td>
+      <td>$4,346/oz</td>
+      <td>周内一度+3%突破4400</td>
+      <td>🔴 利多央行购金+避险</td>
+    </tr>
+    <tr>
+      <td>工行纸黄金（国内）</td>
+      <td>¥941.86/克</td>
+      <td class="bull-text"><strong>+2.45%</strong></td>
+      <td>🔴 国内金饰黄金股共振</td>
+    </tr>
+    <tr>
+      <td>WTI原油</td>
+      <td>$78.73/桶</td>
+      <td>微涨</td>
+      <td>🟡 伊朗拒谈 + 海峡风险溢价支撑</td>
+    </tr>
+    <tr>
+      <td>美元指数</td>
+      <td>一个月半新低</td>
+      <td class="bear-text">加速下行（非农爆冷驱动）</td>
+      <td>🔴 利空美元 / 利多人民币资产</td>
+    </tr>
+    <tr>
+      <td>在岸人民币</td>
+      <td>逼近 <strong>6.74</strong></td>
+      <td class="bull-text"><strong>创3年新高</strong></td>
+      <td>🔴 吸引外资流入A股</td>
+    </tr>
+    <tr>
+      <td>离岸人民币</td>
+      <td>逼近 6.74</td>
+      <td class="bull-text"><strong>创3年新高</strong></td>
+      <td>🔴 同上</td>
+    </tr>
+    <tr>
+      <td>2年/10年美债收益率</td>
+      <td>2年<strong>创3周新低</strong></td>
+      <td class="bear-text">全线走低</td>
+      <td>🔴 估值压力释放</td>
+    </tr>
+  </tbody>
+</table>
+<div style="font-size: 13px; color: #656d76; padding: 8px 12px; background: #f6f8fa; border-radius: 6px;">
+<strong>核心逻辑：</strong>① 非农意外减少2.3万→9月加息概率从67%降至41-44% → 美元跌；② 美伊霍尔木兹谈判推进 → 地缘溢价回落 → 通胀预期降温 → 金价反弹；③ 双因素叠加推动人民币对美元创3年新高。
+</div>
+</div>
+
+<!-- 三、A股指数概览 -->
+<div class="section">
+<h2>三、A股指数概览（8/7周五收盘）</h2>
+<table>
+  <thead>
+    <tr><th>指数</th><th>昨收</th><th>涨跌幅</th><th>近5日趋势</th><th>位置判断</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>上证指数</td>
+      <td>3,940.04</td>
+      <td class="bull-text">+1.02%</td>
+      <td><strong>四连阳</strong> · 5日金叉20日</td>
+      <td>🟡 站上3940/30日线，<strong>60日线4002压力</strong></td>
+    </tr>
+    <tr>
+      <td>深证成指</td>
+      <td>14,311.01</td>
+      <td class="bull-text">+1.42%</td>
+      <td>四连阳</td>
+      <td>🟢 中小盘强于权重</td>
+    </tr>
+    <tr>
+      <td>沪深300</td>
+      <td>~4,720</td>
+      <td class="bull-text">小涨</td>
+      <td>震荡上行</td>
+      <td>🟡 权重股偏稳</td>
+    </tr>
+    <tr>
+      <td>中证500</td>
+      <td>~7,900+</td>
+      <td class="bull-text">走强</td>
+      <td>反弹</td>
+      <td>🟢 中小盘占优</td>
+    </tr>
+    <tr>
+      <td>创业板指</td>
+      <td>3,563.12</td>
+      <td class="bull-text">+1.35%</td>
+      <td>站上20日均线</td>
+      <td>🟡 上影线偏长</td>
+    </tr>
+    <tr style="background: #fff8c5;">
+      <td><strong>科创50</strong></td>
+      <td><strong>1,744.02</strong></td>
+      <td class="bull-text"><strong>+2.51%</strong></td>
+      <td><strong>两连阳</strong></td>
+      <td>🟢 <strong>涨幅居前，板块放量</strong></td>
+    </tr>
+    <tr>
+      <td>上证50</td>
+      <td>弱</td>
+      <td class="bear-text">偏弱</td>
+      <td>弱于中小盘</td>
+      <td>🟢 风格切向成长</td>
+    </tr>
+  </tbody>
+</table>
+
+<div style="font-size: 13px; color: #444; padding: 10px 14px; background: #f6f8fa; border-radius: 6px;">
+<strong>关键特征：</strong>两市成交<strong>突破2.66万亿</strong>，较前日多放出1356亿，量价齐升。上<strong>2856家/下2536家</strong>，涨停75只；资金高度集中在"光"线（天孚通信、工业富联、胜宏科技、生益科技、光迅科技5日净流入居前）；AI应用线（软件开发/IT服务）连续资金流出2日+。
+</div>
+</div>
+
+<!-- 四、临时倾向 -->
+<div class="section">
+<h2>四、市场环境临时倾向</h2>
+<div class="tendency-banner tend-bull">
+  <div class="label">08:00 临时倾向（不输出正式评分）</div>
+  <div class="value bull-text">偏多</div>
+</div>
+
+<h3>📌 核心依据（5条）</h3>
+<ul class="bullets">
+  <li><strong>外围全面偏暖三重共振</strong> — 美股创历史新高 + 美国非农爆冷削弱加息预期 + 离岸人民币创三年新高，外资买入A股的宏观条件全面打开</li>
+  <li><strong>科技硬件海外映射强力</strong> — 美股光通信板块周涨40%（Coherent +13%），半导体板块全周+9%（英伟达+10%），正向映射A股CPO/PCB/算力硬件</li>
+  <li><strong>A股自身技术形态修复</strong> — 上证四连阳站上3940/30日线，5/10/20日均线依次金叉，<strong>科创50放量+2.51%走最强主线</strong></li>
+  <li><strong>资金集中度极强</strong> — 主力资金5日净流入榜清一色光通信/PCB/算力硬件，"空存储多光"形成强共识</li>
+  <li><strong>重大事件密集催化</strong> — 长鑫科技8/10正式纳入MSCI中国全股票指数、宇树科技8/10科创板申购（人形机器人催化）、国产10万卡AI超集群投用</li>
+</ul>
+
+<h3>⚠️ 风险点（保留警惕）</h3>
+<ul class="bullets">
+  <li><span class="bear-text">短线获利盘兑现</span>：沪指从3767涨到3940累计+173点，60日均线4002点压力沉重</li>
+  <li><span class="bear-text">存量资金挪窝而非加仓</span>：周一量能若不能维持2.6万亿以上则面临"指数红个股跌"</li>
+  <li><span class="bear-text">K线技术瑕疵</span>：创业板8/7上影线偏长，科创50急涨后存技术性回调需求</li>
+  <li><span class="bear-text">黄金股预期透支</span>：黄金板块本周已大涨7%，周一若高开需警惕利好兑现</li>
+  <li><span class="bear-text">全球宏观仍有变数</span>：8/12美国7月CPI是本周最大变量，若偏热将逆转宽松预期</li>
+  <li><span class="bear-text">伊朗地缘反复</span>：伊朗拒谈+开6个条件，原油/避险资产波动随时可能反转</li>
+</ul>
+
+<div class="isolation-note">
+🔒 <strong>信息隔离提醒：</strong>08:00节点只输出临时倾向（偏多），<strong>正式0-100市场评分将在15:30收盘分析中统一输出</strong>。后续09:00/11:30节点不引用本节点判断，各自独立分析。
+</div>
+</div>
+
+<!-- 五、今日关键信号 -->
+<div class="section">
+<h2>五、今日关键信号</h2>
+<div class="signal-area">
+  <div class="signal-box bull-box">
+    <h4>🔴 利多（3条）</h4>
+    <ol>
+      <li>美股+非农+人民币三重外部利好共振：标普500+0.62%创新高、非农爆冷推升离岸人民币至6.74三年高位、外资买入A股条件全面打开</li>
+      <li>科技硬件海外强力映射：美股光通信板块Coherent周涨40%，半导体全周+9%（英伟达+10%），正向映射A股CPO/PCB/算力硬件</li>
+      <li>A股技术修复+事件密集：上证四连阳3940+5-10-20日线金叉，长鑫纳入MSCI+宇树申购+10万卡国产AI超集群投用</li>
+    </ol>
+  </div>
+  <div class="signal-box bear-box">
+    <h4>🟢 利空（3条）</h4>
+    <ol>
+      <li>短线获利盘兑现压力：沪指累涨173点，60日均线4002压力沉重，创业板指上影线偏长</li>
+      <li>存量资金挪窝而非加仓：光通信集中但其他板块"出血"，量能不能维持2.6万亿就分化</li>
+      <li>黄金股预期透支+地缘反复：黄金板块本周已涨7%周一若高开警惕兑现；伊朗拒谈+6条件地缘溢价随时反弹</li>
+    </ol>
+  </div>
+</div>
+
+<h3>🎯 重点关注（2条）</h3>
+<div style="background: #fff8c5; padding: 16px 20px; border-radius: 8px; border-left: 4px solid #d4a72c; font-size: 14px;">
+<ol>
+  <li><strong>8/12（周三）美国7月CPI</strong> — 本周全球市场<strong>最大变量</strong>，定调美联储9月政策走向；若偏热将逆转降息预期+推升美元+压制风险资产</li>
+  <li><strong>8/10（周一）宇树申购+长鑫纳入MSCI正式生效</strong> — 人形机器人/半导体板块资金面事件催化</li>
+</ol>
+</div>
+</div>
+
+<!-- 六、本周宏观日历 -->
+<div class="section">
+<h2>六、本周宏观日历（核心事件）</h2>
+<table class="calendar-table">
+  <thead>
+    <tr><th>日期</th><th>事件</th><th>影响</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><strong>8/10 周一</strong></td>
+      <td>宇树科技申购 · 长鑫纳入MSCI · 中国7月CPI/PPI已公布</td>
+      <td>🔴 机器人+半导体+通胀</td>
+    </tr>
+    <tr>
+      <td>8/11 周二</td>
+      <td>美国7月ADP就业人数 · 第六届全球固态电池峰会</td>
+      <td>🟡 就业+电池</td>
+    </tr>
+    <tr class="warn-row">
+      <td><strong>8/12 周三</strong></td>
+      <td><strong>美国7月CPI（核心变量）</strong> · EIA原油库存 · 腾讯业绩</td>
+      <td>⚠️ 全球最大变量</td>
+    </tr>
+    <tr>
+      <td>8/13 周四</td>
+      <td>美国7月PPI · 初请失业金 · 中芯/华虹业绩 · 谷歌发布会</td>
+      <td>🟡 通胀链+科技</td>
+    </tr>
+    <tr>
+      <td>8/14 周五</td>
+      <td>美国7月零售销售 · 密歇根消费者信心 · SEC 13F披露截止</td>
+      <td>🟡 消费+持仓</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+
+<!-- 七、跟踪节点 -->
+<div class="section">
+<h2>七、跟踪节点</h2>
+<table>
+  <tbody>
+    <tr><td style="width: 22%;"><strong>09:00 盘前策略</strong></td><td>基于8/7收盘+海外周末数据做产业/资金/情绪<strong>独立分析</strong>（不引用本节点"偏多"判断）</td></tr>
+    <tr><td><strong>11:30 资金异动</strong></td><td>验证量能能否维持2.6万亿+关注光通信/PCB/机器人/创新药四大方向资金阶段</td></tr>
+    <tr><td><strong>15:30 收盘分析</strong></td><td><strong>正式市场评分输出点</strong>，验证本节点"偏多"倾向</td></tr>
+    <tr><td><strong>20:00 深度复盘</strong></td><td>不重复评分，引用15:30正式评分</td></tr>
+  </tbody>
+</table>
+</div>
+
+<div class="risk-note">
+<strong>免责声明：</strong>以上内容基于公开数据和量化分析，仅供参考，不构成投资建议。市场有风险，投资需谨慎。任何投资决策应结合个人风险承受能力、资金状况和投资目标独立判断，必要时咨询持牌专业机构。
+</div>
+
+</div>
+
+<footer>
+⚡ V5.0系统 | Market Intelligence Agent | 2026-08-10 08:00
+</footer>
+</div>
+</body>
+</html>

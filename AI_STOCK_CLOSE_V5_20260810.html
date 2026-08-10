@@ -1,0 +1,798 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI 智能股票组合主理人 V5.0 — 收盘完整分析报告 · 2026-08-10</title>
+<style>
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei",sans-serif;background:#f4f5f7;color:#1a1d29;line-height:1.6;font-size:14px}
+  .container{max-width:1280px;margin:0 auto;padding:24px}
+  .header{background:linear-gradient(135deg,#1e3a8a 0%,#3b82f6 100%);color:#fff;padding:28px 32px;border-radius:12px;margin-bottom:20px;box-shadow:0 4px 12px rgba(30,58,138,0.15)}
+  .header h1{font-size:24px;margin-bottom:8px;font-weight:700}
+  .header .meta{font-size:13px;opacity:0.9;display:flex;gap:24px;flex-wrap:wrap;margin-top:12px}
+  .header .meta span{background:rgba(255,255,255,0.15);padding:4px 12px;border-radius:6px}
+
+  .data-validation{background:#fff;border:1px solid #e5e7eb;border-radius:10px;padding:18px 24px;margin-bottom:20px;display:flex;align-items:center;gap:18px;flex-wrap:wrap}
+  .data-validation .status{display:flex;align-items:center;gap:8px;font-weight:600}
+  .data-validation .status.ok{color:#10b981}
+  .data-validation .status.warn{color:#f59e0b}
+  .data-validation .item{display:flex;align-items:center;gap:6px;font-size:13px;color:#4b5563;background:#f9fafb;padding:6px 12px;border-radius:6px}
+
+  .score-banner{background:linear-gradient(135deg,#fef3c7 0%,#fde68a 100%);border:2px solid #f59e0b;border-radius:12px;padding:32px;margin-bottom:20px;display:grid;grid-template-columns:auto 1fr auto;gap:32px;align-items:center}
+  .score-circle{width:140px;height:140px;border-radius:50%;background:#fff;display:flex;flex-direction:column;align-items:center;justify-content:center;border:6px solid #f59e0b;box-shadow:0 4px 16px rgba(245,158,11,0.2)}
+  .score-circle .num{font-size:48px;font-weight:800;color:#d97706;line-height:1}
+  .score-circle .label{font-size:12px;color:#92400e;margin-top:4px}
+  .score-info h2{font-size:22px;color:#1a1d29;margin-bottom:12px}
+  .score-info .status-line{font-size:16px;color:#d97706;font-weight:600;margin-bottom:8px}
+  .score-info .desc{color:#4b5563;font-size:13px}
+  .score-info .position{background:#fff;padding:12px 20px;border-radius:8px;margin-top:12px;border-left:4px solid #f59e0b}
+  .score-info .position strong{color:#d97706;font-size:18px}
+
+  .section{background:#fff;border-radius:10px;padding:24px 28px;margin-bottom:20px;box-shadow:0 1px 3px rgba(0,0,0,0.05)}
+  .section-title{font-size:18px;font-weight:700;color:#1a1d29;margin-bottom:16px;padding-bottom:12px;border-bottom:2px solid #3b82f6;display:flex;align-items:center;gap:10px}
+  .section-title .badge{background:#3b82f6;color:#fff;padding:2px 10px;border-radius:4px;font-size:11px;font-weight:600}
+
+  .index-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:14px;margin-bottom:20px}
+  .index-card{background:#fff;border:1px solid #e5e7eb;border-radius:8px;padding:16px 18px;transition:all 0.2s}
+  .index-card:hover{transform:translateY(-2px);box-shadow:0 4px 12px rgba(0,0,0,0.08)}
+  .index-card .name{font-size:13px;color:#6b7280;margin-bottom:6px}
+  .index-card .price{font-size:22px;font-weight:700;color:#1a1d29}
+  .index-card .chg{font-size:14px;font-weight:600;margin-top:4px;display:inline-block;padding:2px 8px;border-radius:4px}
+  .chg.up{color:#dc2626;background:#fee2e2}  /* 红涨 */
+  .chg.down{color:#16a34a;background:#dcfce7} /* 绿跌 */
+  .index-card .sub{font-size:12px;color:#6b7280;margin-top:6px}
+
+  table{width:100%;border-collapse:collapse;margin-top:12px;font-size:13px}
+  th{background:#f3f4f6;color:#374151;padding:10px 8px;text-align:left;font-weight:600;border-bottom:2px solid #e5e7eb}
+  td{padding:8px;border-bottom:1px solid #f3f4f6;vertical-align:top}
+  tr:hover{background:#f9fafb}
+  .code{font-family:monospace;font-size:12px;color:#3b82f6}
+  .name{font-weight:600;color:#1a1d29}
+
+  .rating{display:inline-block;padding:2px 8px;border-radius:4px;font-weight:600;font-size:11px;color:#fff}
+  .rating.S2{background:linear-gradient(135deg,#dc2626,#b91c1c)}
+  .rating.S{background:#dc2626}
+  .rating.A{background:#f59e0b}
+  .rating.B{background:#10b981}
+  .rating.C{background:#6b7280}
+
+  .stage{display:inline-block;padding:2px 8px;border-radius:4px;font-size:11px;font-weight:600}
+  .stage.进入{background:#dbeafe;color:#1e40af}
+  .stage.加速{background:#fef3c7;color:#92400e}
+  .stage.高潮{background:#fee2e2;color:#991b1b}
+  .stage.撤退{background:#f3f4f6;color:#4b5563}
+  .stage.持续{background:#dcfce7;color:#166534}
+  .stage.启动{background:#e9d5ff;color:#6b21a8}
+
+  .operation{display:inline-block;padding:2px 8px;border-radius:4px;font-size:11px;font-weight:600}
+  .operation.优先建仓{background:#dcfce7;color:#166534}
+  .operation.回踩建仓{background:#dbeafe;color:#1e40af}
+  .operation.关注{background:#fef3c7;color:#92400e}
+  .operation.持有{background:#f3f4f6;color:#4b5563}
+  .operation.减仓,.operation.清仓{background:#fee2e2;color:#991b1b}
+
+  .industry-top10{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:14px}
+  .industry-card{background:#f9fafb;border:1px solid #e5e7eb;border-radius:8px;padding:14px 16px}
+  .industry-card .head{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
+  .industry-card .title{font-weight:700;font-size:14px}
+  .industry-card .industry-score{font-size:18px;font-weight:800;color:#3b82f6}
+  .industry-card .desc{font-size:12px;color:#6b7280;margin-bottom:8px}
+  .industry-card .stocks{font-size:12px;color:#4b5563;line-height:1.7}
+  .industry-card .stocks strong{color:#1a1d29}
+
+  .combo-grid{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+  @media(max-width:768px){.combo-grid{grid-template-columns:1fr}}
+  .combo{background:#f9fafb;border:1px solid #e5e7eb;border-radius:8px;padding:18px 20px}
+  .combo h3{color:#1e40af;font-size:16px;margin-bottom:12px;display:flex;align-items:center;gap:8px}
+  .combo .item{display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid #e5e7eb;font-size:13px}
+  .combo .item:last-child{border:none}
+  .combo .item .pct{color:#3b82f6;font-weight:600}
+
+  .conflict{background:linear-gradient(135deg,#fef3c7 0%,#fde68a 100%);border:2px solid #f59e0b;border-radius:10px;padding:20px 24px;margin-bottom:20px}
+  .conflict h3{color:#92400e;font-size:16px;margin-bottom:12px;display:flex;align-items:center;gap:8px}
+  .conflict pre{background:rgba(255,255,255,0.7);padding:12px 16px;border-radius:6px;font-size:13px;white-space:pre-wrap;color:#1a1d29;line-height:1.8}
+
+  .risk-list{display:grid;gap:12px}
+  .risk-item{background:#fef2f2;border:1px solid #fecaca;border-radius:8px;padding:14px 18px;display:flex;gap:14px;align-items:flex-start}
+  .risk-item .num{background:#dc2626;color:#fff;width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;flex-shrink:0}
+  .risk-item .body{flex:1}
+  .risk-item h4{color:#991b1b;font-size:14px;margin-bottom:6px}
+  .risk-item p{color:#7f1d1d;font-size:13px;line-height:1.6}
+
+  .yellow-warn{background:linear-gradient(135deg,#fef3c7 0%,#fbbf24 100%);color:#7c2d12;padding:6px 14px;border-radius:6px;font-weight:700;font-size:13px;display:inline-block;margin-bottom:12px}
+
+  .footer{text-align:center;color:#9ca3af;font-size:12px;margin-top:32px;padding:20px;border-top:1px solid #e5e7eb}
+
+  .summary-cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:14px;margin-bottom:20px}
+  .summary-card{background:#fff;border:1px solid #e5e7eb;border-radius:8px;padding:14px 16px;text-align:center}
+  .summary-card .label{font-size:12px;color:#6b7280;margin-bottom:6px}
+  .summary-card .value{font-size:20px;font-weight:700;color:#1e3a8a}
+  .summary-card .sub{font-size:11px;color:#9ca3af;margin-top:4px}
+</style>
+</head>
+<body>
+<div class="container">
+
+  <!-- Header -->
+  <div class="header">
+    <h1>📊 AI 智能股票组合主理人 V5.0 — 收盘完整分析报告</h1>
+    <div class="meta">
+      <span>📅 2026-08-10（周一）</span>
+      <span>🕐 15:30 收盘</span>
+      <span>🏷️ V5.0 Autonomous Fund Manager</span>
+      <span>⭐ 全天唯一正式市场评分节点</span>
+    </div>
+  </div>
+
+  <!-- Data Validation -->
+  <div class="data-validation">
+    <div class="status ok">✅ 数据验证：通过</div>
+    <div class="item">📊 westock-mcp · 6大指数</div>
+    <div class="item">💰 25只个股资金流</div>
+    <div class="item">🎯 龙虎榜TOP30</div>
+    <div class="item">🔥 热搜50只</div>
+    <div class="item">🌐 期货+外汇</div>
+    <div class="item status warn">⚠️ CPO异常标记</div>
+  </div>
+
+  <!-- Summary Cards -->
+  <div class="summary-cards">
+    <div class="summary-card">
+      <div class="label">市场评分</div>
+      <div class="value" style="color:#d97706">68</div>
+      <div class="sub">震荡偏强</div>
+    </div>
+    <div class="summary-card">
+      <div class="label">建议仓位</div>
+      <div class="value">50-70%</div>
+      <div class="sub">结构性配置</div>
+    </div>
+    <div class="summary-card">
+      <div class="label">涨停数</div>
+      <div class="value" style="color:#dc2626">&gt;50</div>
+      <div class="sub">情绪狂热</div>
+    </div>
+    <div class="summary-card">
+      <div class="label">风险等级</div>
+      <div class="value" style="color:#f59e0b">黄色</div>
+      <div class="sub">CPO出货信号</div>
+    </div>
+  </div>
+
+  <!-- Score Banner -->
+  <div class="score-banner">
+    <div class="score-circle">
+      <div class="num">68</div>
+      <div class="label">市场评分</div>
+    </div>
+    <div class="score-info">
+      <h2>市场状态：震荡偏强 · 结构性分化</h2>
+      <div class="status-line">📌 阶段定位：业绩验证前的板块轮动期</div>
+      <div class="desc">5日快速反弹+8%后面临技术回调压力。CPO/AI硬件巨震释放高位出货信号，资金从拥挤赛道切换至低估值/底部方向（CXO/稀土/军工）。建议减仓CPO、加仓接力方向。</div>
+      <div class="position">建议仓位：<strong>50%-70%</strong> · 中线50-60% + 短线30-40%</div>
+    </div>
+  </div>
+
+  <!-- Index Cards -->
+  <div class="section">
+    <div class="section-title">📈 A 股主要指数收盘 <span class="badge">核心数据</span></div>
+    <div class="index-grid">
+      <div class="index-card">
+        <div class="name">上证指数</div>
+        <div class="price">3966.59</div>
+        <span class="chg up">+0.67% +26.55</span>
+        <div class="sub">5日 +4.12% | 成交1.17万亿</div>
+      </div>
+      <div class="index-card">
+        <div class="name">沪深300</div>
+        <div class="price">4702.02</div>
+        <span class="chg up">+0.16% +7.58</span>
+        <div class="sub">5日 +3.50% | 成交7331亿</div>
+      </div>
+      <div class="index-card">
+        <div class="name">深证成指</div>
+        <div class="price">14316.96</div>
+        <span class="chg up">+0.04% +5.95</span>
+        <div class="sub">5日 +6.46% | 成交1.36万亿</div>
+      </div>
+      <div class="index-card">
+        <div class="name">创业板指</div>
+        <div class="price">3537.21</div>
+        <span class="chg down">-0.73% -25.91</span>
+        <div class="sub">5日 +7.11% | 成交6579亿</div>
+      </div>
+      <div class="index-card">
+        <div class="name">科创50</div>
+        <div class="price">1737.77</div>
+        <span class="chg down">-0.36% -6.25</span>
+        <div class="sub">5日 +11.91% | 反弹修复</div>
+      </div>
+      <div class="index-card">
+        <div class="name">中证500</div>
+        <div class="price">8030.95</div>
+        <span class="chg up">+0.64% +50.83</span>
+        <div class="sub">5日 +8.31% | 成交4904亿</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Global Markets -->
+  <div class="section">
+    <div class="section-title">🌐 全球资产报价 <span class="badge">实时</span></div>
+    <div class="index-grid">
+      <div class="index-card">
+        <div class="name">纳斯达克100</div>
+        <div class="price">29915</div>
+        <span class="chg up">+0.27%</span>
+      </div>
+      <div class="index-card">
+        <div class="name">标普500</div>
+        <div class="price">7785.25</div>
+        <span class="chg up">+0.07%</span>
+      </div>
+      <div class="index-card">
+        <div class="name">恒生指数</div>
+        <div class="price">25945</div>
+        <span class="chg up">+1.10%</span>
+      </div>
+      <div class="index-card">
+        <div class="name">富时A50</div>
+        <div class="price">15044</div>
+        <span class="chg down">-0.01%</span>
+      </div>
+      <div class="index-card">
+        <div class="name">COMEX黄金</div>
+        <div class="price">4410.6</div>
+        <span class="chg up">+0.25%</span>
+        <div class="sub">历史新高</div>
+      </div>
+      <div class="index-card">
+        <div class="name">WTI原油</div>
+        <div class="price">78.50</div>
+        <span class="chg up">+0.41%</span>
+      </div>
+      <div class="index-card">
+        <div class="name">COMEX白银</div>
+        <div class="price">64.31</div>
+        <span class="chg up">+1.27%</span>
+      </div>
+      <div class="index-card">
+        <div class="name">10年美债收益率</div>
+        <div class="price">4.34%</div>
+        <span class="chg up">+0.01%</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Module Conflict -->
+  <div class="conflict">
+    <h3>⚠️ 模块冲突标注（Layer 8-9 整合）</h3>
+    <pre>⚠️ 模块冲突标注：
+• Layer 1 市场评分：68分（震荡偏强）
+• Layer 3 产业评分：CPO/光模块-15分（资金撤退）vs 稀土/有色/CXO +85分（加速）
+• Layer 4 资金主线：CPO大单出货-130亿 vs PCB/封测/CXO资金接力+150亿
+• 冲突解读：板块剧烈分化，高低切换特征明显
+  （高位CPO出货→低位稀土/CXO/PCB承接）
+• 操作建议：减仓高位CPO + 加仓低位接力方向
+  （胜宏科技/药明康德/长电科技/稀土）</pre>
+  </div>
+
+  <!-- Industry TOP10 -->
+  <div class="section">
+    <div class="section-title">🏭 未来 3-6 个月核心产业方向 TOP10 <span class="badge">Layer 3 独立评分</span></div>
+    <div class="industry-top10">
+      <div class="industry-card">
+        <div class="head">
+          <span class="title">① AI算力/光模块</span>
+          <span class="rating S">S 86</span>
+        </div>
+        <div class="desc">产业空间28 + 政策20 + 资金15 + 竞争18 + 估值5</div>
+        <div class="desc"><span class="stage 高潮">高潮→分化</span></div>
+        <div class="stocks"><strong>TOP5：</strong>胜宏科技 / 亨通光电 / 中际旭创 / 光迅科技 / 东山精密</div>
+      </div>
+      <div class="industry-card">
+        <div class="head">
+          <span class="title">② PCB/CCL</span>
+          <span class="rating S">S 90</span>
+        </div>
+        <div class="desc">产业27 + 政策18 + 资金20 + 竞争17 + 估值8</div>
+        <div class="desc"><span class="stage 加速">资金加速</span></div>
+        <div class="stocks"><strong>TOP5：</strong>胜宏科技 / 东山精密 / 国瓷材料 / 瑞芯微 / 长电科技</div>
+      </div>
+      <div class="industry-card">
+        <div class="head">
+          <span class="title">③ 稀土/小金属</span>
+          <span class="rating S">S 89</span>
+        </div>
+        <div class="desc">产业26 + 政策22 + 资金18 + 竞争16 + 估值7</div>
+        <div class="desc"><span class="stage 加速">资金加速→高潮</span></div>
+        <div class="stocks"><strong>TOP5：</strong>厦门钨业 / 中国稀土 / 中钨高新 / 寒锐钴业 / 翔鹭钨业</div>
+      </div>
+      <div class="industry-card">
+        <div class="head">
+          <span class="title">④ CXO/创新药</span>
+          <span class="rating S">S 85</span>
+        </div>
+        <div class="desc">产业25 + 政策18 + 资金17 + 竞争16 + 估值9</div>
+        <div class="desc"><span class="stage 进入">底部反弹</span></div>
+        <div class="stocks"><strong>TOP5：</strong>药明康德 / 毕得医药 / 泰格医药 / 华大智造 / 博腾股份</div>
+      </div>
+      <div class="industry-card">
+        <div class="head">
+          <span class="title">⑤ 半导体设备/材料</span>
+          <span class="rating S">S 85</span>
+        </div>
+        <div class="desc">产业27 + 政策22 + 资金16 + 竞争15 + 估值5</div>
+        <div class="desc"><span class="stage 高潮">高潮→分化</span></div>
+        <div class="stocks"><strong>TOP5：</strong>中芯国际 / 兆易创新 / 有研新材 / 盛美上海 / 长电科技</div>
+      </div>
+      <div class="industry-card">
+        <div class="head">
+          <span class="title">⑥ 机器人/智能制造</span>
+          <span class="rating A">A 83</span>
+        </div>
+        <div class="desc">产业24 + 政策20 + 资金14 + 竞争18 + 估值7</div>
+        <div class="desc"><span class="stage 进入">资金进入</span></div>
+        <div class="stocks"><strong>TOP5：</strong>宇树科技-W / 国电南瑞 / 长江电力 / 双环传动 / 上海电气</div>
+      </div>
+      <div class="industry-card">
+        <div class="head">
+          <span class="title">⑦ 黄金/贵金属</span>
+          <span class="rating A">A 77</span>
+        </div>
+        <div class="desc">产业20 + 政策14 + 资金18 + 竞争16 + 估值9</div>
+        <div class="desc"><span class="stage 加速">资金加速</span></div>
+        <div class="stocks"><strong>TOP5：</strong>紫金矿业 / 招金黄金 / 山东黄金 / 黄金ETF / 中金黄金</div>
+      </div>
+      <div class="industry-card">
+        <div class="head">
+          <span class="title">⑧ 电网设备/储能</span>
+          <span class="rating A">A 79</span>
+        </div>
+        <div class="desc">产业24 + 政策20 + 资金13 + 竞争15 + 估值7</div>
+        <div class="desc"><span class="stage 持续">持续流入</span></div>
+        <div class="stocks"><strong>TOP5：</strong>国电南瑞 / 思源电气 / 阳光电源 / 上海电气 / 赣锋锂业</div>
+      </div>
+      <div class="industry-card">
+        <div class="head">
+          <span class="title">⑨ 军工（地缘催化）</span>
+          <span class="rating A">A 76</span>
+        </div>
+        <div class="desc">产业22 + 政策20 + 资金14 + 竞争13 + 估值7</div>
+        <div class="desc"><span class="stage 加速">事件驱动</span></div>
+        <div class="stocks"><strong>TOP5：</strong>北方长龙 / 洪都航空 / 中航沈飞 / 中直股份 / 内蒙一机</div>
+      </div>
+      <div class="industry-card">
+        <div class="head">
+          <span class="title">⑩ 养殖业（周期反转）</span>
+          <span class="rating B">B 70</span>
+        </div>
+        <div class="desc">产业19 + 政策13 + 资金14 + 竞争15 + 估值9</div>
+        <div class="desc"><span class="stage 启动">底部启动</span></div>
+        <div class="stocks"><strong>TOP5：</strong>益生股份 / 新希望 / 海大集团 / 双汇发展 / 大北农</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- TOP30 Stock Scoring -->
+  <div class="section">
+    <div class="section-title">🎯 综合评分 TOP30 股票 <span class="badge">Layer 5-6 独立评分</span></div>
+    <table>
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>代码</th>
+          <th>名称</th>
+          <th>机会</th>
+          <th>风险扣</th>
+          <th>总分</th>
+          <th>评级</th>
+          <th>资金阶段</th>
+          <th>行业</th>
+          <th>操作建议</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>1</td><td class="code">sz300476</td><td class="name">胜宏科技</td>
+          <td>92</td><td>-5</td><td><strong>87</strong></td>
+          <td><span class="rating A">A</span></td>
+          <td><span class="stage 加速">加速</span></td>
+          <td>PCB</td>
+          <td><span class="operation 优先建仓">优先建仓</span></td>
+        </tr>
+        <tr>
+          <td>2</td><td class="code">sh603259</td><td class="name">药明康德</td>
+          <td>90</td><td>-8</td><td><strong>82</strong></td>
+          <td><span class="rating A">A</span></td>
+          <td><span class="stage 加速">加速</span></td>
+          <td>CXO</td>
+          <td><span class="operation 回踩建仓">回踩建仓</span></td>
+        </tr>
+        <tr>
+          <td>3</td><td class="code">sh601899</td><td class="name">紫金矿业</td>
+          <td>88</td><td>-7</td><td><strong>81</strong></td>
+          <td><span class="rating A">A</span></td>
+          <td><span class="stage 加速">加速</span></td>
+          <td>黄金</td>
+          <td><span class="operation 优先建仓">优先建仓</span></td>
+        </tr>
+        <tr>
+          <td>4</td><td class="code">sh600487</td><td class="name">亨通光电</td>
+          <td>88</td><td>-10</td><td><strong>78</strong></td>
+          <td><span class="rating A">A</span></td>
+          <td><span class="stage 加速">加速</span></td>
+          <td>光通信</td>
+          <td><span class="operation 持有">持有</span></td>
+        </tr>
+        <tr>
+          <td>5</td><td class="code">sz000831</td><td class="name">中国稀土</td>
+          <td>86</td><td>-10</td><td><strong>76</strong></td>
+          <td><span class="rating A">A</span></td>
+          <td><span class="stage 加速">加速</span></td>
+          <td>稀土</td>
+          <td><span class="operation 关注">关注</span></td>
+        </tr>
+        <tr>
+          <td>6</td><td class="code">sh600584</td><td class="name">长电科技</td>
+          <td>84</td><td>-8</td><td><strong>76</strong></td>
+          <td><span class="rating A">A</span></td>
+          <td><span class="stage 加速">加速</span></td>
+          <td>封测</td>
+          <td><span class="operation 回踩建仓">回踩建仓</span></td>
+        </tr>
+        <tr>
+          <td>7</td><td class="code">sh600900</td><td class="name">长江电力</td>
+          <td>78</td><td>-3</td><td><strong>75</strong></td>
+          <td><span class="rating A">A</span></td>
+          <td><span class="stage 持续">持续</span></td>
+          <td>电力</td>
+          <td><span class="operation 持有">持有</span></td>
+        </tr>
+        <tr>
+          <td>8</td><td class="code">sh600549</td><td class="name">厦门钨业</td>
+          <td>82</td><td>-8</td><td><strong>74</strong></td>
+          <td><span class="rating A">A</span></td>
+          <td><span class="stage 加速">加速</span></td>
+          <td>钨</td>
+          <td><span class="operation 关注">关注</span></td>
+        </tr>
+        <tr>
+          <td>9</td><td class="code">sz300618</td><td class="name">寒锐钴业</td>
+          <td>80</td><td>-7</td><td><strong>73</strong></td>
+          <td><span class="rating A">A</span></td>
+          <td><span class="stage 加速">加速</span></td>
+          <td>钴</td>
+          <td><span class="operation 关注">关注</span></td>
+        </tr>
+        <tr>
+          <td>10</td><td class="code">sh603893</td><td class="name">瑞芯微</td>
+          <td>80</td><td>-8</td><td><strong>72</strong></td>
+          <td><span class="rating A">A</span></td>
+          <td><span class="stage 关注">关注</span></td>
+          <td>SoC</td>
+          <td><span class="operation 关注">关注</span></td>
+        </tr>
+        <tr>
+          <td>11</td><td class="code">sz300285</td><td class="name">国瓷材料</td>
+          <td>85</td><td>-13</td><td><strong>72</strong></td>
+          <td><span class="rating A">A</span></td>
+          <td><span class="stage 加速">加速</span></td>
+          <td>电子化学品</td>
+          <td><span class="operation 持有">持有</span></td>
+        </tr>
+        <tr style="background:#fef2f2">
+          <td>12</td><td class="code">sz300308</td><td class="name">中际旭创 ⚠️</td>
+          <td>85</td><td>-22</td><td><strong>63</strong></td>
+          <td><span class="rating B">B</span></td>
+          <td><span class="stage 撤退">撤退</span></td>
+          <td>光模块</td>
+          <td><span class="operation 减仓">减仓</span></td>
+        </tr>
+        <tr style="background:#fef2f2">
+          <td>13</td><td class="code">sh688981</td><td class="name">中芯国际</td>
+          <td>75</td><td>-8</td><td><strong>67</strong></td>
+          <td><span class="rating B">B</span></td>
+          <td><span class="stage 关注">关注</span></td>
+          <td>半导体</td>
+          <td><span class="operation 关注">关注</span></td>
+        </tr>
+        <tr style="background:#fef2f2">
+          <td>14</td><td class="code">sh600406</td><td class="name">国电南瑞</td>
+          <td>70</td><td>-3</td><td><strong>67</strong></td>
+          <td><span class="rating B">B</span></td>
+          <td><span class="stage 持续">持续</span></td>
+          <td>电网</td>
+          <td><span class="operation 持有">持有</span></td>
+        </tr>
+        <tr style="background:#fef2f2">
+          <td>15</td><td class="code">sh600206</td><td class="name">有研新材</td>
+          <td>75</td><td>-5</td><td><strong>70</strong></td>
+          <td><span class="rating B">B</span></td>
+          <td><span class="stage 加速">加速</span></td>
+          <td>靶材</td>
+          <td><span class="operation 关注">关注</span></td>
+        </tr>
+        <tr>
+          <td>16</td><td class="code">sz002842</td><td class="name">翔鹭钨业</td>
+          <td>73</td><td>-7</td><td><strong>66</strong></td>
+          <td><span class="rating B">B</span></td>
+          <td><span class="stage 加速">加速</span></td>
+          <td>钨</td>
+          <td><span class="operation 关注">关注</span></td>
+        </tr>
+        <tr>
+          <td>17</td><td class="code">sh601728</td><td class="name">中国电信</td>
+          <td>68</td><td>-3</td><td><strong>65</strong></td>
+          <td><span class="rating B">B</span></td>
+          <td><span class="stage 持续">持续</span></td>
+          <td>通信运营</td>
+          <td><span class="operation 持有">持有</span></td>
+        </tr>
+        <tr>
+          <td>18</td><td class="code">sh600036</td><td class="name">招商银行</td>
+          <td>68</td><td>-3</td><td><strong>65</strong></td>
+          <td><span class="rating B">B</span></td>
+          <td><span class="stage 持续">持续</span></td>
+          <td>银行</td>
+          <td><span class="operation 持有">持有</span></td>
+        </tr>
+        <tr>
+          <td>19</td><td class="code">sh600028</td><td class="name">中国石化</td>
+          <td>65</td><td>-2</td><td><strong>63</strong></td>
+          <td><span class="rating B">B</span></td>
+          <td><span class="stage 持续">持续</span></td>
+          <td>石油</td>
+          <td><span class="operation 持有">持有</span></td>
+        </tr>
+        <tr>
+          <td>20</td><td class="code">sh601857</td><td class="name">中国石油</td>
+          <td>65</td><td>-2</td><td><strong>63</strong></td>
+          <td><span class="rating B">B</span></td>
+          <td><span class="stage 持续">持续</span></td>
+          <td>石油</td>
+          <td><span class="operation 持有">持有</span></td>
+        </tr>
+        <tr>
+          <td>21</td><td class="code">sz000506</td><td class="name">招金黄金</td>
+          <td>70</td><td>-7</td><td><strong>63</strong></td>
+          <td><span class="rating B">B</span></td>
+          <td><span class="stage 加速">加速</span></td>
+          <td>黄金</td>
+          <td><span class="operation 关注">关注</span></td>
+        </tr>
+        <tr>
+          <td>22</td><td class="code">sh600050</td><td class="name">中国联通</td>
+          <td>62</td><td>-2</td><td><strong>60</strong></td>
+          <td><span class="rating B">B</span></td>
+          <td><span class="stage 持续">持续</span></td>
+          <td>通信运营</td>
+          <td><span class="operation 持有">持有</span></td>
+        </tr>
+        <tr style="background:#fef2f2">
+          <td>23</td><td class="code">sh601318</td><td class="name">中国平安</td>
+          <td>65</td><td>-5</td><td><strong>60</strong></td>
+          <td><span class="rating B">B</span></td>
+          <td><span class="stage 持续">持续</span></td>
+          <td>保险</td>
+          <td><span class="operation 减仓">减仓</span></td>
+        </tr>
+        <tr style="background:#fef2f2">
+          <td>24</td><td class="code">sz002384</td><td class="name">东山精密 ⚠️</td>
+          <td>78</td><td>-18</td><td><strong>60</strong></td>
+          <td><span class="rating B">B</span></td>
+          <td><span class="stage 撤退">撤退</span></td>
+          <td>PCB+光模块</td>
+          <td><span class="operation 减仓">减仓</span></td>
+        </tr>
+        <tr style="background:#fef2f2">
+          <td>25</td><td class="code">sh603986</td><td class="name">兆易创新 ⚠️</td>
+          <td>73</td><td>-15</td><td><strong>58</strong></td>
+          <td><span class="rating B">B</span></td>
+          <td><span class="stage 撤退">撤退</span></td>
+          <td>存储</td>
+          <td><span class="operation 减仓">减仓</span></td>
+        </tr>
+        <tr style="background:#fef2f2">
+          <td>26</td><td class="code">sz002281</td><td class="name">光迅科技 ⚠️</td>
+          <td>78</td><td>-20</td><td><strong>58</strong></td>
+          <td><span class="rating B">B</span></td>
+          <td><span class="stage 撤退">撤退</span></td>
+          <td>光模块</td>
+          <td><span class="operation 减仓">减仓</span></td>
+        </tr>
+        <tr>
+          <td>27</td><td class="code">sz002458</td><td class="name">益生股份</td>
+          <td>65</td><td>-8</td><td><strong>57</strong></td>
+          <td><span class="rating C">C</span></td>
+          <td><span class="stage 启动">启动</span></td>
+          <td>养殖</td>
+          <td><span class="operation 关注">关注</span></td>
+        </tr>
+        <tr>
+          <td>28</td><td class="code">sz300353</td><td class="name">东土科技</td>
+          <td>62</td><td>-5</td><td><strong>57</strong></td>
+          <td><span class="rating C">C</span></td>
+          <td><span class="stage 关注">关注</span></td>
+          <td>工业互联</td>
+          <td><span class="operation 关注">关注</span></td>
+        </tr>
+        <tr>
+          <td>29</td><td class="code">sh603306</td><td class="name">华懋科技</td>
+          <td>65</td><td>-7</td><td><strong>58</strong></td>
+          <td><span class="rating C">C</span></td>
+          <td><span class="stage 关注">关注</span></td>
+          <td>CPO</td>
+          <td><span class="operation 关注">关注</span></td>
+        </tr>
+        <tr>
+          <td>30</td><td class="code">sh600397</td><td class="name">江钨装备</td>
+          <td>62</td><td>-5</td><td><strong>57</strong></td>
+          <td><span class="rating C">C</span></td>
+          <td><span class="stage 加速">加速</span></td>
+          <td>钨</td>
+          <td><span class="operation 关注">关注</span></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Portfolio Recommendations -->
+  <div class="section">
+    <div class="section-title">💼 组合管理建议 <span class="badge">Layer 8-9</span></div>
+    <div class="combo-grid">
+      <div class="combo">
+        <h3>🏛️ 鑫未来核心组合（中线 3-12个月）</h3>
+        <div class="item"><span>胜宏科技 <span class="rating A">A</span></span><span class="pct">12%</span></div>
+        <div class="item"><span>药明康德 <span class="rating A">A</span></span><span class="pct">10%</span></div>
+        <div class="item"><span>紫金矿业 <span class="rating A">A</span></span><span class="pct">10%</span></div>
+        <div class="item"><span>亨通光电 <span class="rating A">A</span></span><span class="pct">8%</span></div>
+        <div class="item"><span>长电科技 <span class="rating A">A</span></span><span class="pct">8%</span></div>
+        <div class="item"><span>中国稀土 <span class="rating A">A</span></span><span class="pct">7%</span></div>
+        <div class="item"><span>长江电力 <span class="rating A">A</span></span><span class="pct">6%</span></div>
+        <div class="item"><span>厦门钨业 <span class="rating A">A</span></span><span class="pct">6%</span></div>
+        <div class="item"><span>国瓷材料 <span class="rating A">A</span></span><span class="pct">5%</span></div>
+        <div class="item"><span>瑞芯微 <span class="rating A">A</span></span><span class="pct">5%</span></div>
+        <div class="item" style="border-top:2px solid #3b82f6;padding-top:10px"><strong>合计</strong><span class="pct">77%</span></div>
+        <div class="item"><span>建议仓位</span><span class="pct">50-60%</span></div>
+        <div class="item"><span>平均评分</span><span class="pct">76.4</span></div>
+      </div>
+      <div class="combo">
+        <h3>⚡ 鑫准出击短线机会池（5-20交易日）</h3>
+        <div class="item"><span>紫金矿业 <span class="rating A">A</span> ★★★★★</span><span class="pct">8%</span></div>
+        <div class="item"><span>胜宏科技 <span class="rating A">A</span> ★★★★★</span><span class="pct">6%</span></div>
+        <div class="item"><span>亨通光电 <span class="rating A">A</span> ★★★★</span><span class="pct">6%</span></div>
+        <div class="item"><span>长电科技 <span class="rating A">A</span> ★★★★</span><span class="pct">5%</span></div>
+        <div class="item"><span>药明康德 <span class="rating A">A</span> ★★★★</span><span class="pct">5%</span></div>
+        <div class="item"><span>中国稀土 <span class="rating A">A</span> ★★★★★</span><span class="pct">5%</span></div>
+        <div class="item" style="border-top:2px solid #3b82f6;padding-top:10px"><strong>合计</strong><span class="pct">35%</span></div>
+        <div class="item"><span>建议仓位</span><span class="pct">30-40%</span></div>
+        <div class="item"><span>止损规则</span><span class="pct">-7%强制</span></div>
+        <div class="item"><strong>事件驱动池</strong></div>
+        <div class="item"><span>北方长龙（地面兵装+20%）</span><span class="pct">关注</span></div>
+        <div class="item"><span>招金黄金（黄金+9.98%）</span><span class="pct">关注</span></div>
+        <div class="item"><span>益生股份（家禽+10.02%）</span><span class="pct">关注</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Position Adjustment -->
+  <div class="section">
+    <div class="section-title">🔄 当前持仓调整建议 <span class="badge">T+1</span></div>
+    <table>
+      <thead>
+        <tr>
+          <th>操作</th>
+          <th>标的</th>
+          <th>代码</th>
+          <th>理由</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr style="background:#dcfce7">
+          <td><span class="operation 优先建仓">🟢 加仓</span></td>
+          <td class="name">胜宏科技</td><td class="code">sz300476</td>
+          <td>PCB龙头5日+51%，AI服务器主线，资金加速</td>
+        </tr>
+        <tr style="background:#dcfce7">
+          <td><span class="operation 回踩建仓">🟢 加仓</span></td>
+          <td class="name">药明康德</td><td class="code">sh603259</td>
+          <td>CXO底部反弹确立，5日+25%，业绩拐点</td>
+        </tr>
+        <tr style="background:#dcfce7">
+          <td><span class="operation 回踩建仓">🟢 加仓</span></td>
+          <td class="name">长电科技</td><td class="code">sh600584</td>
+          <td>封测龙头资金接力，5日+28%</td>
+        </tr>
+        <tr style="background:#fef2f2">
+          <td><span class="operation 减仓">🔴 减仓50%</span></td>
+          <td class="name">中际旭创</td><td class="code">sz300308</td>
+          <td>主力净流出72.4亿历史天量，-6.01%</td>
+        </tr>
+        <tr style="background:#fef2f2">
+          <td><span class="operation 减仓">🔴 减仓50%</span></td>
+          <td class="name">光迅科技</td><td class="code">sz002281</td>
+          <td>主力净流出22.9亿，-7.64%巨量出货</td>
+        </tr>
+        <tr style="background:#fef2f2">
+          <td><span class="operation 减仓">🔴 减仓30%</span></td>
+          <td class="name">东山精密</td><td class="code">sz002384</td>
+          <td>主力净流出29.6亿，-4.78%</td>
+        </tr>
+        <tr style="background:#fef2f2">
+          <td><span class="operation 减仓">🔴 减仓30%</span></td>
+          <td class="name">兆易创新</td><td class="code">sh603986</td>
+          <td>主力净流出31.7亿，-3.36%</td>
+        </tr>
+        <tr style="background:#fef2f2">
+          <td><span class="operation 减仓">🔴 减仓</span></td>
+          <td class="name">中国平安</td><td class="code">sh601318</td>
+          <td>主力净流出4.07亿</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Risk Section -->
+  <div class="section">
+    <div class="section-title">⚠️ 风险提示 <span class="badge">Layer 9</span></div>
+    <div class="yellow-warn">🟡 风险等级：黄色预警 · CPO天量出货 + 业绩披露期</div>
+    <div class="risk-list">
+      <div class="risk-item">
+        <div class="num">1</div>
+        <div class="body">
+          <h4>CPO光模块"三只天量出货"风险（核心风险）</h4>
+          <p>中际旭创-6.01%成交457亿（历史天量），主力净流出72.4亿；光迅科技-7.64%成交142亿，主力净流出22.9亿；东山精密-4.78%成交190亿，主力净流出29.6亿。三只同步出货+巨量=短线顶部确立信号。</p>
+        </div>
+      </div>
+      <div class="risk-item">
+        <div class="num">2</div>
+        <div class="body">
+          <h4>半导体主力撤退风险</h4>
+          <p>兆易创新主力净流出31.7亿；中芯国际-2.99亿；长电科技-0.45亿（但5日+17.3亿）。半导体整体资金面分化，需精选个股。</p>
+        </div>
+      </div>
+      <div class="risk-item">
+        <div class="num">3</div>
+        <div class="body">
+          <h4>中报披露期"业绩杀"风险</h4>
+          <p>8月15日起进入中报密集披露期。高位股（兆易/中际/光迅）面临业绩验证，建议提前减仓高估值品种。</p>
+        </div>
+      </div>
+      <div class="risk-item">
+        <div class="num">4</div>
+        <div class="body">
+          <h4>情绪过热风险</h4>
+          <p>涨停>50只，情绪指标狂热。局部热点赚钱效应 + 指数失真，容易引发"高位接力"亏损。</p>
+        </div>
+      </div>
+      <div class="risk-item">
+        <div class="num">5</div>
+        <div class="body">
+          <h4>缩量震荡风险</h4>
+          <p>成交额处于90-110%均值区间，存量博弈，增量资金不足。板块轮动加速，赚钱难度提升。</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Conclusion -->
+  <div class="section">
+    <div class="section-title">📋 总结</div>
+    <table>
+      <tr><td style="width:120px"><strong>市场定位</strong></td><td>震荡偏强 · 结构性分化</td></tr>
+      <tr><td><strong>操作核心</strong></td><td>减仓CPO高位股 + 加仓PCB/CXO/稀土接力方向</td></tr>
+      <tr><td><strong>仓位建议</strong></td><td>50%-70%（中线50-60% + 短线30-40%）</td></tr>
+      <tr><td><strong>关键观察</strong></td><td>8月15日起中报披露 / 关注PCB/CXO/稀土持续性</td></tr>
+    </table>
+  </div>
+
+  <div class="footer">
+    <p>本报告由 AI 智能股票组合主理人 V5.0 系统自动生成 · 数据来源：westock-mcp / tdx-connector / 期货外汇实时报价</p>
+    <p style="margin-top:8px">本系统遵循半隔离信息规则 · 15:30 唯一正式市场评分节点</p>
+  </div>
+
+</div>
+</body>
+</html>

@@ -1,0 +1,499 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>全球市场扫描 | 2026-08-17 08:00 | V5.0</title>
+    <style>
+        :root {
+            --bg: #f8f9fa;
+            --card-bg: #ffffff;
+            --text: #1f2328;
+            --text-secondary: #656d76;
+            --border: #d1d9e0;
+            --up: #cf222e;
+            --down: #1a7f37;
+            --neutral: #6e7781;
+            --banner-neutral: #6e7781;
+            --header-bg: #ffffff;
+            --shadow: 0 1px 3px rgba(31, 35, 40, 0.08);
+            --radius: 8px;
+            --status-warn: #f0ad4e;
+            --status-ok: #1a7f37;
+            --status-bad: #cf222e;
+        }
+        * { box-sizing: border-box; }
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            line-height: 1.6;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 24px 16px 48px;
+        }
+        header {
+            background: var(--header-bg);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            padding: 24px 28px;
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+        .title-block h1 {
+            margin: 0 0 6px 0;
+            font-size: 26px;
+            font-weight: 700;
+        }
+        .title-block .meta {
+            color: var(--text-secondary);
+            font-size: 14px;
+        }
+        .tag {
+            display: inline-block;
+            background: #0969da;
+            color: #fff;
+            padding: 6px 14px;
+            border-radius: 16px;
+            font-size: 13px;
+            font-weight: 600;
+        }
+        .section {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            padding: 22px 26px;
+            margin-bottom: 18px;
+        }
+        .section h2 {
+            margin: 0 0 16px 0;
+            font-size: 18px;
+            font-weight: 700;
+            border-left: 4px solid #0969da;
+            padding-left: 12px;
+        }
+        .section h3 {
+            margin: 20px 0 10px 0;
+            font-size: 15px;
+            color: var(--text-secondary);
+            font-weight: 600;
+        }
+        .status-bar {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 12px 16px;
+            border-radius: var(--radius);
+            background: #fff8e6;
+            border: 1px solid #f0ad4e;
+            margin-bottom: 14px;
+        }
+        .status-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: var(--status-warn);
+        }
+        .status-text {
+            font-weight: 700;
+            color: #8a5a00;
+        }
+        .status-detail {
+            color: var(--text-secondary);
+            font-size: 13px;
+        }
+        ul.clean {
+            margin: 0;
+            padding-left: 20px;
+        }
+        ul.clean li {
+            margin-bottom: 7px;
+        }
+        .cards-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 14px;
+        }
+        .card {
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 16px;
+            background: #fafafa;
+        }
+        .card .name {
+            font-size: 13px;
+            color: var(--text-secondary);
+            margin-bottom: 4px;
+        }
+        .card .price {
+            font-size: 20px;
+            font-weight: 700;
+            margin-bottom: 6px;
+        }
+        .card .change {
+            font-size: 14px;
+            font-weight: 700;
+        }
+        .card .signal {
+            font-size: 12px;
+            color: var(--text-secondary);
+            margin-top: 8px;
+            line-height: 1.5;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 14px;
+        }
+        th, td {
+            padding: 11px 12px;
+            border-bottom: 1px solid var(--border);
+            text-align: left;
+        }
+        th {
+            background: #f6f8fa;
+            font-weight: 600;
+            color: var(--text-secondary);
+        }
+        tr:hover td {
+            background: #f6f8fa;
+        }
+        .up { color: var(--up); font-weight: 700; }
+        .down { color: var(--down); font-weight: 700; }
+        .neutral { color: var(--neutral); font-weight: 700; }
+        .tendency-banner {
+            border-radius: var(--radius);
+            padding: 20px 24px;
+            background: #f6f8fa;
+            border: 1px solid var(--border);
+            margin-top: 10px;
+        }
+        .tendency-label {
+            font-size: 15px;
+            color: var(--text-secondary);
+            margin-bottom: 6px;
+        }
+        .tendency-value {
+            font-size: 32px;
+            font-weight: 800;
+            color: var(--banner-neutral);
+            margin-bottom: 14px;
+        }
+        .tendency-value.bull { color: var(--up); }
+        .tendency-value.bear { color: var(--down); }
+        .signal-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 16px;
+            margin-top: 14px;
+        }
+        .signal-box {
+            border-radius: var(--radius);
+            padding: 16px 18px;
+            border: 1px solid var(--border);
+        }
+        .signal-box.bullish {
+            background: #fff5f5;
+            border-color: #ffc8c8;
+        }
+        .signal-box.bearish {
+            background: #f0fff4;
+            border-color: #c6f6d5;
+        }
+        .signal-box.focus {
+            background: #fff8e6;
+            border-color: #f0d5a3;
+        }
+        .signal-box h4 {
+            margin: 0 0 10px 0;
+            font-size: 15px;
+            font-weight: 700;
+        }
+        .signal-box.bullish h4 { color: var(--up); }
+        .signal-box.bearish h4 { color: var(--down); }
+        .signal-box.focus h4 { color: #8a5a00; }
+        .signal-box ul {
+            margin: 0;
+            padding-left: 18px;
+            font-size: 13px;
+        }
+        .signal-box li {
+            margin-bottom: 6px;
+        }
+        .note {
+            font-size: 13px;
+            color: var(--text-secondary);
+            margin-top: 10px;
+            padding: 10px 14px;
+            background: #f6f8fa;
+            border-radius: var(--radius);
+            border-left: 3px solid var(--neutral);
+        }
+        footer {
+            text-align: center;
+            color: var(--text-secondary);
+            font-size: 13px;
+            margin-top: 30px;
+            padding: 16px;
+        }
+        @media (max-width: 640px) {
+            header { flex-direction: column; align-items: flex-start; }
+            .cards-grid { grid-template-columns: 1fr; }
+            .signal-grid { grid-template-columns: 1fr; }
+            th, td { padding: 9px 8px; font-size: 13px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="title-block">
+                <h1>🌍 全球市场扫描</h1>
+                <div class="meta">2026-08-17 08:00 · Market Intelligence Agent · V5.0</div>
+            </div>
+            <div class="tag">08:00 全球扫描</div>
+        </header>
+
+        <div class="section">
+            <h2>⚠️ 数据验证报告</h2>
+            <div class="status-bar">
+                <div class="status-dot"></div>
+                <div>
+                    <span class="status-text">验证状态：警告</span>
+                    <span class="status-detail">部分数据存在来源冲突/单源，已标注</span>
+                </div>
+            </div>
+            <ul class="clean">
+                <li><strong>关1 交叉验证：</strong>A股指数 westock 与 WebSearch 收盘数据基本一致（上证/沪深300/创业板/中证500/中证1000差异&lt;0.5%）；tdx-connector 未连接，A股指数实际为[单源 westock + 多源 WebSearch 互证]（置信度中等）。</li>
+                <li><strong>关1 交叉验证：</strong>科创50 微小差异 — westock 报 1717.68（-0.07%），WebSearch 报 1718.03（+0.11%），差异&lt;0.05%，以 WebSearch 收盘口径为准。</li>
+                <li><strong>关1 交叉验证：</strong>美股三大指数 WebSearch 多源一致（道指/标普/纳指）。</li>
+                <li><strong>关1 交叉验证：</strong>大宗商品 westock 期货返回 8/16-8/17 实时报价，与 8/14 隔夜收盘存在时间差；本报告以 WebSearch 8/14 收盘数据为准。</li>
+                <li><strong>关1 交叉验证：</strong>外汇数据 westock 未返回实时报价，美元指数/离岸人民币为[单源 WebSearch]（置信度低）。</li>
+                <li><strong>关2 异常检测：</strong>A股 8/14 两市成交 2.14 万亿（较 8/13 缩量约 4080 亿）；指数收红但个股跌多涨少（约 2400 涨 / 2970 跌）；主力资金净流出 217.53 亿；股票型 ETF 净流出 183.2 亿。</li>
+                <li><strong>关3 逻辑校验：</strong>指数价格×涨跌幅误差&lt;0.05%，通过；股票代码与名称匹配，通过。</li>
+            </ul>
+        </div>
+
+        <div class="section">
+            <h2>一、隔夜外盘</h2>
+            <div class="cards-grid">
+                <div class="card">
+                    <div class="name">道琼斯</div>
+                    <div class="price">53732.41</div>
+                    <div class="change down">-0.20%</div>
+                    <div class="signal">美国7月零售销售环比-0.6%超预期转负，消费数据走弱压制蓝筹</div>
+                </div>
+                <div class="card">
+                    <div class="name">标普500</div>
+                    <div class="price">7785.76</div>
+                    <div class="change down">-0.17%</div>
+                    <div class="signal">高位小幅回调，全周仍累涨0.36%</div>
+                </div>
+                <div class="card">
+                    <div class="name">纳斯达克</div>
+                    <div class="price">26729.16</div>
+                    <div class="change down">-0.28%</div>
+                    <div class="signal">大型科技股多数收跌，英伟达/微软/亚马逊承压</div>
+                </div>
+                <div class="card">
+                    <div class="name">费城半导体</div>
+                    <div class="price">—</div>
+                    <div class="change down">-0.31%</div>
+                    <div class="signal">存储股逆势大涨（闪迪+7.39%/希捷+5.65%/西部数据+4.41%）</div>
+                </div>
+                <div class="card">
+                    <div class="name">纳斯达克中国金龙</div>
+                    <div class="price">—</div>
+                    <div class="change up">+0.61%</div>
+                    <div class="signal">中概股小幅反弹，情绪较前日-1.84%有所修复</div>
+                </div>
+                <div class="card">
+                    <div class="name">韩国KOSPI</div>
+                    <div class="price">6977.94</div>
+                    <div class="change up">+2.42%</div>
+                    <div class="signal">全周大涨约11%，半导体存储领涨，但属深跌后暴力修复</div>
+                </div>
+            </div>
+            <div class="note">
+                隔夜核心事件：美国7月零售销售环比-0.6%（预期+0.1%，去年5月以来最大降幅）；密歇根消费者信心指数骤降至51.0；CME“美联储观察”显示9月维持利率不变概率67.5%、加息25bp概率32.5%；10年期美债收益率约4.639%，美元指数99.96，离岸人民币6.7446。
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>二、大宗商品与外汇</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>品种</th>
+                        <th>最新</th>
+                        <th>变动</th>
+                        <th>对A股影响</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>WTI原油</td>
+                        <td>82.40 美元</td>
+                        <td class="up">+1.42%</td>
+                        <td>油价反弹，霍尔木兹局势仍紧张，利好能源股但压制制造业成本预期</td>
+                    </tr>
+                    <tr>
+                        <td>布伦特原油</td>
+                        <td>88.52 美元</td>
+                        <td class="up">+1.67%</td>
+                        <td>同上，能源板块情绪偏正面</td>
+                    </tr>
+                    <tr>
+                        <td>COMEX黄金</td>
+                        <td>约 4432 美元</td>
+                        <td class="up">+0.26%</td>
+                        <td>避险需求与降息预期交织，贵金属高位震荡</td>
+                    </tr>
+                    <tr>
+                        <td>现货黄金</td>
+                        <td>4376.16 美元</td>
+                        <td class="up">+0.60%</td>
+                        <td>同上</td>
+                    </tr>
+                    <tr>
+                        <td>美元指数</td>
+                        <td>99.96</td>
+                        <td class="down">-0.01%</td>
+                        <td>维持100关口下方弱美元，人民币资产外部压力不大</td>
+                    </tr>
+                    <tr>
+                        <td>离岸人民币</td>
+                        <td>6.7446</td>
+                        <td class="up">升14基点</td>
+                        <td>人民币升值方向，利好北向回流</td>
+                    </tr>
+                    <tr>
+                        <td>10年期美债</td>
+                        <td>4.639%</td>
+                        <td class="down">-5.16bp</td>
+                        <td>全球流动性环境边际改善</td>
+                    </tr>
+                </tbody>
+            </table>
+            <div class="note">数据说明：大宗商品以 WebSearch 8/14 隔夜收盘为主；westock 期货接口返回的为 8/16-8/17 实时电子盘数据，存在时间差，已标注。</div>
+        </div>
+
+        <div class="section">
+            <h2>三、A股指数概览</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>指数</th>
+                        <th>昨收</th>
+                        <th>近5日趋势</th>
+                        <th>位置判断</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>上证指数</td>
+                        <td>3927.18 <span class="up">+0.01%</span></td>
+                        <td class="down">-0.99%</td>
+                        <td>周线收阴，3900点支撑暂有效，3950点压力明显</td>
+                    </tr>
+                    <tr>
+                        <td>沪深300</td>
+                        <td>4665.88 <span class="up">+0.04%</span></td>
+                        <td class="up">+0.20%</td>
+                        <td>权重横盘，大权重几乎原地踏步</td>
+                    </tr>
+                    <tr>
+                        <td>中证500</td>
+                        <td>7990.33 <span class="up">+0.28%</span></td>
+                        <td class="up">+6.49%</td>
+                        <td>中小盘周涨幅领先，但周五缩量反弹</td>
+                    </tr>
+                    <tr>
+                        <td>中证1000</td>
+                        <td>7769.82 <span class="up">+0.70%</span></td>
+                        <td class="up">+2.46%</td>
+                        <td>小票弹性更大，仍处震荡格局</td>
+                    </tr>
+                    <tr>
+                        <td>创业板指</td>
+                        <td>3626.30 <span class="up">+1.12%</span></td>
+                        <td class="up">+2.52%</td>
+                        <td>本周唯一周线收红宽基，重回3600点上方</td>
+                    </tr>
+                    <tr>
+                        <td>科创50</td>
+                        <td>1718.03 <span class="up">+0.11%</span></td>
+                        <td class="up">+0.50%</td>
+                        <td>半导体分化，设备抗跌、存储震荡磨底</td>
+                    </tr>
+                </tbody>
+            </table>
+            <div class="note">
+                A股 8/14 画像：沪深两市成交约 2.14 万亿元（较 8/13 缩量约 4080 亿），缩量修复；上涨约 2400 只 / 下跌约 2970 只，涨停 63-74 只 / 跌停 3-10 只；主力资金净流出 217.53 亿，北向资金净买入 16.24 亿（力度克制）。板块方面，通信（CPO/光模块/国产光芯片）+74.26亿、有色金属+51.83亿、医药生物+41.57亿流入；电子-94.71亿、非银金融-62.38亿、公用事业-43.25亿流出。股票型 ETF 全天净流出 183.2 亿。
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>四、市场环境临时倾向</h2>
+            <div class="tendency-banner">
+                <div class="tendency-label">08:00 临时倾向</div>
+                <div class="tendency-value">中性</div>
+                <ul class="clean">
+                    <li><strong>外部多空交织：</strong>美股三大指数小幅收跌反映消费数据走弱，但存储半导体逆势大涨、中概金龙+0.61%修复；9月加息概率未进一步升温但仍有32.5%概率，政策不确定性维持。</li>
+                    <li><strong>A股缩量弱修复：</strong>8/14 创业板领涨但沪指仅微红，个股跌多涨少，成交额从 2.55 万亿快速缩至 2.14 万亿，说明反弹主要由科技龙头带动，市场整体赚钱效应不足。</li>
+                    <li><strong>资金结构偏谨慎：</strong>主力资金净流出 217.53 亿，股票型 ETF 净流出 183.2 亿，北向仅小幅买入 16.24 亿，增量资金入场意愿不足，仍为存量博弈。</li>
+                    <li><strong>板块轮动加剧：</strong>资金从高位权重/非银/公用事业撤出，流向通信（CPO/国产光芯片）、有色（超跌反弹）、医药（避险），高低切换特征明显。</li>
+                    <li><strong>流动性托底：</strong>央行 8/14 开展 1 万亿元 6 个月期买断式逆回购（等额续作），叠加隔夜逆回购操作，资金面整体宽松，为市场提供流动性底。</li>
+                </ul>
+                <div class="note">正式市场评分（0-100）将在 <strong>15:30 收盘分析</strong> 中统一输出；本节点仅提供临时倾向，09:00/11:30 节点不引用此判断。</div>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>五、今日关键信号</h2>
+            <div class="signal-grid">
+                <div class="signal-box bullish">
+                    <h4>利多</h4>
+                    <ul>
+                        <li>中概股金龙指数+0.61%反弹，港股/中概情绪小幅修复。</li>
+                        <li>隔夜美股存储股大涨（闪迪+7.39%/希捷+5.65%），对A股半导体/存储方向存在映射机会。</li>
+                        <li>央行万亿流动性投放托底，资金面维持宽松。</li>
+                        <li>离岸人民币维持 6.7446 偏强位置，弱美元环境未改。</li>
+                        <li>通信网年内投资 8000-1 万亿政策催化，CPO/光模块/国产光芯片方向受资金青睐。</li>
+                    </ul>
+                </div>
+                <div class="signal-box bearish">
+                    <h4>利空</h4>
+                    <ul>
+                        <li>美股三大指数小幅收跌，美国7月零售销售负增长、消费者信心骤降，全球经济放缓担忧升温。</li>
+                        <li>A股 8/14 缩量反弹，个股跌多涨少，主力资金与 ETF 双双净流出，反弹质量一般。</li>
+                        <li>高位题材股批量退潮，电力/非银/公用事业板块资金兑现离场。</li>
+                        <li>电子板块主力净流出 94.71 亿，半导体/存储方向仍承压。</li>
+                    </ul>
+                </div>
+                <div class="signal-box focus">
+                    <h4>重点关注</h4>
+                    <ul>
+                        <li>A股今日能否在 3900 点上方企稳，并观察成交量能否重回 2.3 万亿以上——缩量企稳是调整结束信号，持续缩量则需警惕反弹空间受限。</li>
+                        <li>通信/CPO/国产光芯片方向能否延续强势，以及半导体存储能否承接美股存储大涨映射。</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <footer>
+            ⚡ V5.0系统 | Market Intelligence Agent | 2026-08-17 08:00
+        </footer>
+    </div>
+</body>
+</html>

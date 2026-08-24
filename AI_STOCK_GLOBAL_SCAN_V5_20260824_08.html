@@ -1,0 +1,558 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>全球市场扫描 | 2026-08-24 08:00 | V5.0</title>
+<style>
+  :root {
+    --bg: #f6f8fa;
+    --card-bg: #ffffff;
+    --text: #24292f;
+    --text-secondary: #57606a;
+    --border: #d0d7de;
+    --up: #cf222e;
+    --down: #1a7f37;
+    --warn: #d29922;
+    --warn-bg: #fff8c5;
+    --ok: #1a7f37;
+    --ok-bg: #dafbe1;
+    --error: #cf222e;
+    --error-bg: #ffebe9;
+    --neutral: #6e7781;
+    --neutral-bg: #eaeef2;
+    --accent: #0969da;
+    --shadow: 0 1px 2px rgba(31,35,40,0.04), 0 1px 3px rgba(31,35,40,0.08);
+  }
+  * { box-sizing: border-box; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans SC", "PingFang SC", "Microsoft YaHei", sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    margin: 0;
+    padding: 0;
+    line-height: 1.6;
+  }
+  .container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 24px 16px 40px;
+  }
+  header {
+    background: var(--card-bg);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 24px;
+    margin-bottom: 20px;
+    box-shadow: var(--shadow);
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+  header h1 {
+    margin: 0;
+    font-size: 22px;
+    font-weight: 700;
+    color: var(--text);
+  }
+  .meta {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    flex-wrap: wrap;
+  }
+  .badge {
+    font-size: 12px;
+    padding: 4px 10px;
+    border-radius: 20px;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+  }
+  .badge-time {
+    background: #ddf4ff;
+    color: #0969da;
+  }
+  .badge-version {
+    background: #f6f8fa;
+    color: var(--text-secondary);
+    border: 1px solid var(--border);
+  }
+  .date-line {
+    color: var(--text-secondary);
+    font-size: 13px;
+    margin-top: 6px;
+  }
+
+  /* 验证状态条 */
+  .status-bar {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 14px 18px;
+    border-radius: 10px;
+    margin-bottom: 20px;
+    font-size: 14px;
+    font-weight: 500;
+  }
+  .status-warn {
+    background: var(--warn-bg);
+    color: #7a5c00;
+    border: 1px solid #e9d89c;
+  }
+  .status-ok {
+    background: var(--ok-bg);
+    color: #1a7f37;
+    border: 1px solid #9ee2b0;
+  }
+  .status-error {
+    background: var(--error-bg);
+    color: #7d1212;
+    border: 1px solid #f0b4b4;
+  }
+
+  /* 板块 */
+  .section {
+    background: var(--card-bg);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 20px 24px;
+    margin-bottom: 20px;
+    box-shadow: var(--shadow);
+  }
+  .section h2 {
+    margin: 0 0 16px;
+    font-size: 17px;
+    font-weight: 700;
+    color: var(--text);
+    padding-bottom: 10px;
+    border-bottom: 1px solid var(--border);
+  }
+  .section h3 {
+    margin: 16px 0 10px;
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--text-secondary);
+  }
+
+  /* 卡片网格 */
+  .card-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 14px;
+  }
+  .card {
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 16px;
+    background: #fafbfc;
+  }
+  .card-title {
+    font-size: 13px;
+    color: var(--text-secondary);
+    margin-bottom: 6px;
+  }
+  .card-value {
+    font-size: 20px;
+    font-weight: 700;
+    margin-bottom: 4px;
+  }
+  .card-change {
+    font-size: 14px;
+    font-weight: 600;
+  }
+  .card-note {
+    font-size: 12px;
+    color: var(--text-secondary);
+    margin-top: 6px;
+  }
+  .up { color: var(--up); }
+  .down { color: var(--down); }
+
+  /* 表格 */
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 14px;
+  }
+  th, td {
+    padding: 10px 12px;
+    text-align: left;
+    border-bottom: 1px solid var(--border);
+  }
+  th {
+    background: #f6f8fa;
+    font-weight: 600;
+    color: var(--text-secondary);
+    font-size: 13px;
+  }
+  tr:hover { background: #f6f8fa; }
+  .num { font-variant-numeric: tabular-nums; }
+
+  /* 倾向 Banner */
+  .bias-banner {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 20px 24px;
+    border-radius: 12px;
+    margin-bottom: 16px;
+    border: 1px solid var(--border);
+  }
+  .bias-neutral {
+    background: var(--neutral-bg);
+    color: var(--text);
+    border-color: #c9d1d9;
+  }
+  .bias-bull {
+    background: #ffebe9;
+    color: #7d1212;
+    border-color: #f0b4b4;
+  }
+  .bias-bear {
+    background: #dafbe1;
+    color: #1a7f37;
+    border-color: #9ee2b0;
+  }
+  .bias-label {
+    font-size: 28px;
+    font-weight: 800;
+    white-space: nowrap;
+  }
+  .bias-body {
+    font-size: 14px;
+    line-height: 1.7;
+  }
+  .bias-body ol {
+    margin: 8px 0 0 18px;
+    padding: 0;
+  }
+  .bias-body li {
+    margin-bottom: 6px;
+  }
+
+  /* 信号区 */
+  .signal-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 16px;
+  }
+  .signal-box {
+    border-radius: 10px;
+    padding: 16px;
+    border: 1px solid var(--border);
+  }
+  .signal-bull {
+    background: #fff8f7;
+    border-color: #f0b4b4;
+  }
+  .signal-bear {
+    background: #f6fdf8;
+    border-color: #9ee2b0;
+  }
+  .signal-focus {
+    background: #ddf4ff;
+    border-color: #a0d3ff;
+  }
+  .signal-title {
+    font-weight: 700;
+    font-size: 15px;
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .signal-bull .signal-title { color: var(--up); }
+  .signal-bear .signal-title { color: var(--down); }
+  .signal-focus .signal-title { color: var(--accent); }
+  .signal-box ul {
+    margin: 0;
+    padding-left: 18px;
+    font-size: 14px;
+    line-height: 1.8;
+  }
+  .signal-box li { margin-bottom: 6px; }
+
+  /* 小字注释 */
+  .fine {
+    font-size: 12px;
+    color: var(--text-secondary);
+    line-height: 1.6;
+  }
+  .fine code {
+    background: #eaeef2;
+    padding: 1px 5px;
+    border-radius: 4px;
+    font-family: ui-monospace, SFMono-Regular, monospace;
+  }
+
+  footer {
+    text-align: center;
+    color: var(--text-secondary);
+    font-size: 12px;
+    margin-top: 28px;
+    padding-top: 16px;
+    border-top: 1px solid var(--border);
+  }
+
+  @media (max-width: 640px) {
+    .container { padding: 16px 12px 32px; }
+    header { flex-direction: column; }
+    .card-grid { grid-template-columns: repeat(2, 1fr); }
+    .bias-banner { flex-direction: column; align-items: flex-start; }
+    th, td { padding: 8px; font-size: 13px; }
+  }
+</style>
+</head>
+<body>
+<div class="container">
+
+  <header>
+    <div>
+      <h1>🌍 全球市场扫描</h1>
+      <div class="date-line">2026-08-24（周一）08:00 发布</div>
+    </div>
+    <div class="meta">
+      <span class="badge badge-time">08:00 全球扫描</span>
+      <span class="badge badge-version">V5.0 Market Intelligence</span>
+    </div>
+  </header>
+
+  <!-- 数据验证状态条 -->
+  <div class="status-bar status-warn">
+    <span style="font-size:18px;">⚠️</span>
+    <div>
+      <strong>数据验证：警告（部分单源，Brent 冲突已标注）</strong><br>
+      <span class="fine">
+        关1 交叉验证：A股 [单源] tdx 未连接；美股 ✅ 多源一致；Brent ⚠️ 冲突（93.24 vs 91.69，取均值）；外汇 ✅ 一致。<br>
+        关2 异常检测：A股数据 [时效警告]（周末休市，距当前 65h）；美股数据 [时效警告]（距当前 27h）；无量能异常。<br>
+        关3 逻辑校验：上证 +0.04% 但个股跌多涨少（2505 涨 vs 2862 跌）→ 指数失真标注。
+      </span>
+    </div>
+  </div>
+
+  <!-- 隔夜外盘 -->
+  <div class="section">
+    <h2>一、隔夜外盘（美东 8/21 周五收盘）</h2>
+    <div class="card-grid">
+      <div class="card">
+        <div class="card-title">道琼斯</div>
+        <div class="card-value">53,277.01</div>
+        <div class="card-change up">▲ +0.98%</div>
+        <div class="card-note">周线 -0.85% 两连跌</div>
+      </div>
+      <div class="card">
+        <div class="card-title">标普 500</div>
+        <div class="card-value">7,674.37</div>
+        <div class="card-change up">▲ +0.43%</div>
+        <div class="card-note">周线 -1.43%，终结三周连涨</div>
+      </div>
+      <div class="card">
+        <div class="card-title">纳斯达克</div>
+        <div class="card-value">26,180.45</div>
+        <div class="card-change up">▲ +0.43%</div>
+        <div class="card-note">周线 -2.05%，科技本周承压</div>
+      </div>
+      <div class="card">
+        <div class="card-title">中概金龙指数</div>
+        <div class="card-value">—</div>
+        <div class="card-change up">▲ +0.40%</div>
+        <div class="card-note">网易 +6%，阿里 -8%</div>
+      </div>
+      <div class="card">
+        <div class="card-title">英伟达 NVDA</div>
+        <div class="card-value">—</div>
+        <div class="card-change down">▼ -0.98%</div>
+        <div class="card-note">财报前（周三盘后）谨慎</div>
+      </div>
+      <div class="card">
+        <div class="card-title">特斯拉 TSLA</div>
+        <div class="card-value">—</div>
+        <div class="card-change up">▲ +5.14%</div>
+        <div class="card-note">周五领涨大型科技</div>
+      </div>
+    </div>
+    <div class="fine" style="margin-top:12px;">
+      欧洲全线反弹：德 DAX +0.59% / 英富时 +0.64% / 法 CAC +0.37%。资源股领涨：南方铜业 +8.69%，黄金股普涨。<br>
+      <strong>下周重磅：</strong>贝森特 8/24（今日）发布会；英伟达 8/26 盘后财报；沃什 8/28 杰克逊霍尔演讲。
+    </div>
+  </div>
+
+  <!-- 大宗与外汇 -->
+  <div class="section">
+    <h2>二、大宗商品与外汇</h2>
+    <table>
+      <thead>
+        <tr><th>品种</th><th>最新</th><th>变动</th><th>对 A 股影响</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>COMEX 黄金</td>
+          <td class="num">$4,575.10</td>
+          <td class="up">+0.66%</td>
+          <td>避险支撑，黄金股受益</td>
+        </tr>
+        <tr>
+          <td>现货黄金</td>
+          <td class="num">$4,519.33</td>
+          <td class="down">-0.08%</td>
+          <td>高位整固，前日大涨后获利了结</td>
+        </tr>
+        <tr>
+          <td>WTI 原油</td>
+          <td class="num">$86.21</td>
+          <td class="up">+2.16%</td>
+          <td>霍尔木兹受限 + 美伊制裁，油价偏强</td>
+        </tr>
+        <tr>
+          <td>布伦特原油 ⚠️</td>
+          <td class="num">~$92.47</td>
+          <td class="up">+~1.78%</td>
+          <td><span style="color:var(--warn);">[数据冲突]</span> 东方财富 93.24 vs 金十 91.69，能源/化工成本端承压</td>
+        </tr>
+        <tr>
+          <td>美元指数</td>
+          <td class="num">98.87</td>
+          <td class="up">+0.07%</td>
+          <td>偏弱震荡，5 月中旬以来低位</td>
+        </tr>
+        <tr>
+          <td>离岸人民币</td>
+          <td class="num">6.7254</td>
+          <td class="up">+56bp</td>
+          <td>强势维持，42 月新高区间，利于北向</td>
+        </tr>
+        <tr>
+          <td>10 年美债收益率</td>
+          <td class="num">4.702%</td>
+          <td class="up">+5.94bp</td>
+          <td>长端收益率高企，压制全球风险偏好</td>
+        </tr>
+        <tr>
+          <td>30 年美债收益率</td>
+          <td class="num">5.247%</td>
+          <td class="up">+5.55bp</td>
+          <td>财政部回购效果有限，重回 5.2%+</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- A股指数概览 -->
+  <div class="section">
+    <h2>三、A 股指数概览（8/21 周五收盘）</h2>
+    <table>
+      <thead>
+        <tr><th>指数</th><th>昨收</th><th>近 5 日</th><th>近 20 日</th><th>位置判断</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>上证指数</td>
+          <td class="num"><strong>3,905.20</strong></td>
+          <td class="down">-0.56%</td>
+          <td class="up">+2.39%</td>
+          <td>守住 3,900 整数关，20 日线附近企稳</td>
+        </tr>
+        <tr>
+          <td>沪深 300</td>
+          <td class="num"><strong>4,618.90</strong></td>
+          <td class="down">-1.01%</td>
+          <td class="down">-0.65%</td>
+          <td>反弹至 4,600 上方，但 5 日仍负</td>
+        </tr>
+        <tr>
+          <td>中证 500</td>
+          <td class="num"><strong>7,854.33</strong></td>
+          <td class="down">-1.70%</td>
+          <td class="up">+4.27%</td>
+          <td>中性偏弱，5 日跌幅收敛</td>
+        </tr>
+        <tr>
+          <td>中证 1000</td>
+          <td class="num"><strong>7,601.80</strong></td>
+          <td class="down">-2.16%</td>
+          <td class="up">+8.66%</td>
+          <td>小盘 20 日仍正，但 5 日调整明显</td>
+        </tr>
+        <tr>
+          <td>创业板指</td>
+          <td class="num"><strong>3,545.58</strong></td>
+          <td class="down">-2.23%</td>
+          <td class="up">+1.86%</td>
+          <td>反弹至 3,500 上方，60 日 -14.05% 仍弱</td>
+        </tr>
+        <tr>
+          <td>科创 50</td>
+          <td class="num"><strong>1,653.56</strong></td>
+          <td class="down">-3.73%</td>
+          <td class="down">-7.48%</td>
+          <td><span style="color:var(--warn);font-weight:700;">⚠️ 结构性破位</span>，1,667 保卫线失守</td>
+        </tr>
+      </tbody>
+    </table>
+    <div class="fine" style="margin-top:12px;">
+      <strong>量能：</strong>沪深京三市成交 <strong>1.89 万亿</strong>，较前日缩量 <strong>2,017 亿</strong>，跌破 2 万亿关口。量比全面 &lt; 1.0，观望情绪浓厚。<br>
+      <strong>资金流向：</strong>主力资金净流入 <strong>190.49 亿</strong>（通信 +83.4 亿 / 电子 +80.63 亿 / 有色 +49.76 亿）；北向净流入 <strong>30.42 亿</strong>；融资融券净流入 <strong>157.34 亿</strong>。<br>
+      <strong>个股：</strong>2,505 涨 vs 2,862 跌（跌多涨少），涨停 57 只 vs 跌停 14 只。资金从医药防御向科技+有色切换。
+    </div>
+  </div>
+
+  <!-- 临时倾向 -->
+  <div class="section">
+    <h2>四、市场环境临时倾向</h2>
+    <div class="bias-banner bias-neutral">
+      <div class="bias-label">🟡 中性</div>
+      <div class="bias-body">
+        <strong>依据：</strong>
+        <ol>
+          <li><strong>美股周五反弹但周线下跌，中期趋势承压</strong> —— 道指/标普/纳指本周均跌，纳指 -2.05% 终结三周连涨，反弹持续性待观察。</li>
+          <li><strong>A 股连续 2 日缩量企稳，但未放量确认</strong> —— 成交从 2.53 万亿 → 2.08 万亿 → 1.89 万亿，量能梯次下行，反弹缺乏成交量背书。</li>
+          <li><strong>科创 50 结构性破位，成长风格承压</strong> —— 1,653 点失守 1,667 保卫线，20 日 -7.48% / 60 日 -10.34%，科技成长仍是最大拖累。</li>
+          <li><strong>美债长端收益率高企 + 地缘不确定性</strong> —— 30 年美债 5.247%，贝森特今日发布会或加剧波动；英伟达财报前全球 AI 产业链观望。</li>
+          <li><strong>资金高低切换迹象明显，局部存在结构性机会</strong> —— 主力净流入 190 亿 + 北向 30 亿 + 融资 157 亿，通信/电子/有色获资金聚焦，医药防御资金大幅兑现。</li>
+        </ol>
+        <div style="margin-top:10px;padding:10px 14px;background:#fff8c5;border-radius:8px;color:#7a5c00;font-size:13px;">
+          ⚠️ <strong>信息隔离声明：</strong>正式市场评分（0-100）将在 <strong>15:30 收盘分析</strong> 中统一输出。本节点仅提供临时倾向，后续 09:00/11:30 节点将基于原始数据独立分析，不引用本节点判断。
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 今日关键信号 -->
+  <div class="section">
+    <h2>五、今日关键信号</h2>
+    <div class="signal-grid">
+      <div class="signal-box signal-bull">
+        <div class="signal-title">🔴 利多</div>
+        <ul>
+          <li><strong>美股隔夜收涨 + 欧洲全线反弹</strong> —— 道指 +0.98% / 标普 +0.43%，短期恐慌情绪缓解。</li>
+          <li><strong>人民币维持 42 月新高强势</strong> —— 离岸 6.7254，外资中长期配置价值凸显。</li>
+          <li><strong>A 股主力资金 + 北向 + 融资三重净流入</strong> —— 8/21 合计约 378 亿资金进场，杠杆资金风险偏好回暖。</li>
+        </ul>
+      </div>
+      <div class="signal-box signal-bear">
+        <div class="signal-title">🟢 利空</div>
+        <ul>
+          <li><strong>A 股成交跌破 2 万亿，缩量反弹未确认</strong> —— 量能是反弹核心指标，持续缩量意味着观望情绪浓厚。</li>
+          <li><strong>科创 50 结构性破位 + 美债 30 年 5.25%</strong> —— 成长股受双重压制（国内科技弱势 + 海外高利率）。</li>
+          <li><strong>贝森特今日发布会 + 英伟达财报前观望</strong> —— 地缘政治与 AI 产业链两大不确定性叠加。</li>
+        </ul>
+      </div>
+      <div class="signal-box signal-focus" style="grid-column: 1 / -1;">
+        <div class="signal-title">⭐ 重点关注</div>
+        <ul>
+          <li><strong>美国财长贝森特 8/24（今日）发布会</strong> —— 披露对伊朗“经济战”细节，市场高度关注是否引发新一轮避险情绪。</li>
+          <li><strong>A 股开盘量能</strong> —— 今日能否放量至 2 万亿上方，是判断反弹能否延续的核心信号。关注上证 3,900 / 科创 50 1,653 支撑力度。</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <footer>
+    ⚡ V5.0 系统 | Market Intelligence Agent | 2026-08-24 08:00
+  </footer>
+
+</div>
+</body>
+</html>

@@ -1,0 +1,547 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>全球市场扫描 | 2026-08-20 08:00 | V5.0</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
+    background: #f5f7fb;
+    color: #1f2328;
+    line-height: 1.6;
+    padding: 24px 16px;
+  }
+  .container { max-width: 1200px; margin: 0 auto; }
+  .header {
+    background: linear-gradient(135deg, #1f2937 0%, #374151 100%);
+    color: white;
+    padding: 28px 32px;
+    border-radius: 12px;
+    margin-bottom: 20px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+  }
+  .header h1 { font-size: 24px; font-weight: 700; margin-bottom: 8px; }
+  .header .meta { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; font-size: 13px; opacity: 0.9; }
+  .tag {
+    display: inline-block;
+    padding: 4px 10px;
+    border-radius: 6px;
+    font-size: 12px;
+    font-weight: 500;
+    background: rgba(255,255,255,0.18);
+  }
+  .tag-sys { background: rgba(255,255,255,0.12); }
+
+  .verify {
+    padding: 14px 20px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+    border-left: 4px solid;
+    background: white;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.04);
+  }
+  .verify-pass { border-left-color: #1a7f37; background: #f0fdf4; }
+  .verify-warn { border-left-color: #d97706; background: #fffbeb; }
+  .verify-fail { border-left-color: #cf222e; background: #fef2f2; }
+  .verify h3 { font-size: 14px; font-weight: 600; margin-bottom: 6px; color: #1f2328; }
+  .verify ul { margin-left: 18px; font-size: 13px; color: #57606a; }
+  .verify ul li { margin-bottom: 3px; }
+
+  .section {
+    background: white;
+    padding: 24px 28px;
+    border-radius: 10px;
+    margin-bottom: 18px;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.04);
+  }
+  .section h2 {
+    font-size: 18px;
+    font-weight: 700;
+    color: #1f2328;
+    margin-bottom: 16px;
+    padding-bottom: 10px;
+    border-bottom: 2px solid #f0f3f8;
+  }
+  .section h3 { font-size: 15px; font-weight: 600; margin: 16px 0 10px; color: #1f2328; }
+
+  /* Grid for cards */
+  .card-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
+    gap: 12px;
+    margin-bottom: 16px;
+  }
+  .card {
+    padding: 14px 16px;
+    border-radius: 8px;
+    background: #f9fafb;
+    border: 1px solid #e5e7eb;
+    transition: all 0.15s;
+  }
+  .card:hover { box-shadow: 0 2px 8px rgba(0,0,0,0.06); }
+  .card .label { font-size: 12px; color: #6b7280; margin-bottom: 4px; }
+  .card .value { font-size: 20px; font-weight: 700; line-height: 1.3; }
+  .card .change { font-size: 13px; margin-top: 4px; font-weight: 500; }
+  .card .signal {
+    display: inline-block;
+    font-size: 11px;
+    padding: 2px 8px;
+    border-radius: 4px;
+    background: #f3f4f6;
+    color: #6b7280;
+    margin-top: 6px;
+  }
+
+  /* Color rules */
+  .red { color: #cf222e; }
+  .green { color: #1a7f37; }
+  .neutral { color: #6b7280; }
+  .bg-red { background: #fef2f2 !important; border-color: #fca5a5 !important; }
+  .bg-green { background: #f0fdf4 !important; border-color: #86efac !important; }
+
+  /* Table */
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+    margin-bottom: 12px;
+  }
+  th, td {
+    padding: 9px 10px;
+    text-align: left;
+    border-bottom: 1px solid #f0f3f8;
+  }
+  th {
+    background: #f9fafb;
+    font-weight: 600;
+    color: #4b5563;
+    font-size: 12px;
+  }
+  tr:hover { background: #fafbfc; }
+  td.code, td.symbol { font-family: "SF Mono", Consolas, monospace; font-size: 12px; }
+
+  .pct-badge {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-weight: 600;
+    font-size: 12px;
+    color: white;
+  }
+  .pct-badge.up { background: #cf222e; }
+  .pct-badge.down { background: #1a7f37; }
+  .pct-badge.flat { background: #6b7280; }
+
+  /* Tendency banner */
+  .tendency {
+    padding: 18px 24px;
+    border-radius: 10px;
+    margin: 16px 0;
+    text-align: center;
+    font-weight: 600;
+    font-size: 16px;
+  }
+  .tendency-bull { background: linear-gradient(135deg, #fef2f2 0%, #fee2e2 100%); color: #991b1b; border: 1px solid #fca5a5; }
+  .tendency-bear { background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%); color: #166534; border: 1px solid #86efac; }
+  .tendency-neutral { background: linear-gradient(135deg, #f3f4f6 0%, #e5e7eb 100%); color: #374151; border: 1px solid #d1d5db; }
+
+  .keywords { text-align: center; margin-top: 8px; font-size: 13px; font-weight: normal; }
+
+  /* Signal blocks */
+  .signal-block {
+    padding: 14px 18px;
+    border-radius: 8px;
+    margin: 12px 0;
+    border-left: 4px solid;
+  }
+  .signal-block.bull { background: linear-gradient(135deg, #fef2f2 0%, #fef2f2 80%, white 100%); border-left-color: #cf222e; }
+  .signal-block.bear { background: linear-gradient(135deg, #f0fdf4 0%, #f0fdf4 80%, white 100%); border-left-color: #1a7f37; }
+  .signal-block h4 {
+    font-size: 14px;
+    font-weight: 700;
+    margin-bottom: 8px;
+  }
+  .signal-block.bull h4 { color: #991b1b; }
+  .signal-block.bear h4 { color: #166534; }
+  .signal-block ol { margin-left: 24px; font-size: 13px; }
+  .signal-block ol li { margin-bottom: 4px; color: #374151; }
+
+  /* Focus */
+  .focus-block {
+    padding: 14px 18px;
+    border-radius: 8px;
+    background: linear-gradient(135deg, #fefce8 0%, #fef3c7 100%);
+    border-left: 4px solid #eab308;
+    margin: 12px 0;
+  }
+  .focus-block h4 { font-size: 14px; font-weight: 700; margin-bottom: 8px; color: #854d0e; }
+  .focus-block ol { margin-left: 24px; font-size: 13px; }
+  .focus-block ol li { margin-bottom: 4px; color: #374151; }
+
+  /* Note */
+  .note {
+    margin-top: 12px;
+    padding: 10px 14px;
+    background: #fef9c3;
+    border-left: 3px solid #eab308;
+    border-radius: 4px;
+    font-size: 12px;
+    color: #713f12;
+  }
+
+  .footer {
+    text-align: center;
+    padding: 20px;
+    color: #6b7280;
+    font-size: 13px;
+    margin-top: 24px;
+  }
+  .footer .sys-name { font-weight: 700; color: #1f2937; }
+
+  /* Position badges */
+  .position {
+    display: inline-block;
+    padding: 2px 6px;
+    border-radius: 3px;
+    font-size: 11px;
+    font-weight: 500;
+  }
+  .pos-warn { background: #fef3c7; color: #92400e; }
+  .pos-danger { background: #fee2e2; color: #991b1b; color: white; }
+  .pos-danger { background: #dc2626; color: white; }
+  .pos-safe { background: #d1fae5; color: #065f46; }
+
+  ul { margin-left: 20px; font-size: 13px; color: #4b5563; }
+  ul li { margin-bottom: 4px; }
+
+  @media (max-width: 700px) {
+    .card-grid { grid-template-columns: repeat(2, 1fr); }
+    table { font-size: 12px; }
+    th, td { padding: 7px 6px; }
+    .header { padding: 20px 18px; }
+    .section { padding: 16px 14px; }
+  }
+</style>
+</head>
+<body>
+<div class="container">
+
+  <!-- Header -->
+  <div class="header">
+    <h1>🌍 全球市场扫描</h1>
+    <div class="meta">
+      <span class="tag">2026-08-20</span>
+      <span class="tag tag-sys">⏰ 08:00 时段</span>
+      <span class="tag tag-sys">Layer 1-2 市场环境判断（半隔离）</span>
+      <span class="tag tag-sys">📊 数据基准：8/19 收盘 + 8/19 美股收盘</span>
+    </div>
+  </div>
+
+  <!-- Data Validation -->
+  <div class="verify verify-warn">
+    <h3>⚠️ 数据验证报告：通过（含冲突标注）</h3>
+    <ul>
+      <li><strong>关1 交叉验证</strong> ✅ A股 westock 六指数获取完整；美股 WebSearch 多源（证券时报/财联社/腾讯）一致</li>
+      <li><strong>关2 异常检测</strong> ⚠️ <strong>结构性重大异常</strong>：8/19 创业板 -6.26% / 科创 50 -6.89% / 韩国综指 -5.8% 触发熔断 / 主力净流出 1,718.63 亿（年内峰值之一）</li>
+      <li><strong>关3 逻辑校验</strong> ✅ 涨跌幅×昨收≈现价（误差&lt;0.01%）；代码-名称匹配；FX/黄金跨多源一致</li>
+      <li><strong>数据冲突标注</strong>：
+        <ul>
+          <li>主力资金净流出 数据宝 1718.63 亿 vs 证券时报 1274.48 亿（口径差异）</li>
+          <li>现货黄金 多源报价 $4,503.61 / $4,464 / $4,523.08（不同时刻快照，趋势一致）</li>
+          <li>30 年美债 5.196% vs 5.199% 微小差异 &lt;0.01%</li>
+        </ul>
+      </li>
+      <li>[单源] westock forex 未返回实时报价，汇率从 WebSearch 多源补</li>
+    </ul>
+  </div>
+
+  <!-- 1. Overnight Foreign Markets -->
+  <div class="section">
+    <h2>📉 一、隔夜外盘（美东 8/19 收盘）</h2>
+    <div class="card-grid">
+      <div class="card">
+        <div class="label">道琼斯</div>
+        <div class="value">44,922.27</div>
+        <div class="change neutral">+0.02% <span class="signal">盘中创历史新高后回落</span></div>
+      </div>
+      <div class="card bg-red">
+        <div class="label">标普 500</div>
+        <div class="value red">6,411.37</div>
+        <div class="change red">-0.59%</div>
+      </div>
+      <div class="card bg-red">
+        <div class="label">纳斯达克</div>
+        <div class="value red">21,314.95</div>
+        <div class="change red">🔥 -1.46%</div>
+      </div>
+      <div class="card bg-red">
+        <div class="label">费城半导体</div>
+        <div class="value red">—</div>
+        <div class="change red">🔥 -1.81%</div>
+      </div>
+      <div class="card bg-red">
+        <div class="label">中概金龙</div>
+        <div class="value red">—</div>
+        <div class="change red">-0.90%</div>
+      </div>
+      <div class="card bg-red">
+        <div class="label">韩国综指</div>
+        <div class="value red">—</div>
+        <div class="change red">🔥 -5.80% <span class="signal">盘中熔断</span></div>
+      </div>
+      <div class="card bg-red">
+        <div class="label">日经 225</div>
+        <div class="value red">—</div>
+        <div class="change red">-3.16%</div>
+      </div>
+    </div>
+
+    <h3>外盘关键事件</h3>
+    <ul>
+      <li><strong>30 年美债 5.196%（-9bp）</strong>，前一交易日 5.33% 创 2007 年以来新高</li>
+      <li><strong>10 年美债 4.647%（-6bp）</strong></li>
+      <li><strong>🔥 美国财政部首次"救市"</strong>：长期国债流动性支持回购从单次 20 亿美元翻倍至 <strong>至少 40 亿美元</strong>（9/9 生效），市场解读为对长端收益率失控的应对</li>
+      <li><strong>美股科技股全线下挫</strong>：英伟达 -3.5%（单夜蒸发 1,554 亿美元 ≈ 1.1 万亿人民币）、AMD -5%、Marvell -6%、甲骨文 -5%+、博通/台积电 -3%</li>
+      <li><strong>美伊紧张</strong>：特朗普要求高级特使暂停与伊朗接触；伊朗考虑打击美军欧洲目标（含海底光纤电缆）；阿联酋暂停与伊朗一切贸易金融</li>
+      <li>北京时间 <strong>8/21 02:00</strong> 公布美联储 7 月会议纪要（关键变量，3 票反对加息分歧详情）</li>
+    </ul>
+  </div>
+
+  <!-- 2. Commodities & FX -->
+  <div class="section">
+    <h2>💰 二、大宗商品与外汇</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>品种</th>
+          <th>最新报价</th>
+          <th>变动</th>
+          <th>对 A 股影响</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>🟡 现货黄金</td>
+          <td>$4,503.61-4,523.08/盎司</td>
+          <td><span class="pct-badge up">+3.91% ~ +4.30%</span></td>
+          <td>🟢 避险升温，黄金股（山东/西部/赤峰黄金）8/19 逆市走强</td>
+        </tr>
+        <tr>
+          <td>🟡 COMEX 黄金期货</td>
+          <td>$4,580.70</td>
+          <td><span class="pct-badge up">+3.62%</span></td>
+          <td>🟢 突破 $4,500 整数关口</td>
+        </tr>
+        <tr>
+          <td>⚪ 现货白银</td>
+          <td>$67.008</td>
+          <td><span class="pct-badge up">+5.80%</span></td>
+          <td>🟢 涨幅领先黄金，工业属性重估（光伏/MLCC/电子）</td>
+        </tr>
+        <tr>
+          <td>🛢️ WTI 原油</td>
+          <td>未确认</td>
+          <td>—</td>
+          <td>⚠️ 美军继续海上封锁伊朗；阿联酋-伊朗断交 → 油价上行压力</td>
+        </tr>
+        <tr>
+          <td>💵 美元指数（DXY）</td>
+          <td>98.79</td>
+          <td><span class="pct-badge down">-0.86% / -0.87%</span></td>
+          <td>🟢 创三周最大跌幅，触及 5 月中旬以来新低</td>
+        </tr>
+        <tr>
+          <td>🇨🇳 在岸人民币</td>
+          <td>6.7377</td>
+          <td><span class="pct-badge up">+50bp</span></td>
+          <td>🟢 创 42 月新高，夜盘 6.7302</td>
+        </tr>
+        <tr>
+          <td>🇨🇳 离岸人民币</td>
+          <td>6.7310-6.7394</td>
+          <td><span class="pct-badge up">+158bp</span></td>
+          <td>🟢 中间价 6.7854（2023/2/8 以来最高）</td>
+        </tr>
+        <tr>
+          <td>📈 美 10Y 国债</td>
+          <td>4.647%</td>
+          <td><span class="pct-badge flat">-6bp</span></td>
+          <td>⚠️ 财政部干预后回落，但处历史高位</td>
+        </tr>
+        <tr>
+          <td>📈 美 30Y 国债</td>
+          <td>5.196%</td>
+          <td><span class="pct-badge flat">-9bp</span></td>
+          <td>⚠️ 从 5.33% 高点回落，全球财政风险重定价</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <h3>商品/外汇核心逻辑</h3>
+    <ul>
+      <li><strong>黄金三大共振</strong>：美元弱（DXY -0.86%）+ 美债跌（30Y -9bp）+ 地缘紧（阿联酋-伊朗断交）→ 避险/流动性/金融三重逻辑同向激活</li>
+      <li><strong>白银涨幅领先</strong>：金银比进一步压缩，弹性大于金价反映工业属性重估</li>
+      <li><strong>人民币资产短期受益于避险</strong>，但 A 股杀跌表明资金对中国科技板块结构性撤离，与汇率形成背离</li>
+    </ul>
+  </div>
+
+  <!-- 3. A-share Indices -->
+  <div class="section">
+    <h2>📊 三、A股指数概览（westock 8/19 收盘）</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>指数</th>
+          <th>昨收</th>
+          <th>8/19 收盘</th>
+          <th>涨跌</th>
+          <th>5日</th>
+          <th>20日</th>
+          <th>60日</th>
+          <th>位置判断</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr class="bg-red">
+          <td><strong>上证指数</strong></td>
+          <td>3,990.30</td>
+          <td>3,894.42</td>
+          <td><span class="pct-badge down">-2.40%</span></td>
+          <td class="red">-1.32%</td>
+          <td class="green">+0.71%</td>
+          <td class="red">-6.05%</td>
+          <td><span class="position pos-danger">⚠️ 跌破 3,900</span></td>
+        </tr>
+        <tr class="bg-red">
+          <td><strong>沪深 300</strong></td>
+          <td>4,725.81</td>
+          <td>4,588.70</td>
+          <td><span class="pct-badge down">-2.90%</span></td>
+          <td class="red">-2.18%</td>
+          <td class="red">-2.72%</td>
+          <td class="red">-7.26%</td>
+          <td><span class="position pos-danger">⚠️ 跌破 4,600</span></td>
+        </tr>
+        <tr class="bg-red">
+          <td><strong>中证 500</strong></td>
+          <td>8,177.18</td>
+          <td>7,783.46</td>
+          <td><span class="pct-badge down">-4.81%</span></td>
+          <td class="red">-3.25%</td>
+          <td class="green">+0.41%</td>
+          <td class="red">-10.11%</td>
+          <td><span class="position pos-warn">⚠️ 20 日仍正，60 日已 -10%</span></td>
+        </tr>
+        <tr class="bg-red">
+          <td><strong>中证 1000</strong></td>
+          <td>7,945.96</td>
+          <td>7,517.77</td>
+          <td><span class="pct-badge down">-5.39%</span></td>
+          <td class="red">-3.54%</td>
+          <td class="green">+5.01%</td>
+          <td class="red">-13.46%</td>
+          <td><span class="position pos-danger">⚠️ 20 日 +5% 全部抹去</span></td>
+        </tr>
+        <tr class="bg-red">
+          <td><strong>创业板指</strong></td>
+          <td>3,705.56</td>
+          <td>3,473.49</td>
+          <td><span class="pct-badge down">-6.26%</span></td>
+          <td class="red">-3.57%</td>
+          <td class="red">-2.61%</td>
+          <td class="red">-14.09%</td>
+          <td><span class="position pos-danger">🔥 连破 3700/3600/3500</span></td>
+        </tr>
+        <tr class="bg-red">
+          <td><strong>科创 50</strong></td>
+          <td>1,790.87</td>
+          <td>1,667.52</td>
+          <td><span class="pct-badge down">-6.89%</span></td>
+          <td class="red">-4.00%</td>
+          <td class="red">-10.35%</td>
+          <td class="red">-10.72%</td>
+          <td><span class="position pos-danger">🔥🔥 破 1,700 结构性破位</span></td>
+        </tr>
+      </tbody>
+    </table>
+
+    <h3>市场画像</h3>
+    <ul>
+      <li><strong>成交 2.53 万亿</strong>（与前期持平，但卖压集中）</li>
+      <li><strong>极端普跌</strong>：上涨 447 只（8.07%）/ 下跌 5,069 只（91%+）</li>
+      <li><strong>科创综指</strong> 重挫超 7%、失守 2,000 点</li>
+      <li><strong>看跌期权暴涨</strong>：科创 50ETF 沽 8 月 1700 <span class="pct-badge up">+813%</span> / 创业板 ETF 沽 8 月 3400 <span class="pct-badge up">+783.6%</span> —— 极端恐慌信号</li>
+      <li><strong>行业涨幅 TOP3</strong>：银行 +1.78% / 石油石化 +1.12% / 煤炭 +0.73%</li>
+      <li><strong>行业跌幅 TOP2</strong>：通信 -7.95% / 电子 -7.77%</li>
+      <li><strong>28/31 一级行业</strong>主力净流出 —— 几乎全行业溃败</li>
+    </ul>
+  </div>
+
+  <!-- 4. Tendency -->
+  <div class="section">
+    <h2>🎯 四、市场环境临时倾向</h2>
+    <div class="tendency tendency-bear">
+      <div>倾向：<strong>中性偏空</strong> ⬇ 较 8/17 "中性" 显著下调</div>
+      <div class="keywords">⚠️ 信息隔离：08:00 节点只输出临时倾向，不出正式 0-100 评分（统一在 15:30 收盘分析中输出）</div>
+    </div>
+
+    <h3>核心依据（5 条）</h3>
+    <ol style="margin-left: 24px; font-size: 13.5px; color: #374151;">
+      <li><strong>8/19 A 股极端杀跌</strong>：创业板 -6.26% / 科创 50 -6.89% / 沪深 300 -2.90% / 上证 -2.40%，普跌 91%+ 个股、主力净流出 1,718 亿（年内峰值之一），亚太联动（韩 -5.8% 触发熔断 / 日 -3.16%）—— 8 月单日最大冲击</li>
+      <li><strong>结构性破位确认</strong>：科创 50 跌穿 1,700（整数+前期支撑位）、创业板连失三道整数关（3700/3600/3500）、5 日/20 日均线全面拐头向下</li>
+      <li><strong>美债流动性危机+美国财政部"救市"</strong>：30 年美债盘中破 5.33%（2007 年以来新高）触发财政部首次干预，这是全球流动性极端信号，对所有风险资产估值形成压制</li>
+      <li><strong>避险+防御风格极致演绎</strong>：黄金 +3-4% 破 $4,500、银行/煤炭/石油石化逆市走强、华为/半导体/5G 等热门题材净流出 200-700 亿；看跌期权集中爆发 +813%——资金从成长板块结构性撤退</li>
+      <li><strong>美元破 99、人民币 42 月新高</strong>：表面利多 A 股，但外资态度分化（黄金避险与人民币资产并非同向）—— A 股实际遭遇外资从科技股撤离，与汇率走势形成背离</li>
+    </ol>
+
+    <div class="note">
+      注意：正式市场评分将在 <strong>15:30 收盘分析</strong>中统一输出。后续 09:00/11:30 节点不引用本节点的临时倾向判断，各自独立分析。
+    </div>
+  </div>
+
+  <!-- 5. Key Signals -->
+  <div class="section">
+    <h2>⚡ 五、今日关键信号（8/20）</h2>
+
+    <div class="signal-block bull">
+      <h4>🟢 利多（4 条）</h4>
+      <ol>
+        <li><strong>黄金白银暴涨</strong>：避险情绪+美元破位共振，黄金股（山东/西部/赤峰黄金）8/19 已逆市走强，今日仍有惯性</li>
+        <li><strong>人民币 42 月新高 + 中间价创 2023/2/8 以来新高</strong>：6.7377 ↔ 中间价 6.7854，外资中长期配置视角仍偏正面</li>
+        <li><strong>防御板块（银行/石油石化/煤炭）逆市上攻</strong>：8/19 主力净流入合计 >17 亿，资金切换至低估值高股息，今日是否延续决定 8/20 主线</li>
+        <li><strong>N 宇树-W 首日 +460.34%</strong>：人形机器人龙头上市吸金 22.28 亿，成为弱势中少数持续亮点</li>
+      </ol>
+    </div>
+
+    <div class="signal-block bear">
+      <h4>🔴 利空（5 条）</h4>
+      <ol>
+        <li><strong>科技股溃败</strong>：8/19 电子主力 -707.14 亿 / 通信 -247.15 亿 / 计算机 -118.09 亿，<strong>单日合计 1,072 亿</strong>，今日延续压力极大</li>
+        <li><strong>科创 50 结构性破位</strong>：1,667.52 距离 1,500 关键支撑仅 -10%；PE 仍处 176.99 倍极高估，估值与情绪双杀</li>
+        <li><strong>看跌期权集中爆发</strong>：科创 50 沽 1700 +813% / 创业板沽 3400 +783.6%——极端恐慌情绪+杠杆空头集中，今日或引发技术性反抽但中期压力未消</li>
+        <li><strong>美债收益率历史高位+财政部干预是"治标不治本"</strong>：本次财政部长债回购规模仍有限（40 亿单次），无法解决美债供给过剩+财政赤字 1.8 万亿的结构性问题</li>
+        <li><strong>亚太联动风险</strong>：韩股 -5.8% 触发熔断、日经 -3.16%，亚太股市尚未完成本轮出清，今日港股/A 股开盘仍承压</li>
+      </ol>
+    </div>
+
+    <div class="focus-block">
+      <h4>📍 重点关注（3 条）</h4>
+      <ol>
+        <li><strong>美联储 7 月会议纪要（北京时间 8/21 02:00）</strong>：3 票反对加息（2016 年首次三方分歧）的详情——鹰派细节将冲击全球风险资产；鸽派细节或提供短期反弹窗口</li>
+        <li><strong>8/20 科创 50 1,667 保卫战 + 上证 3,900 保卫战</strong>：今日开盘可能复制 8/19 亚太杀跌惯性，开盘后 30 分钟资金动向决定全天节奏</li>
+        <li><strong>宇树科技（N 宇树-W）后续走势</strong>：8/19 收 +460% 后是否二次拉升，将决定人形机器人板块是否能在弱势中走出独立主线</li>
+      </ol>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <div class="footer">
+    <div class="sys-name">⚡ V5.0 系统 | Market Intelligence Agent</div>
+    <div>2026-08-20 08:00 | 自动生成（数据基准：8/19 A 股收盘 + 8/19 美东收盘）</div>
+  </div>
+
+</div>
+</body>
+</html>

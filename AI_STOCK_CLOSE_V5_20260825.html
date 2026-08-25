@@ -1,0 +1,549 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI智能股票组合主理人系统V5.0 - 2026-08-25 收盘报告</title>
+    <style>
+        :root {
+            --bg: #fafafa;
+            --card: #ffffff;
+            --text: #1f2937;
+            --text-secondary: #6b7280;
+            --border: #e5e7eb;
+            --up: #dc2626;
+            --down: #16a34a;
+            --primary: #2563eb;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --success: #22c55e;
+        }
+        * { box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            line-height: 1.6;
+            margin: 0;
+            padding: 0;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 24px;
+        }
+        .header {
+            background: linear-gradient(135deg, #1e3a8a 0%, #3730a3 100%);
+            color: white;
+            padding: 32px;
+            border-radius: 16px;
+            margin-bottom: 24px;
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
+        }
+        .header h1 { margin: 0 0 8px 0; font-size: 28px; }
+        .header-meta { opacity: 0.9; font-size: 14px; }
+        .score-banner {
+            display: flex;
+            gap: 24px;
+            margin-top: 24px;
+            flex-wrap: wrap;
+        }
+        .score-card {
+            background: rgba(255,255,255,0.15);
+            backdrop-filter: blur(10px);
+            border-radius: 12px;
+            padding: 20px 32px;
+            text-align: center;
+            min-width: 160px;
+        }
+        .score-card .value {
+            font-size: 42px;
+            font-weight: 700;
+            line-height: 1;
+        }
+        .score-card .label { font-size: 14px; margin-top: 8px; opacity: 0.9; }
+        .section {
+            background: var(--card);
+            border-radius: 12px;
+            padding: 24px;
+            margin-bottom: 24px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+            border: 1px solid var(--border);
+        }
+        .section h2 {
+            margin: 0 0 16px 0;
+            font-size: 20px;
+            color: #111827;
+            border-left: 4px solid var(--primary);
+            padding-left: 12px;
+        }
+        .section h3 {
+            margin: 20px 0 12px 0;
+            font-size: 16px;
+            color: #374151;
+        }
+        .status-bar {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 16px;
+            flex-wrap: wrap;
+        }
+        .status-pill {
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 500;
+        }
+        .status-pill.success { background: #dcfce7; color: #166534; }
+        .status-pill.warning { background: #fef3c7; color: #92400e; }
+        .status-pill.danger { background: #fee2e2; color: #991b1b; }
+        .status-pill.info { background: #dbeafe; color: #1e40af; }
+        .index-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 16px;
+            margin: 16px 0;
+        }
+        .index-card {
+            background: #f9fafb;
+            border-radius: 10px;
+            padding: 16px;
+            border: 1px solid var(--border);
+        }
+        .index-card .name { font-size: 14px; color: var(--text-secondary); }
+        .index-card .price { font-size: 24px; font-weight: 700; margin: 4px 0; }
+        .index-card .change { font-size: 14px; font-weight: 600; }
+        .up { color: var(--up); }
+        .down { color: var(--down); }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 14px;
+            margin: 12px 0;
+        }
+        th, td {
+            padding: 10px 12px;
+            text-align: left;
+            border-bottom: 1px solid var(--border);
+        }
+        th {
+            background: #f3f4f6;
+            font-weight: 600;
+            color: #374151;
+            position: sticky;
+            top: 0;
+        }
+        tr:hover { background: #f9fafb; }
+        .rating {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 700;
+            color: white;
+        }
+        .rating-splusplus { background: #6b21a8; }
+        .rating-s { background: #9333ea; }
+        .rating-a { background: #2563eb; }
+        .rating-b { background: #16a34a; }
+        .rating-c { background: #6b7280; }
+        .fund-stage {
+            display: inline-block;
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+        .stage-enter { background: #dbeafe; color: #1e40af; }
+        .stage-accelerate { background: #dcfce7; color: #166534; }
+        .stage-peak { background: #fef3c7; color: #92400e; }
+        .stage-retreat { background: #fee2e2; color: #991b1b; }
+        .conflict-box {
+            background: #fffbeb;
+            border: 1px solid #fcd34d;
+            border-radius: 10px;
+            padding: 16px;
+            margin: 16px 0;
+        }
+        .conflict-box h4 { margin: 0 0 10px 0; color: #92400e; }
+        .risk-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            gap: 16px;
+        }
+        .risk-card {
+            border-radius: 10px;
+            padding: 16px;
+            border: 1px solid var(--border);
+        }
+        .risk-card.red { background: #fef2f2; border-color: #fecaca; }
+        .risk-card.yellow { background: #fffbeb; border-color: #fcd34d; }
+        .risk-card.green { background: #f0fdf4; border-color: #bbf7d0; }
+        .risk-card .title { font-weight: 700; margin-bottom: 8px; }
+        .portfolio-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 24px;
+        }
+        .portfolio-card {
+            background: #f9fafb;
+            border-radius: 10px;
+            padding: 16px;
+            border: 1px solid var(--border);
+        }
+        .portfolio-card h4 { margin: 0 0 12px 0; color: #111827; }
+        .highlight {
+            background: #eff6ff;
+            border-left: 4px solid var(--primary);
+            padding: 12px 16px;
+            border-radius: 0 8px 8px 0;
+            margin: 12px 0;
+        }
+        .footer {
+            text-align: center;
+            color: var(--text-secondary);
+            font-size: 12px;
+            padding: 24px;
+        }
+        @media (max-width: 768px) {
+            .container { padding: 12px; }
+            .header { padding: 20px; }
+            .score-banner { gap: 12px; }
+            .score-card { min-width: 120px; padding: 16px 20px; }
+            table { font-size: 12px; }
+            th, td { padding: 8px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>AI智能股票组合主理人系统V5.0</h1>
+            <div class="header-meta">2026-08-25 收盘完整分析报告 | 15:30 | 唯一正式市场评分输出点</div>
+            <div class="score-banner">
+                <div class="score-card">
+                    <div class="value">60</div>
+                    <div class="label">市场评分</div>
+                </div>
+                <div class="score-card">
+                    <div class="value" style="font-size: 20px; margin-top: 10px;">震荡修复</div>
+                    <div class="label">市场状态</div>
+                </div>
+                <div class="score-card">
+                    <div class="value" style="font-size: 20px; margin-top: 10px;">30%-50%</div>
+                    <div class="label">建议仓位</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>⚠️ 数据验证状态</h2>
+            <div class="status-bar">
+                <span class="status-pill success">关1 交叉验证：核心指数一致 ✅</span>
+                <span class="status-pill warning">关1 单源警告：tdx未连接</span>
+                <span class="status-pill warning">关2 异常标注：N高凯+282.99% 新股首日</span>
+                <span class="status-pill warning">关2 时效警告：market_overview 8/24旧数据</span>
+                <span class="status-pill success">关3 逻辑校验：通过 ✅</span>
+            </div>
+            <p style="color: var(--text-secondary); font-size: 14px;">
+                tdx-connector当前未连接，A股核心指数采用westock-mcp单源，WebSearch交叉验证一致。
+                market_overview接口返回2026-08-24数据，已改用data_changedist实时数据。
+            </p>
+        </div>
+
+        <div class="section">
+            <h2>⚠️ 模块冲突标注</h2>
+            <div class="conflict-box">
+                <h4>结构性修复特征</h4>
+                <p><strong>Layer 1 市场评分：60分（震荡偏弱）</strong> — 成交额缩量1769亿，创业板跌1%。</p>
+                <p><strong>Layer 3 产业评分：医疗服务/CRO 85分、农业/种业 82分、通信设备 80分（偏多）</strong></p>
+                <p><strong>Layer 4 资金评分：通信设备+21.83亿、医药生物+36.20亿、专用设备+41.54亿（偏多）</strong></p>
+                <p><strong>Layer 7 情绪评分：70涨停/4跌停/涨跌比76%（偏暖，未达高潮）</strong></p>
+                <p><strong>冲突解读：</strong>市场整体处于缩量修复，指数分化，但医药/CRO、农业、通信设备三大方向获得资金主动回流，呈现"市场弱、局部强"的结构性修复特征。情绪从昨日冰点明显回暖，但尚未过热。</p>
+                <p><strong>操作建议：</strong>总仓位控制在30%-50%中性偏低水平，重点配置资金回流方向（CRO/农业/通信设备），规避高位资源股退潮风险。</p>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>📊 A股指数收盘</h2>
+            <div class="index-grid">
+                <div class="index-card">
+                    <div class="name">上证指数</div>
+                    <div class="price">3889.44</div>
+                    <div class="change up">+7.43 +0.19%</div>
+                </div>
+                <div class="index-card">
+                    <div class="name">深证成指</div>
+                    <div class="price">13745.87</div>
+                    <div class="change down">-48.42 -0.35%</div>
+                </div>
+                <div class="index-card">
+                    <div class="name">创业板指</div>
+                    <div class="price">3397.52</div>
+                    <div class="change down">-34.37 -1.00%</div>
+                </div>
+                <div class="index-card">
+                    <div class="name">沪深300</div>
+                    <div class="price">4552.03</div>
+                    <div class="change down">-11.10 -0.24%</div>
+                </div>
+                <div class="index-card">
+                    <div class="name">中证500</div>
+                    <div class="price">7710.94</div>
+                    <div class="change down">-6.15 -0.08%</div>
+                </div>
+                <div class="index-card">
+                    <div class="name">科创50</div>
+                    <div class="price">1604.59</div>
+                    <div class="change up">+2.25 +0.14%</div>
+                </div>
+            </div>
+            <div class="highlight">
+                <strong>市场宽度：</strong>两市成交额 <span class="down">18318亿（缩量1756亿）</span> | 涨跌家数 <span class="up">4234涨</span> / <span class="down">1246跌</span> / 70平 | 涨停70 / 跌停4 | 上涨比例76%
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>🌍 全球市场</h2>
+            <table>
+                <tr><th>市场</th><th>收盘</th><th>涨跌幅</th><th>状态</th></tr>
+                <tr><td>道琼斯</td><td>53417.16</td><td class="up">+0.26%</td><td>两连涨</td></tr>
+                <tr><td>纳斯达克</td><td>25980.19</td><td class="down">-0.76%</td><td>7连阴</td></tr>
+                <tr><td>标普500</td><td>7652.86</td><td class="down">-0.28%</td><td>调整</td></tr>
+                <tr><td>COMEX黄金</td><td>4699.4美元</td><td class="up">+0.03%</td><td>历史高位震荡</td></tr>
+                <tr><td>WTI原油</td><td>84.29美元</td><td class="down">-0.85%</td><td>回落</td></tr>
+                <tr><td>美元指数</td><td>98.99</td><td class="up">+0.15%</td><td>弱势反弹</td></tr>
+                <tr><td>离岸人民币</td><td>6.7218</td><td>跌6基点</td><td>强势区间</td></tr>
+            </table>
+        </div>
+
+        <div class="section">
+            <h2>🏭 产业趋势 TOP10</h2>
+            <table>
+                <tr><th>排名</th><th>产业方向</th><th>评分</th><th>资金流向</th><th>资金阶段</th><th>核心逻辑</th></tr>
+                <tr><td>1</td><td>医疗服务/CRO</td><td>85</td><td class="up">+36.20亿</td><td><span class="fund-stage stage-enter">回流</span></td><td>创新药政策回暖，CRO板块20日+25%</td></tr>
+                <tr><td>2</td><td>农业/种业</td><td>82</td><td class="up">+9.61亿</td><td><span class="fund-stage stage-accelerate">加速</span></td><td>粮食安全政策催化，种业板块20日+18%</td></tr>
+                <tr><td>3</td><td>通信设备/光通信</td><td>80</td><td class="up">+21.83亿</td><td><span class="fund-stage stage-accelerate">加速</span></td><td>AI算力基建刚需，亨通光电资金全市场#2</td></tr>
+                <tr><td>4</td><td>机械设备/机器人</td><td>78</td><td class="up">+44.53亿</td><td><span class="fund-stage stage-accelerate">加速</span></td><td>机器人产业政策+事件催化</td></tr>
+                <tr><td>5</td><td>液冷服务器</td><td>76</td><td class="up">+12.81亿</td><td><span class="fund-stage stage-enter">进入</span></td><td>AI算力配套，英维克/康盛涨停</td></tr>
+                <tr><td>6</td><td>电子/元件</td><td>75</td><td class="up">+22.26亿</td><td><span class="fund-stage stage-enter">进入</span></td><td>国产替代+AI硬件</td></tr>
+                <tr><td>7</td><td>传媒/稳定币</td><td>72</td><td class="up">+12.50亿</td><td><span class="fund-stage stage-peak">题材炒作</span></td><td>稳定币/RWA题材，楚天龙3连板</td></tr>
+                <tr><td>8</td><td>消费电子/小家电</td><td>70</td><td class="up">+9.60亿</td><td><span class="fund-stage stage-enter">反弹</span></td><td>超跌反弹，石头科技20cm涨停</td></tr>
+                <tr><td>9</td><td>银行</td><td>68</td><td class="down">-12.03亿</td><td><span class="fund-stage stage-retreat">防御</span></td><td>高股息+低估值</td></tr>
+                <tr><td>10</td><td>贵金属</td><td>65</td><td class="down">-57.50亿</td><td><span class="fund-stage stage-retreat">撤退</span></td><td>避险逻辑仍在但短线退潮</td></tr>
+            </table>
+        </div>
+
+        <div class="section">
+            <h2>💰 资金主线 TOP5</h2>
+            <table>
+                <tr><th>排名</th><th>主线</th><th>资金评分</th><th>今日主力净流入</th><th>资金阶段</th><th>操作建议</th></tr>
+                <tr><td>1</td><td>专用设备</td><td>88</td><td class="up">+41.54亿</td><td><span class="fund-stage stage-accelerate">加速</span></td><td>关注龙头</td></tr>
+                <tr><td>2</td><td>医药生物/CRO</td><td>85</td><td class="up">+36.20亿</td><td><span class="fund-stage stage-enter">回流</span></td><td>重点建仓</td></tr>
+                <tr><td>3</td><td>电子/元件</td><td>82</td><td class="up">+22.26亿</td><td><span class="fund-stage stage-enter">进入</span></td><td>精选龙头</td></tr>
+                <tr><td>4</td><td>通信设备</td><td>80</td><td class="up">+21.83亿</td><td><span class="fund-stage stage-enter">回流</span></td><td>加速谨慎</td></tr>
+                <tr><td>5</td><td>机械设备</td><td>78</td><td class="up">+44.53亿</td><td><span class="fund-stage stage-accelerate">加速</span></td><td>关注机器人</td></tr>
+            </table>
+        </div>
+
+        <div class="section">
+            <h2>⭐ 综合评分 TOP30</h2>
+            <table>
+                <tr>
+                    <th>排名</th><th>代码</th><th>名称</th><th>收盘</th><th>涨跌幅</th><th>评分</th><th>评级</th><th>资金阶段</th><th>行业</th><th>买入逻辑</th><th>风险点</th><th>操作</th>
+                </tr>
+                <tr>
+                    <td>1</td><td>sz002821</td><td>凯莱英</td><td>172.23</td><td class="up">+10.00%</td><td>82</td><td><span class="rating rating-a">A</span></td><td><span class="fund-stage stage-enter">回流</span></td><td>CRO</td><td>CXO龙头，CRO板块20日+25%，涨停突破</td><td>业绩波动、海外订单不确定性</td><td>优先建仓</td>
+                </tr>
+                <tr>
+                    <td>2</td><td>sh688169</td><td>石头科技</td><td>135.00</td><td class="up">+20.00%</td><td>73</td><td><span class="rating rating-b">B</span></td><td><span class="fund-stage stage-accelerate">加速</span></td><td>消费电子</td><td>扫地机器人龙头，PE21/PB2.4合理</td><td>20cm高潮后易分化</td><td>回踩建仓</td>
+                </tr>
+                <tr>
+                    <td>3</td><td>sh600508</td><td>上海能源</td><td>10.87</td><td class="up">+10.02%</td><td>69</td><td><span class="rating rating-b">B</span></td><td><span class="fund-stage stage-accelerate">加速</span></td><td>煤炭</td><td>煤炭防御，PE37/PB0.86低估值</td><td>周期属性，弹性有限</td><td>关注</td>
+                </tr>
+                <tr>
+                    <td>4</td><td>sh600487</td><td>亨通光电</td><td>64.60</td><td class="up">+6.90%</td><td>68</td><td><span class="rating rating-b">B</span></td><td><span class="fund-stage stage-accelerate">加速</span></td><td>通信设备</td><td>光通信龙头，主力+18.28亿#2</td><td>PE49/PB5偏高，60日-14%</td><td>关注</td>
+                </tr>
+                <tr>
+                    <td>5</td><td>sh600522</td><td>中天科技</td><td>33.89</td><td class="up">+4.18%</td><td>68</td><td><span class="rating rating-b">B</span></td><td><span class="fund-stage stage-enter">回流</span></td><td>通信设备</td><td>海缆+通信双轮，PE36合理</td><td>60日-13%，高位震荡</td><td>关注</td>
+                </tr>
+                <tr>
+                    <td>6</td><td>sz002041</td><td>登海种业</td><td>11.21</td><td class="up">+10.01%</td><td>67</td><td><span class="rating rating-b">B</span></td><td><span class="fund-stage stage-accelerate">加速</span></td><td>种业</td><td>玉米种子龙头，20日+33%</td><td>PE98偏高</td><td>关注</td>
+                </tr>
+                <tr>
+                    <td>7</td><td>sh600785</td><td>新华百货</td><td>11.78</td><td class="up">+9.99%</td><td>60</td><td><span class="rating rating-c">C</span></td><td><span class="fund-stage stage-accelerate">加速</span></td><td>零售</td><td>消费复苏，涨停</td><td>PE65偏高</td><td>短线关注</td>
+                </tr>
+                <tr>
+                    <td>8</td><td>sz002837</td><td>英维克</td><td>60.23</td><td class="up">+10.01%</td><td>62</td><td><span class="rating rating-c">C</span></td><td><span class="fund-stage stage-accelerate">加速</span></td><td>液冷</td><td>温控龙头，主力+16.30亿#3</td><td>PE157/PB21.5极高</td><td>短线关注</td>
+                </tr>
+                <tr>
+                    <td>9</td><td>sh601869</td><td>长飞光纤</td><td>394.50</td><td class="up">+4.04%</td><td>52</td><td><span class="rating rating-c">C</span></td><td><span class="fund-stage stage-enter">回流</span></td><td>通信设备</td><td>光纤龙头，主力+6.61亿#8</td><td>PE95/PB20极高</td><td>观望</td>
+                </tr>
+                <tr>
+                    <td>10</td><td>sh600371</td><td>万向德农</td><td>8.67</td><td class="up">+10.03%</td><td>52</td><td><span class="rating rating-c">C</span></td><td><span class="fund-stage stage-accelerate">加速</span></td><td>种业</td><td>种业政策催化，涨停</td><td>PE负值，高位</td><td>观望</td>
+                </tr>
+                <tr>
+                    <td>11</td><td>sz003040</td><td>楚天龙</td><td>15.48</td><td class="up">+10.02%</td><td>44</td><td><span class="rating rating-c">C</span></td><td><span class="fund-stage stage-accelerate">加速</span></td><td>稳定币</td><td>3连板，RWA/稳定币题材</td><td>PE-304亏损，游资炒作</td><td>高风险短线</td>
+                </tr>
+                <tr>
+                    <td>12</td><td>sh600172</td><td>黄河旋风</td><td>13.99</td><td class="up">+9.98%</td><td>35</td><td><span class="rating rating-c">C</span></td><td><span class="fund-stage stage-enter">进入</span></td><td>金刚石</td><td>金刚石+半导体材料，主力+5.22亿</td><td>PE-23亏损，PB43.5极高</td><td>观望</td>
+                </tr>
+                <tr>
+                    <td>13</td><td>sh600460</td><td>士兰微</td><td>34.32</td><td class="down">-3.49%</td><td>35</td><td><span class="rating rating-c">C</span></td><td><span class="fund-stage stage-retreat">撤退</span></td><td>半导体</td><td>IDM龙头，基本面尚可</td><td>主力-2.20亿，PE88高</td><td>观望</td>
+                </tr>
+                <tr>
+                    <td>14</td><td>sh688825</td><td>长鑫科技</td><td>56.50</td><td class="down">-0.18%</td><td>48</td><td><span class="rating rating-c">C</span></td><td><span class="fund-stage stage-retreat">撤退</span></td><td>半导体</td><td>HBM/国产存储核心</td><td>PE134/PB27极高</td><td>观望</td>
+                </tr>
+                <tr>
+                    <td>15</td><td>sz300308</td><td>中际旭创</td><td>846.00</td><td class="down">-2.78%</td><td>28</td><td><span class="rating rating-c">C</span></td><td><span class="fund-stage stage-retreat">撤退</span></td><td>光模块</td><td>光模块全球龙头</td><td>PE48/PB25高，行业资金流出</td><td>观望</td>
+                </tr>
+                <tr>
+                    <td>16</td><td>sz300502</td><td>新易盛</td><td>400.87</td><td class="down">-2.70%</td><td>30</td><td><span class="rating rating-c">C</span></td><td><span class="fund-stage stage-retreat">撤退</span></td><td>光模块</td><td>光模块核心</td><td>PE42/PB23高，5日-11%</td><td>观望</td>
+                </tr>
+                <tr>
+                    <td>17</td><td>sh601899</td><td>紫金矿业</td><td>33.68</td><td class="down">-2.49%</td><td>47</td><td><span class="rating rating-c">C</span></td><td><span class="fund-stage stage-retreat">撤退</span></td><td>贵金属</td><td>铜金双轮，PE13低估值</td><td>贵金属板块-3.83%退潮</td><td>减仓</td>
+                </tr>
+                <tr>
+                    <td>18</td><td>sz002716</td><td>湖南白银</td><td>10.77</td><td class="down">-6.02%</td><td>29</td><td><span class="rating rating-c">C</span></td><td><span class="fund-stage stage-retreat">撤退</span></td><td>贵金属</td><td>白银弹性标的</td><td>主力-2.99亿，-6.02%</td><td>减仓</td>
+                </tr>
+                <tr>
+                    <td>19</td><td>sz000506</td><td>招金黄金</td><td>20.61</td><td class="down">-7.74%</td><td>19</td><td><span class="rating rating-c">C</span></td><td><span class="fund-stage stage-retreat">撤退</span></td><td>贵金属</td><td>黄金标的</td><td>机构净卖2.29亿</td><td>清仓</td>
+                </tr>
+                <tr>
+                    <td>20</td><td>sz000603</td><td>盛达资源</td><td>36.27</td><td class="down">-9.01%</td><td>16</td><td><span class="rating rating-c">C</span></td><td><span class="fund-stage stage-retreat">撤退</span></td><td>小金属</td><td>白银+铅锌</td><td>机构净卖2.29亿</td><td>清仓</td>
+                </tr>
+                <tr>
+                    <td>21</td><td>sz002104</td><td>恒宝股份</td><td>11.33</td><td class="down">-1.56%</td><td>40</td><td><span class="rating rating-c">C</span></td><td><span class="fund-stage stage-retreat">撤退</span></td><td>稳定币</td><td>稳定币概念</td><td>PE576亏损，高位震荡</td><td>观望</td>
+                </tr>
+                <tr>
+                    <td>22</td><td>sz000065</td><td>北方国际</td><td>9.98</td><td>0.00%</td><td>59</td><td><span class="rating rating-c">C</span></td><td><span class="fund-stage stage-enter">关注</span></td><td>建筑</td><td>一带一路/建筑，PE15/PB1低估值</td><td>资金流出，题材不强</td><td>观望</td>
+                </tr>
+                <tr>
+                    <td>23</td><td>sz300864</td><td>南大环境</td><td>25.53</td><td class="down">-0.62%</td><td>59</td><td><span class="rating rating-c">C</span></td><td><span class="fund-stage stage-enter">关注</span></td><td>环保</td><td>PE26/PB3.17合理，20日+45%</td><td>主力-0.16亿</td><td>观望</td>
+                </tr>
+                <tr>
+                    <td>24</td><td>sz002418</td><td>康盛股份</td><td>4.05</td><td class="up">+10.05%</td><td>46</td><td><span class="rating rating-c">C</span></td><td><span class="fund-stage stage-accelerate">加速</span></td><td>液冷</td><td>液冷低价弹性，涨停</td><td>PE265亏损</td><td>高风险短线</td>
+                </tr>
+                <tr>
+                    <td>25</td><td>sh600127</td><td>金健米业</td><td>9.31</td><td class="up">+10.05%</td><td>38</td><td><span class="rating rating-c">C</span></td><td><span class="fund-stage stage-accelerate">加速</span></td><td>农业加工</td><td>粮食安全题材，主力+3.56亿</td><td>PE负值、PB8.9极高、亏损</td><td>观望</td>
+                </tr>
+                <tr>
+                    <td>26</td><td>sh600613</td><td>神奇制药</td><td>10.27</td><td class="up">+3.74%</td><td>43</td><td><span class="rating rating-c">C</span></td><td><span class="fund-stage stage-retreat">撤退</span></td><td>中药</td><td>10日+99%，短期爆发</td><td>机构净卖0.74亿，PE152高</td><td>观望</td>
+                </tr>
+                <tr>
+                    <td>27</td><td>sh600721</td><td>百花医药</td><td>14.96</td><td class="up">+5.43%</td><td>41</td><td><span class="rating rating-c">C</span></td><td><span class="fund-stage stage-enter">关注</span></td><td>创新药</td><td>创新药情绪标</td><td>PE192极高，游资炒作</td><td>观望</td>
+                </tr>
+                <tr>
+                    <td>28</td><td>sh688143</td><td>长盈通</td><td>168.80</td><td class="up">+12.37%</td><td>46</td><td><span class="rating rating-c">C</span></td><td><span class="fund-stage stage-accelerate">加速</span></td><td>通信设备</td><td>特种光纤，+12.37%</td><td>PE2211极高</td><td>高风险短线</td>
+                </tr>
+                <tr>
+                    <td>29</td><td>sz000796</td><td>凯撒旅业</td><td>4.18</td><td class="up">+10.00%</td><td>44</td><td><span class="rating rating-c">C</span></td><td><span class="fund-stage stage-accelerate">加速</span></td><td>旅游</td><td>消费复苏，涨停</td><td>PE190亏损</td><td>观望</td>
+                </tr>
+                <tr>
+                    <td>30</td><td>sz300607</td><td>拓斯达</td><td>36.73</td><td class="up">+10.23%</td><td>55</td><td><span class="rating rating-c">C</span></td><td><span class="fund-stage stage-accelerate">加速</span></td><td>机器人</td><td>工业机器人，+10.23%</td><td>题材为主</td><td>观望</td>
+                </tr>
+            </table>
+            <p style="color: var(--text-secondary); font-size: 13px;">评级分布：A级1只 / B级5只 / C级24只。N高凯（+282.99%）为新股首日，已剔除评分。</p>
+        </div>
+
+        <div class="section">
+            <h2>😊 市场情绪周期</h2>
+            <div class="status-bar">
+                <span class="status-pill info">涨停：70家</span>
+                <span class="status-pill info">跌停：4家</span>
+                <span class="status-pill info">涨跌比：76%</span>
+                <span class="status-pill warning">成交额：18318亿（缩量）</span>
+                <span class="status-pill info">连板高度：3板（楚天龙）</span>
+            </div>
+            <div class="highlight">
+                <strong>情绪周期：启动→加速过渡期</strong> | 情绪评分：65分  
+                昨日冰点（42涨停、71%个股下跌），今日涨停翻倍至70家、涨跌比76%，情绪快速回暖。但成交额缩量显示场外资金入场意愿不强，属于"缩量反弹"，尚未进入高潮期。
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>📈 组合管理建议</h2>
+            <div class="portfolio-grid">
+                <div class="portfolio-card">
+                    <h4>🏦 鑫未来核心组合（中线）</h4>
+                    <table>
+                        <tr><th>代码</th><th>名称</th><th>评分</th><th>仓位</th></tr>
+                        <tr><td>sz002821</td><td>凯莱英</td><td>82 A</td><td>8%-12%</td></tr>
+                        <tr><td>sh600487</td><td>亨通光电</td><td>68 B</td><td>5%-8%</td></tr>
+                        <tr><td>sh600522</td><td>中天科技</td><td>68 B</td><td>5%-8%</td></tr>
+                        <tr><td>sh688169</td><td>石头科技</td><td>73 B</td><td>5%-8%</td></tr>
+                        <tr><td>sh600508</td><td>上海能源</td><td>69 B</td><td>4%-6%</td></tr>
+                        <tr><td>sz002041</td><td>登海种业</td><td>67 B</td><td>4%-6%</td></tr>
+                    </table>
+                    <p style="font-size: 13px; color: var(--text-secondary);">6只标的，总仓位建议25%-35%</p>
+                </div>
+                <div class="portfolio-card">
+                    <h4>⚡ 鑫准出击短线池</h4>
+                    <table>
+                        <tr><th>代码</th><th>名称</th><th>评分</th><th>仓位</th></tr>
+                        <tr><td>sz002837</td><td>英维克</td><td>62 C</td><td>3%-5%</td></tr>
+                        <tr><td>sh600785</td><td>新华百货</td><td>60 C</td><td>2%-4%</td></tr>
+                        <tr><td>sz003040</td><td>楚天龙</td><td>44 C</td><td>1%-3%</td></tr>
+                        <tr><td>sz002418</td><td>康盛股份</td><td>46 C</td><td>1%-3%</td></tr>
+                        <tr><td>sh688143</td><td>长盈通</td><td>46 C</td><td>1%-3%</td></tr>
+                    </table>
+                    <p style="font-size: 13px; color: var(--text-secondary);">5只标的，总仓位建议8%-15%，严格止损</p>
+                </div>
+            </div>
+            <h3>持仓调整建议</h3>
+            <table>
+                <tr><th>操作</th><th>标的类型</th><th>说明</th></tr>
+                <tr><td><span class="fund-stage stage-accelerate">加仓</span></td><td>CRO/医药、通信设备龙头</td><td>凯莱英、亨通光电、中天科技</td></tr>
+                <tr><td><span class="fund-stage stage-enter">持有</span></td><td>低估值防御（煤炭、银行）</td><td>上海能源等</td></tr>
+                <tr><td><span class="fund-stage stage-peak">减仓</span></td><td>贵金属/小金属</td><td>紫金矿业、湖南白银</td></tr>
+                <tr><td><span class="fund-stage stage-retreat">清仓</span></td><td>机构大幅卖出标的</td><td>招金黄金、盛达资源</td></tr>
+                <tr><td><span class="fund-stage stage-retreat">回避</span></td><td>高估值题材股</td><td>英维克、长飞光纤、百花医药</td></tr>
+            </table>
+        </div>
+
+        <div class="section">
+            <h2>🚨 风险控制扫描</h2>
+            <div class="risk-grid">
+                <div class="risk-card yellow">
+                    <div class="title">市场风险：黄色预警</div>
+                    <p>市场评分60分，处于震荡区间下沿。成交额缩量1769亿，反弹持续性存疑。美股纳指7连阴，全球风险偏好承压。建议总仓位不超过50%。</p>
+                </div>
+                <div class="risk-card green">
+                    <div class="title">行业集中风险：绿色</div>
+                    <p>今日领涨板块分散（医药、农业、通信、机械），未出现单一行业过度拥挤。但需警惕通信设备与CRO短期资金同时发力后的分化。</p>
+                </div>
+                <div class="risk-card red">
+                    <div class="title">个股风险：红色预警</div>
+                    <p>高估值个股：长飞光纤PE95/PB20、英维克PE157/PB21.5、长盈通PE2211。亏损题材股：金健米业、万向德农、楚天龙。机构大卖：招金黄金、盛达资源、神奇制药。</p>
+                </div>
+                <div class="risk-card yellow">
+                    <div class="title">情绪过热风险：黄色</div>
+                    <p>涨停70家，情绪快速回暖但未达高潮。汉森制药5日+61%、神奇制药10日+99%、长盈通20日+86%，短线过热。建议不追高，等待回踩。</p>
+                </div>
+            </div>
+            <div class="highlight" style="margin-top: 16px; background: #fef2f2; border-left-color: var(--danger);">
+                <strong>最大风险提示：</strong>缩量反弹后二次探底 + 高位资源股退潮共振。今日个股普涨但成交额缩量，若后续量能无法回补至2万亿以上，上证指数可能再次考验3850点支撑。同时贵金属/小金属板块资金撤退，持有的资源股需果断减仓。
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>📝 今日收盘核心结论</h2>
+            <ol>
+                <li><strong>市场评分60分，处于震荡修复阶段，建议仓位30%-50%。</strong>上证微红但创业板跌1%，指数分化明显。</li>
+                <li><strong>情绪从冰点快速修复：</strong>涨停70家（昨日42家），涨跌比76%，但成交额缩量1769亿，反弹质量一般。</li>
+                <li><strong>资金主线切换到医药/CRO、农业、通信设备：</strong>医药生物+36.20亿、通信设备+21.83亿、专用设备+41.54亿，贵金属/有色资金撤退。</li>
+                <li><strong>凯莱英（82分/A级）为今日唯一A级标的，</strong>CRO龙头涨停突破，产业趋势与资金共振。</li>
+                <li><strong>高估值题材股风险突出：</strong>英维克PE157、长飞光纤PE95、长盈通PE2211，估值泡沫明显。</li>
+                <li><strong>贵金属板块退潮确认：</strong>板块-3.83%，招金黄金/盛达资源龙虎榜机构大卖，需减仓/清仓。</li>
+                <li><strong>美股纳指7连阴压制风险偏好：</strong>费城半导体指数大跌，A股科技硬件短期承压。</li>
+                <li><strong>明日关注点：</strong>成交额能否重回2万亿、CRO板块持续性、通信设备能否延续资金流入。</li>
+            </ol>
+        </div>
+
+        <div class="footer">
+            <p>AI智能股票组合主理人系统V5.0 | 长安鑫工作室</p>
+            <p>报告文件：AI_STOCK_CLOSE_V5_20260825.md / .html | 跟踪CSV：V5_TRACKING_SCORES.csv</p>
+        </div>
+    </div>
+</body>
+</html>

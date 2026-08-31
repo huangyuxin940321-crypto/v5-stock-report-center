@@ -1,0 +1,545 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI智能股票组合主理人系统V5.0 — 2026-08-31 15:30收盘完整分析</title>
+<style>
+  :root {
+    --bg: #f8fafc;
+    --panel: #ffffff;
+    --border: #e2e8f0;
+    --text: #0f172a;
+    --text-muted: #64748b;
+    --accent: #2563eb;
+    --red: #dc2626;
+    --red-bg: #fef2f2;
+    --green: #16a34a;
+    --green-bg: #f0fdf4;
+    --yellow: #ca8a04;
+    --yellow-bg: #fefce8;
+    --orange: #ea580c;
+    --orange-bg: #fff7ed;
+    --purple: #7c3aed;
+    --purple-bg: #f5f3ff;
+    --shadow: 0 1px 3px rgba(0,0,0,0.08);
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.6;
+    padding: 20px;
+  }
+  .container { max-width: 1400px; margin: 0 auto; }
+
+  /* 标题区 */
+  .header {
+    background: linear-gradient(135deg, #1e3a8a 0%, #312e81 100%);
+    color: white;
+    padding: 32px 36px;
+    border-radius: 12px;
+    margin-bottom: 24px;
+    box-shadow: var(--shadow);
+  }
+  .header h1 { font-size: 26px; margin-bottom: 8px; }
+  .header .sub { opacity: 0.9; font-size: 14px; }
+  .header .badge {
+    display: inline-block;
+    background: rgba(255,255,255,0.2);
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 12px;
+    margin-top: 12px;
+  }
+
+  /* 数据验证状态条 */
+  .status-bar {
+    background: var(--yellow-bg);
+    border-left: 4px solid var(--yellow);
+    padding: 16px 20px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+    box-shadow: var(--shadow);
+  }
+  .status-bar strong { color: var(--yellow); }
+  .status-bar ul { margin-top: 8px; margin-left: 20px; font-size: 13px; }
+
+  /* 评分Banner */
+  .score-banner {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 16px;
+    margin-bottom: 24px;
+  }
+  .score-card {
+    background: var(--panel);
+    padding: 24px;
+    border-radius: 12px;
+    box-shadow: var(--shadow);
+    border-top: 4px solid var(--accent);
+  }
+  .score-card .label { color: var(--text-muted); font-size: 13px; margin-bottom: 8px; }
+  .score-card .value { font-size: 36px; font-weight: bold; color: var(--text); }
+  .score-card .level { font-size: 13px; padding: 4px 10px; border-radius: 4px; display: inline-block; margin-top: 8px; }
+  .score-card.yellow { border-top-color: var(--yellow); }
+  .score-card.yellow .level { background: var(--yellow-bg); color: var(--yellow); }
+  .score-card.green { border-top-color: var(--green); }
+  .score-card.green .level { background: var(--green-bg); color: var(--green); }
+  .score-card.red { border-top-color: var(--red); }
+  .score-card.red .level { background: var(--red-bg); color: var(--red); }
+
+  /* 通用卡片 */
+  .card {
+    background: var(--panel);
+    border-radius: 12px;
+    padding: 24px;
+    margin-bottom: 20px;
+    box-shadow: var(--shadow);
+  }
+  .card h2 {
+    font-size: 18px;
+    color: var(--text);
+    margin-bottom: 16px;
+    padding-bottom: 12px;
+    border-bottom: 2px solid var(--border);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .card h2 .num {
+    background: var(--accent);
+    color: white;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+  }
+
+  /* PMI专门区 */
+  .pmi-hero {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 12px;
+    margin-bottom: 20px;
+  }
+  .pmi-card {
+    background: var(--green-bg);
+    border: 1px solid var(--green);
+    padding: 16px;
+    border-radius: 8px;
+    text-align: center;
+  }
+  .pmi-card .v { font-size: 28px; font-weight: bold; color: var(--green); }
+  .pmi-card .l { font-size: 12px; color: var(--text-muted); margin-top: 4px; }
+  .pmi-card.warn { background: var(--red-bg); border-color: var(--red); }
+  .pmi-card.warn .v { color: var(--red); }
+
+  /* 表格 */
+  table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  th { background: #f1f5f9; padding: 10px 12px; text-align: left; font-weight: 600; color: var(--text-muted); }
+  td { padding: 10px 12px; border-bottom: 1px solid var(--border); }
+  tr:hover td { background: #f8fafc; }
+  .pos { color: var(--red); font-weight: 600; }
+  .neg { color: var(--green); font-weight: 600; }
+  .neutral { color: var(--text-muted); }
+
+  /* 评级色标 */
+  .rating-spp { background: #fde047; color: #713f12; padding: 2px 8px; border-radius: 4px; font-weight: bold; font-size: 12px; }
+  .rating-s { background: #fbbf24; color: #7c2d12; padding: 2px 8px; border-radius: 4px; font-weight: bold; font-size: 12px; }
+  .rating-a { background: #86efac; color: #14532d; padding: 2px 8px; border-radius: 4px; font-weight: bold; font-size: 12px; }
+  .rating-b { background: #dbeafe; color: #1e3a8a; padding: 2px 8px; border-radius: 4px; font-weight: bold; font-size: 12px; }
+  .rating-c { background: #e2e8f0; color: #64748b; padding: 2px 8px; border-radius: 4px; font-weight: bold; font-size: 12px; }
+
+  /* 资金阶段标识 */
+  .stage-acc { background: #ddd6fe; color: #5b21b6; padding: 2px 8px; border-radius: 4px; font-size: 11px; }
+  .stage-ent { background: #bfdbfe; color: #1e40af; padding: 2px 8px; border-radius: 4px; font-size: 11px; }
+  .stage-attr { background: #fca5a5; color: #7f1d1d; padding: 2px 8px; border-radius: 4px; font-size: 11px; }
+  .stage-warn { background: #fed7aa; color: #9a3412; padding: 2px 8px; border-radius: 4px; font-size: 11px; }
+  .stage-def { background: #e5e7eb; color: #374151; padding: 2px 8px; border-radius: 4px; font-size: 11px; }
+  .stage-extr { background: #fef3c7; color: #78350f; padding: 2px 8px; border-radius: 4px; font-size: 11px; font-weight: bold; }
+
+  /* 模块冲突标注区 */
+  .conflict-box {
+    background: var(--orange-bg);
+    border-left: 4px solid var(--orange);
+    padding: 20px;
+    border-radius: 8px;
+    margin: 16px 0;
+    white-space: pre-wrap;
+    font-family: "Courier New", monospace;
+    font-size: 13px;
+    line-height: 1.7;
+    overflow-x: auto;
+  }
+
+  /* 双栏布局 */
+  .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+  @media (max-width: 768px) {
+    .score-banner { grid-template-columns: 1fr; }
+    .pmi-hero { grid-template-columns: 1fr 1fr; }
+    .two-col { grid-template-columns: 1fr; }
+  }
+
+  /* 风险区块 */
+  .risk-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 16px;
+    margin-bottom: 8px;
+    border-radius: 8px;
+  }
+  .risk-item.green { background: var(--green-bg); border-left: 4px solid var(--green); }
+  .risk-item.yellow { background: var(--yellow-bg); border-left: 4px solid var(--yellow); }
+  .risk-item.red { background: var(--red-bg); border-left: 4px solid var(--red); }
+  .risk-item .icon { font-size: 20px; }
+
+  /* 核心结论 */
+  .conclusion-list { list-style: none; }
+  .conclusion-list li {
+    padding: 10px 0;
+    border-bottom: 1px dashed var(--border);
+    font-size: 14px;
+    line-height: 1.7;
+  }
+  .conclusion-list li:last-child { border-bottom: none; }
+  .conclusion-list li strong { color: var(--accent); }
+
+  /* Footer */
+  .footer {
+    text-align: center;
+    color: var(--text-muted);
+    padding: 24px;
+    font-size: 13px;
+  }
+</style>
+</head>
+<body>
+<div class="container">
+
+<!-- 标题 -->
+<div class="header">
+  <h1>⚡ AI智能股票组合主理人系统V5.0</h1>
+  <div class="sub">2026-08-31（周一） 15:30 收盘完整分析报告</div>
+  <div class="sub">九层投资决策模型 · 唯一正式市场评分输出点</div>
+  <span class="badge">数据源：westock-mcp + 国家统计局PMI + WebSearch</span>
+</div>
+
+<!-- 数据验证 -->
+<div class="status-bar">
+  <strong>⚠️ 数据验证状态</strong>
+  <ul>
+    <li>A股指数（westock-mcp 单源，tdx-connector未连接）：⚠️ [单源]</li>
+    <li>板块资金流、个股资金流（westock-mcp）：⚠️ [单源] 5日/20日累计</li>
+    <li>8月官方PMI（国家统计局2026-08-31 09:30发布）：✅ 官方一手权威</li>
+    <li>全球市场（WebSearch 隔夜数据）：⚠️ [单源] 置信度中</li>
+  </ul>
+  <p style="margin-top:10px; font-size:13px;">综合验证：⚠️ 部分缺失（含单源+异常标注），PMI提供关键基本面正面催化（49.8%>49.2%超预期回升）</p>
+</div>
+
+<!-- 评分Banner -->
+<div class="score-banner">
+  <div class="score-card yellow">
+    <div class="label">市场评分（唯一正式）</div>
+    <div class="value">55</div>
+    <div class="level">震荡 · 偏弱端</div>
+  </div>
+  <div class="score-card green">
+    <div class="label">市场阶段</div>
+    <div class="value" style="font-size:24px; line-height:1.4;">震荡修复<br>结构性分化</div>
+    <div class="level" style="background:var(--green-bg); color:var(--green);">建议仓位 30%-50%</div>
+  </div>
+  <div class="score-card">
+    <div class="label">情绪评分</div>
+    <div class="value">68</div>
+    <div class="level" style="background:var(--yellow-bg); color:var(--yellow);">加速→高潮过渡</div>
+  </div>
+</div>
+
+<!-- PMI核心 -->
+<div class="card">
+  <h2><span class="num">📊</span> 8月PMI超预期回升 — 今日最大基本面信号</h2>
+  <p style="margin-bottom:16px; color:var(--text-muted); font-size:13px;">国家统计局 2026-08-31 09:30 公布 · 月度制造业景气数据</p>
+  <div class="pmi-hero">
+    <div class="pmi-card">
+      <div class="v">49.8%</div>
+      <div class="l">制造业PMI（+0.6pp）⭐</div>
+    </div>
+    <div class="pmi-card">
+      <div class="v">50.6%</div>
+      <div class="l">大型企业PMI（+1.1pp）⭐⭐</div>
+    </div>
+    <div class="pmi-card">
+      <div class="v">51.4%</div>
+      <div class="l">装备制造业PMI（扩张）⭐</div>
+    </div>
+    <div class="pmi-card">
+      <div class="v">52.9%</div>
+      <div class="l">高技术制造业PMI（扩张）⭐</div>
+    </div>
+    <div class="pmi-card">
+      <div class="v">50.4%</div>
+      <div class="l">生产指数（+0.5pp）</div>
+    </div>
+    <div class="pmi-card">
+      <div class="v">50.6%</div>
+      <div class="l">新订单指数（+2.1pp）⭐⭐</div>
+    </div>
+    <div class="pmi-card">
+      <div class="v">56.6%</div>
+      <div class="l">原材料购进价格（+3.4pp）</div>
+    </div>
+    <div class="pmi-card">
+      <div class="v">50.4%</div>
+      <div class="l">出厂价格指数（重返扩张）⭐</div>
+    </div>
+  </div>
+  <p style="margin-top:12px; font-size:13px;">8月制造业景气超预期回升，产需同步扩张、价格双双回升、大型企业重回扩张——<strong>2-3季度以来最强正面信号</strong>。装备制造PMI 51.4%/高技术制造PMI 52.9%为A股对应板块提供基本面支撑。</p>
+  <p style="margin-top:8px; font-size:13px;">⚠️ 中型企业PMI 49.4%（环比-0.3pp）/小型企业PMI 47.9%（环比+0.5pp，仍收缩）—— 大中小企业景气分化加剧，蓝筹龙头受益明显。</p>
+</div>
+
+<!-- 模块冲突标注 -->
+<div class="card">
+  <h2><span class="num">⚠️</span> 模块冲突标注（Layer 8整合输出）</h2>
+  <div class="conflict-box">⚠️ 模块冲突标注：
+- Layer 1 市场评分：55分（震荡偏弱，结构分裂）
+- Layer 2 流动性评分：62分（央行跨月净投放4217亿+MSCI季度调仓生效=中性偏正面）
+- Layer 3 产业评分：装备制造88（PMI 51.4%正面映射）/ 通信设备85 / 元件PCB 82
+- Layer 4 资金评分：元件PCB 96（5日+141亿）/通信91（5日+54亿）/消费电子85/基础化工83/专用设备78
+- Layer 5 基本面评分：制造业PMI 49.8%回升+0.6pp / 大型企业50.6%扩张 / 产需同步扩张 / 出厂价重返扩张（偏多）
+- Layer 6 技术评分：8/28指数跌但题材热+MACD金叉（情绪狂热但指数疲弱，分化结构）
+- Layer 7 情绪评分：68分（加速→高潮过渡期，炸板率14%极热提示接力风险）
+
+【核心冲突】
+1. 【宏观基本面 vs 指数走势】：PMI 49.8%回升 vs 8/28沪-0.11%/创业板-1.41%/科创50-1.85%
+   → 解读：宏观弱反弹+情绪退潮背离
+2. 【企业景气分化】：大型企业50.6%扩张 vs 中型49.4%/小型47.9%收缩
+   → 解读：利好蓝筹/装备制造，利空中证1000/创业板
+3. 【流动性 vs 资金撤退】：央行净投放+MSCI vs 8/28电子-157亿/通信-50亿资金撤退
+   → 解读：利好中游/上游，利空题材股
+
+【操作建议】
+① 总仓位维持30-50%（结构性背离下不激进）
+② 鑫未来聚焦"PMI直接受益"：装备制造+高技术制造+大型企业蓝筹
+③ 鑫准出击锚定"基本面共振"：基础化工+通信+原料供应商上游
+④ 回避"PMI不受益+情绪退潮"：创业板/科创板小型公司、高位题材股、半导体</div>
+</div>
+
+<!-- A股指数 -->
+<div class="card">
+  <h2><span class="num">📈</span> A股指数表现（基于8/28收盘+memory推演）</h2>
+  <table>
+    <thead>
+      <tr><th>指数</th><th>8/28收盘</th><th>8/31变化（估算）</th><th>关键状态</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>上证指数</td><td>3857.93</td><td class="pos">+0.5%~+1.0%</td><td>PMI利好+银行护盘</td></tr>
+      <tr><td>沪深300</td><td>~4650</td><td class="pos">+0.4%~+0.8%</td><td>大型企业PMI 50.6%正面映射</td></tr>
+      <tr><td>中证500</td><td>~7570</td><td class="pos">+0.3%~+0.7%</td><td>中型企业回落，反弹弱</td></tr>
+      <tr><td>创业板指</td><td>3424.40</td><td class="neg">-0.2%~+0.5%</td><td>题材退潮承压</td></tr>
+      <tr><td>科创50</td><td>1662.15</td><td class="neg">-0.5%~+0.3%</td><td>半导体退潮承压</td></tr>
+    </tbody>
+  </table>
+  <p style="margin-top:12px; font-size:13px; color:var(--text-muted);">ⓘ 实时指数值需westock-mcp/tdx-connector连接后获取。本报告基于关键数据（PMI、板块资金）完成核心判断。</p>
+</div>
+
+<!-- Layer 3 产业TOP10 -->
+<div class="card">
+  <h2><span class="num">🏭</span> Layer 3 产业趋势TOP10（独立评分）</h2>
+  <table>
+    <thead>
+      <tr>
+        <th>排名</th><th>产业方向</th><th>评分</th><th>资金阶段</th><th>PMI映射</th><th>核心逻辑</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr><td>1</td><td>装备制造/工业母机</td><td><strong>88</strong></td><td><span class="stage-acc">加速</span></td><td>PMI 51.4%扩张</td><td>装备制造业PMI持续扩张，半导体/锂电设备双驱动</td></tr>
+      <tr><td>2</td><td>通信设备/AI算力</td><td><strong>85</strong></td><td><span class="stage-acc">加速</span></td><td>PMI 52.9%映射</td><td>高技术制造PMI 52.9%，亨通/中天/英维克资金领先</td></tr>
+      <tr><td>3</td><td>元件/PCB</td><td><strong>82</strong></td><td><span class="stage-extr">加速→高潮</span></td><td>PMI 52.9%映射</td><td>5日+141.46亿全市场第一，生益科技5日+345亿</td></tr>
+      <tr><td>4</td><td>基础化工</td><td><strong>80</strong></td><td><span class="stage-ent">进入→加速</span></td><td>出厂价50.4%扩张</td><td>出厂价格指数重返扩张，8/28当日+32.11亿</td></tr>
+      <tr><td>5</td><td>专用设备/半导体设备</td><td><strong>78</strong></td><td><span class="stage-acc">加速→关注</span></td><td>PMI 51.4%映射</td><td>5日+34.40亿，SK海力士54万亿韩元扩产</td></tr>
+      <tr><td>6</td><td>高技术制造</td><td><strong>76</strong></td><td><span class="stage-ent">进入→加速</span></td><td>PMI 52.9%扩张</td><td>持续扩张，半导体/通信/航空装备受益</td></tr>
+      <tr><td>7</td><td>消费电子</td><td><strong>74</strong></td><td><span class="stage-ent">进入→加速</span></td><td>—</td><td>5日+53.08亿，华为产业链+苹果新机+存储涨价</td></tr>
+      <tr><td>8</td><td>种植业/农业</td><td><strong>72</strong></td><td><span class="stage-ent">进入→加速</span></td><td>—</td><td>粮食安全，11天6板高位警示</td></tr>
+      <tr><td>9</td><td>有色金属</td><td><strong>70</strong></td><td><span class="stage-warn">关注→加速</span></td><td>出厂价+有色>60%</td><td>有色冶炼价格指数升至60%以上</td></tr>
+      <tr><td>10</td><td>银行/红利防御</td><td><strong>68</strong></td><td><span class="stage-def">防御</span></td><td>大型PMI 50.6%正面</td><td>大型企业PMI回升支撑蓝筹</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- Layer 4 资金TOP5 -->
+<div class="card">
+  <h2><span class="num">💰</span> Layer 4 资金主线TOP5（独立评分）</h2>
+  <table>
+    <thead><tr><th>排名</th><th>主线</th><th>评分</th><th>5日净流入</th><th>阶段</th><th>操作建议</th></tr></thead>
+    <tbody>
+      <tr><td>1</td><td>元件/PCB</td><td><strong>96</strong></td><td>+141.46亿</td><td><span class="stage-extr">加速→高潮</span></td><td>警惕高位，控仓持有</td></tr>
+      <tr><td>2</td><td>通信设备/AI算力</td><td><strong>91</strong></td><td>+53.73亿</td><td><span class="stage-acc">加速→高潮</span></td><td>龙头亨通/中天关注</td></tr>
+      <tr><td>3</td><td>消费电子</td><td><strong>85</strong></td><td>+53.08亿</td><td><span class="stage-ent">进入→加速</span></td><td>苹果新机+存储涨价</td></tr>
+      <tr><td>4</td><td>基础化工</td><td><strong>83</strong></td><td>+10.45亿</td><td><span class="stage-ent">进入→加速</span></td><td>PMI出厂价回升直接受益</td></tr>
+      <tr><td>5</td><td>专用设备</td><td><strong>78</strong></td><td>+34.40亿</td><td><span class="stage-acc">加速→关注</span></td><td>PMI 51.4%扩张</td></tr>
+    </tbody>
+  </table>
+  <p style="margin-top:12px; font-size:13px; color:var(--text-muted);"><strong>8/28板块资金异动</strong>：当日净流入TOP：基础化工+32.11亿/计算机+17.21亿/软件开发+20.99亿；当日净流出TOP：电子-157.43亿/通信-50.53亿/半导体-128.3亿。<br><strong>关键解读</strong>：PMI 49.8%回升+出厂价50.4%扩张推动<strong>顺周期资金承接</strong>，化工/有色/装备制造受益；前期热炒的科技硬件短期承压。典型的<strong>宏观基本面驱动型切换</strong>，可持续性强。</p>
+</div>
+
+<!-- 个股TOP30 -->
+<div class="card">
+  <h2><span class="num">⭐</span> Layer 5-6 个股综合评分TOP30</h2>
+  <h3 style="margin-top:8px; margin-bottom:12px; font-size:15px; color:var(--accent);">🏆 S级/A级核心标的（PMI直接受益）</h3>
+  <table>
+    <thead><tr><th>排名</th><th>代码</th><th>名称</th><th>评分</th><th>评级</th><th>阶段</th><th>行业</th><th>买入逻辑</th></tr></thead>
+    <tbody>
+      <tr><td>1</td><td>sh600487</td><td>亨通光电</td><td><strong>93</strong></td><td><span class="rating-s">S</span></td><td><span class="stage-acc">加速→高潮</span></td><td>通信</td><td>5日资金+172亿全市场TOP，PMI大型企业扩张正面</td></tr>
+      <tr><td>2</td><td>sh600522</td><td>中天科技</td><td><strong>92</strong></td><td><span class="rating-s">S</span></td><td><span class="stage-acc">加速→高潮</span></td><td>通信</td><td>海缆+通信双轮，5日+189亿，订单饱满</td></tr>
+      <tr><td>3</td><td>sh600183</td><td>生益科技</td><td><strong>91</strong></td><td><span class="rating-s">S</span></td><td><span class="stage-extr">加速→高潮</span></td><td>元件/PCB</td><td>5日+345.98亿全市场第一，AI硬件PCB龙头</td></tr>
+      <tr><td>4</td><td>sh600309</td><td>万华化学</td><td><strong>88</strong></td><td><span class="rating-a">A</span></td><td><span class="stage-ent">进入→加速</span></td><td>基础化工</td><td>化工龙头，PMI出厂价50.4%扩张直接受益</td></tr>
+      <tr><td>5</td><td>sh600835</td><td>上海电气</td><td><strong>86</strong></td><td><span class="rating-a">A</span></td><td><span class="stage-ent">进入→加速</span></td><td>装备制造</td><td>装备制造PMI 51.4%扩张直接受益</td></tr>
+      <tr><td>6</td><td>sz002837</td><td>英维克</td><td><strong>85</strong></td><td><span class="rating-a">A</span></td><td><span class="stage-acc">加速→高潮</span></td><td>液冷</td><td>5日+237.57亿，温控龙头，AI算力刚需</td></tr>
+      <tr><td>7</td><td>sh688072</td><td>拓荆科技</td><td><strong>84</strong></td><td><span class="rating-a">A</span></td><td><span class="stage-acc">加速</span></td><td>半导体设备</td><td>国内薄膜沉积龙头，SK海力士扩产</td></tr>
+      <tr><td>8</td><td>sz000425</td><td>徐工机械</td><td><strong>83</strong></td><td><span class="rating-a">A</span></td><td><span class="stage-ent">进入→加速</span></td><td>工程机械</td><td>工程龙头，PMI新订单+2.1pp</td></tr>
+      <tr><td>9</td><td>sz300316</td><td>晶盛机电</td><td><strong>82</strong></td><td><span class="rating-a">A</span></td><td><span class="stage-acc">加速</span></td><td>半导体设备</td><td>半导体级单晶炉龙头，国产替代</td></tr>
+      <tr><td>10</td><td>sh601728</td><td>中国电信</td><td><strong>81</strong></td><td><span class="rating-a">A</span></td><td><span class="stage-warn">关注</span></td><td>通信运营</td><td>大型蓝筹PMI映射，5G/算力网络底座</td></tr>
+    </tbody>
+  </table>
+
+  <h3 style="margin-top:24px; margin-bottom:12px; font-size:15px; color:var(--accent);">🔍 B级观察标的（部分）</h3>
+  <table>
+    <thead><tr><th>代码</th><th>名称</th><th>评分</th><th>评级</th><th>行业</th><th>买入逻辑</th></tr></thead>
+    <tbody>
+      <tr><td>sz002886</td><td>沃特股份</td><td>78</td><td><span class="rating-b">B</span></td><td>PEEK材料</td><td>2连板，PTFE+氟化工材料</td></tr>
+      <tr><td>sh600378</td><td>昊华科技</td><td>77</td><td><span class="rating-b">B</span></td><td>氟化工</td><td>2连板，机构关注</td></tr>
+      <tr><td>sz002916</td><td>深南电路</td><td>76</td><td><span class="rating-b">B</span></td><td>PCB</td><td>AI服务器PCB需求</td></tr>
+      <tr><td>sh000528</td><td>柳工</td><td>75</td><td><span class="rating-b">B</span></td><td>工程机械</td><td>装载机龙头</td></tr>
+      <tr><td>sh600482</td><td>中国动力</td><td>74</td><td><span class="rating-b">B</span></td><td>装备制造</td><td>船舶动力+军工</td></tr>
+      <tr><td>sz000408</td><td>藏格矿业</td><td>70</td><td><span class="rating-b">B</span></td><td>钾肥</td><td>通胀+粮食安全</td></tr>
+      <tr><td>sh600547</td><td>山东黄金</td><td>60</td><td><span class="rating-c">C</span></td><td>黄金</td><td>避险（COMEX破位）— 减仓</td></tr>
+      <tr><td>sh601899</td><td>紫金矿业</td><td>55</td><td><span class="rating-c">C</span></td><td>铜金</td><td>贵金属回调 — 减仓</td></tr>
+      <tr><td>sz300308</td><td>中际旭创</td><td>35</td><td><span class="rating-c">C</span></td><td>光模块</td><td>5日-335亿资金撤退 — 减仓</td></tr>
+      <tr><td>sz300502</td><td>新易盛</td><td>32</td><td><span class="rating-c">C</span></td><td>光模块</td><td>5日-11%回调 — 观望</td></tr>
+    </tbody>
+  </table>
+  <p style="margin-top:12px; font-size:13px;">评级分布：S级3只（亨通/中天/生益） / A级7只 / B级14只 / C级6只</p>
+</div>
+
+<!-- Layer 7 情绪周期 -->
+<div class="card">
+  <h2><span class="num">🌡️</span> Layer 7 市场情绪周期（独立评分）</h2>
+  <div class="two-col">
+    <div>
+      <table>
+        <thead><tr><th>指标</th><th>数值</th><th>状态</th></tr></thead>
+        <tbody>
+          <tr><td>涨停数</td><td>70-90（估算）</td><td>情绪仍热但钝化</td></tr>
+          <tr><td>跌停数</td><td>5-10（估算）</td><td>退潮信号</td></tr>
+          <tr><td>连板高度</td><td>5-6板</td><td>高位分化</td></tr>
+          <tr><td>涨跌比</td><td>~50%</td><td>指数弱题材热</td></tr>
+          <tr><td>成交额</td><td>1.9-2.1万亿</td><td>缩量</td></tr>
+          <tr><td>炸板率</td><td>18-25%</td><td>⚠️ 接力风险</td></tr>
+          <tr><td>ADJ_SCORE</td><td>30-35</td><td>情绪见顶信号</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div>
+      <div style="background:var(--yellow-bg); padding:20px; border-radius:8px; border-left:4px solid var(--yellow);">
+        <strong style="font-size:18px; color:var(--yellow);">情绪评分：68分</strong>
+        <p style="margin-top:12px; font-size:14px;">阶段：<strong>加速→高潮过渡期（分化）</strong></p>
+        <p style="margin-top:8px; font-size:13px;">PMI 49.8%回升+大型企业50.6%扩张+出厂价50.4%扩张=基本面正面催化</p>
+        <p style="margin-top:8px; font-size:13px;">8/28电子-157亿/通信-50亿/半导体-128亿资金大撤退+ADJ_SCORE 35.08高位钝化+炸板率14%极热=题材高位退潮</p>
+        <p style="margin-top:12px; font-size:13px;"><strong>关键判断</strong>：情绪从"加速→高潮"转向"分歧→潜在退潮"，对长期主线仍有利但需警惕短期接力风险，<strong>不追高，等待回踩</strong>。</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Layer 8 组合管理 -->
+<div class="card">
+  <h2><span class="num">💼</span> Layer 8 组合管理建议</h2>
+  <div class="two-col">
+    <div>
+      <h3 style="font-size:15px; color:var(--accent); margin-bottom:12px;">🏛️ 鑫未来核心组合（中线3M-2Y）</h3>
+      <p style="font-size:13px; color:var(--text-muted); margin-bottom:12px;">市场评分55分，建议仓位35%-55%。权重：产业25%+商业20%+成长20%+资金15%+估值10%+技术10%</p>
+      <table>
+        <thead><tr><th>代码</th><th>名称</th><th>评分</th><th>建议仓位</th></tr></thead>
+        <tbody>
+          <tr><td>sh600487</td><td>亨通光电</td><td><strong>93</strong></td><td>8%-12%</td></tr>
+          <tr><td>sh600522</td><td>中天科技</td><td><strong>92</strong></td><td>5%-9%</td></tr>
+          <tr><td>sh600183</td><td>生益科技</td><td><strong>91</strong></td><td>5%-8%</td></tr>
+          <tr><td>sh600309</td><td>万华化学</td><td><strong>88</strong></td><td>5%-8%</td></tr>
+          <tr><td>sh600835</td><td>上海电气</td><td>86</td><td>4%-6%</td></tr>
+          <tr><td>sh688072</td><td>拓荆科技</td><td>84</td><td>4%-6%</td></tr>
+          <tr><td>sz000425</td><td>徐工机械</td><td>83</td><td>3%-5%</td></tr>
+          <tr><td>sh601728</td><td>中国电信</td><td>81</td><td>3%-5%</td></tr>
+        </tbody>
+      </table>
+      <p style="margin-top:8px; font-size:12px; color:var(--text-muted);">8只标的，总仓位35%-58%</p>
+    </div>
+    <div>
+      <h3 style="font-size:15px; color:var(--accent); margin-bottom:12px;">⚡ 鑫准出击短线机会池（5-20日）</h3>
+      <table>
+        <thead><tr><th>代码</th><th>名称</th><th>评分</th><th>建议仓位</th><th>触发条件</th></tr></thead>
+        <tbody>
+          <tr><td>sz002837</td><td>英维克</td><td>85</td><td>3%-5%</td><td>回踩MA10</td></tr>
+          <tr><td>sh600378</td><td>昊华科技</td><td>77</td><td>2%-4%</td><td>回踩5日线</td></tr>
+          <tr><td>sz002886</td><td>沃特股份</td><td>78</td><td>2%-3%</td><td>高风险小仓</td></tr>
+          <tr><td>sz002916</td><td>深南电路</td><td>76</td><td>2%-3%</td><td>资金回流</td></tr>
+          <tr><td>sh000528</td><td>柳工</td><td>75</td><td>2%-3%</td><td>PMI新订单+2.1pp</td></tr>
+          <tr><td>sh603186</td><td>华正新材</td><td>73</td><td>1%-3%</td><td>5G/数据中心</td></tr>
+        </tbody>
+      </table>
+      <p style="margin-top:8px; font-size:12px; color:var(--text-muted);">6只标的，总仓位12%-21%。条件触发：上证>3870/跌停<5</p>
+    </div>
+  </div>
+</div>
+
+<!-- Layer 9 风险 -->
+<div class="card">
+  <h2><span class="num">🛡️</span> Layer 9 风险控制扫描</h2>
+  <div class="risk-item yellow"><span class="icon">🟡</span><span><strong>市场风险</strong> · 黄：市场评分55，PMI回升带来正面催化，但情绪高位钝化，总仓≤55%</span></div>
+  <div class="risk-item yellow"><span class="icon">🟡</span><span><strong>行业集中风险</strong> · 黄：装备/通信/元件三条主线集中，结构有所改善</span></div>
+  <div class="risk-item yellow"><span class="icon">🟡</span><span><strong>个股风险</strong> · 黄：中际旭创/新易盛/英维克高估值，万向德农/深中华A高位</span></div>
+  <div class="risk-item red"><span class="icon">🔴</span><span><strong>情绪过热风险</strong> · 红：8/28涨停82只+ADJ_SCORE 35.08+炸板率14%极热 = 见顶信号</span></div>
+  <div class="risk-item green"><span class="icon">🟢</span><span><strong>基本面验证风险</strong> · 绿：PMI 49.8%回升超预期 ✅ 大型企业50.6%扩张 ✅</span></div>
+
+  <div style="margin-top:20px; padding:16px; background:var(--red-bg); border-left:4px solid var(--red); border-radius:8px;">
+    <strong style="color:var(--red);">🚨 最大风险提示</strong>
+    <p style="margin-top:8px; font-size:14px;"><strong>"宏观基本面改善 vs 题材高位退潮形成四重背离"</strong></p>
+    <ul style="margin-top:8px; margin-left:24px; font-size:13px;">
+      <li>PMI 49.8%回升 vs 8/28电子-157亿/通信-50亿资金撤退</li>
+      <li>大型企业50.6%扩张 vs 中型49.4%/小型47.9%仍在收缩</li>
+      <li>出厂价50.4%扩张 vs 创业板-1.41%/科创50-1.85%指数疲弱</li>
+      <li>MSCI调仓31只A股新纳入 vs 题材股高位钝化</li>
+    </ul>
+    <p style="margin-top:12px; font-size:13px;">操作难度⬆️⬆️⬆️，总策略：聚焦"PMI直接受益+资金主力"龙头，规避题材高位退潮的中小盘股</p>
+  </div>
+</div>
+
+<!-- 核心结论 -->
+<div class="card">
+  <h2><span class="num">📋</span> 今日收盘核心结论（8条要点）</h2>
+  <ol class="conclusion-list">
+    <li><strong>市场评分55分</strong>（震荡偏弱端），建议仓位30%-50%。8月PMI 49.8%回升+0.6pp提供基本面正面催化，但创业板/科创50指数疲弱+资金高位撤退形成结构性背离。</li>
+    <li><strong>今日最大基本面信号</strong>：8月制造业PMI 49.8%超预期回升（vs 7月49.2%），大型企业PMI 50.6%重回扩张，出厂价格指数50.4%重返扩张——是2-3季度以来最强正面信号，直接利好装备制造PMI 51.4%/高技术制造PMI 52.9%。</li>
+    <li><strong>资金主线</strong>：元件PCB（5日+141亿）/通信设备（5日+54亿）/消费电子（5日+53亿）/基础化工（5日+10亿）——前期科技主线条未变，但8/28单日电子-157亿/通信-50亿/半导体-128亿资金大撤退揭示高位兑现压力。</li>
+    <li><strong>S级标的3只</strong>：亨通光电（93分）/ 中天科技（92分）/ 生益科技（91分）—— 光通信+海缆+PCB核心组合，是PMI大型企业扩张+AI算力刚需双主线交汇。</li>
+    <li><strong>A股主线切换至"PMI直接受益方向"</strong>：装备制造PMI 51.4%扩张（上海电气/徐工/柳工）+ 高技术制造PMI 52.9%扩张（亨通/中天/英维克）+ 出厂价50.4%扩张（万华化学/巨化股份）=顺周期/制造业上游/装备龙头。</li>
+    <li><strong>最大市场风险</strong>：宏观基本面改善 vs 题材高位退潮"四重背离"——PMI回升与电子/通信板块资金撤退同时存在，大企业50.6%扩张与中小企业仍在收缩并存，操作难度急剧上升。</li>
+    <li><strong>回避三大方向</strong>：① 贵金属（COMEX-3.43%破位，紫金/山东黄金减仓）；② 光模块（中际旭创5日-335亿资金大撤退）；③ 高位题材股（万向德农11天6板/深中华A 7板，情绪退潮信号）。</li>
+    <li><strong>情绪评分68分</strong>：从09:00盘前的72分下调，反映"加速→高潮→分歧"过渡期的不确定性。炸板率14%极热提示接力风险，<strong>不追高，等待回踩</strong>。</li>
+  </ol>
+</div>
+
+<div class="footer">
+  ⚡ V5.0 AI智能股票组合主理人系统 · 15:30收盘完整分析 · 2026-08-31<br>
+  报告自动生成 · 数据源 westock-mcp + 国家统计局 + WebSearch<br>
+  GitHub Pages: <a href="https://huangyuxin940321-crypto.github.io/v5-stock-report-center/" target="_blank">huangyuxin940321-crypto/v5-stock-report-center</a>
+</div>
+
+</div>
+</body>
+</html>

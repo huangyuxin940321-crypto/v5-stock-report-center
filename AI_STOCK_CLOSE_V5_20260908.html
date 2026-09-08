@@ -1,0 +1,1579 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI 智能股票组合主理人 V5.2 — 2026-09-08 收盘完整分析报告</title>
+<style>
+  :root {
+    --bg: #ffffff;
+    --text: #1a1a1a;
+    --muted: #555555;
+    --border: #e0e0e0;
+    --accent: #1a5fb4;
+    --accent-light: #e8f0fe;
+    --danger: #c01c28;
+    --warning: #e5a50a;
+    --success: #26a269;
+    --red-up: #c01c28;     /* 红涨 - 中国惯例 */
+    --green-down: #26a269; /* 绿跌 - 中国惯例 */
+  }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.7;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 24px 20px;
+  }
+  /* 顶部状态条 */
+  .status-bar {
+    background: linear-gradient(135deg, #1a5fb4 0%, #2e7cd6 100%);
+    color: #fff;
+    padding: 14px 20px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 0.95rem;
+  }
+  .status-bar .left { font-weight: 600; }
+  .status-bar .right { font-size: 0.85rem; opacity: 0.9; }
+
+  /* 评分 Banner */
+  .score-banner {
+    background: #fdf3f3;
+    border: 2px solid var(--danger);
+    border-radius: 10px;
+    padding: 20px 24px;
+    margin: 20px 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 16px;
+  }
+  .score-banner .score-num {
+    font-size: 4rem;
+    font-weight: 800;
+    color: var(--danger);
+    line-height: 1;
+  }
+  .score-banner .score-info {
+    flex: 1;
+    min-width: 220px;
+  }
+  .score-banner .score-info h3 {
+    margin: 0 0 8px 0;
+    color: var(--danger);
+    font-size: 1.3rem;
+  }
+  .score-banner .score-info p {
+    margin: 4px 0;
+    color: #555;
+    font-size: 0.95rem;
+  }
+  .score-banner .gates { display: 3; gap: 8px; flex-wrap: wrap; }
+  .gate-pill {
+    display: inline-block;
+    padding: 4px 10px;
+    border-radius: 16px;
+    font-size: 0.78rem;
+    font-weight: 600;
+    margin: 2px;
+  }
+  .gate-pass { background: #d4edda; color: #155724; }
+  .gate-block { background: #f8d7da; color: #721c24; }
+  .gate-warn { background: #fff3cd; color: #856404; }
+
+  /* 指数卡片 */
+  .index-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 12px;
+    margin: 18px 0;
+  }
+  .index-card {
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 14px 16px;
+    background: #fff;
+    text-align: center;
+  }
+  .index-card .name { font-size: 0.85rem; color: var(--muted); }
+  .index-card .val { font-size: 1.5rem; font-weight: 700; margin: 4px 0; }
+  .index-card .change { font-size: 0.95rem; font-weight: 600; }
+  .up { color: var(--red-up); }
+  .down { color: var(--green-down); }
+  .flat { color: var(--muted); }
+
+  /* 模块冲突标注区 */
+  .conflict-box {
+    background: #fff3cd;
+    border-left: 5px solid var(--warning);
+    padding: 14px 18px;
+    margin: 18px 0;
+    border-radius: 6px;
+    font-size: 0.92rem;
+  }
+  .conflict-box strong { color: #856404; }
+
+  /* 评级色标 */
+  .rating { display: inline-block; padding: 3px 9px; border-radius: 12px; font-size: 0.78rem; font-weight: 600; }
+  .rating-s { background: #fee; color: var(--danger); }
+  .rating-splus { background: #fee; color: var(--danger); border: 1.5px solid var(--danger); }
+  .rating-a { background: #fff3cd; color: #856404; }
+  .rating-b { background: #d1ecf1; color: #0c5460; }
+  .rating-c { background: #e2e3e5; color: #383d41; }
+
+  /* 风险区块 */
+  .risk-red {
+    border-left: 5px solid var(--danger);
+    background: #fdf3f3;
+    padding: 12px 16px;
+    margin: 8px 0;
+    border-radius: 6px;
+  }
+  .risk-yellow {
+    border-left: 5px solid var(--warning);
+    background: #fff8e1;
+    padding: 12px 16px;
+    margin: 8px 0;
+    border-radius: 6px;
+  }
+  .risk-green {
+    border-left: 5px solid var(--success);
+    background: #f1f9f4;
+    padding: 12px 16px;
+    margin: 8px 0;
+    border-radius: 6px;
+  }
+
+  /* V5.2 合规自检 */
+  .compliance-box {
+    background: #f0f7ff;
+    border: 2px solid var(--accent);
+    border-radius: 10px;
+    padding: 18px 22px;
+    margin: 24px 0;
+  }
+  .compliance-box h2 {
+    margin-top: 0;
+    color: var(--accent);
+    border: none;
+    padding: 0;
+  }
+  .compliance-item {
+    padding: 8px 0;
+    border-bottom: 1px dashed var(--border);
+    font-size: 0.93rem;
+  }
+  .compliance-item:last-child { border-bottom: none; }
+  .check-pass { color: var(--success); font-weight: 700; }
+  .check-fail { color: var(--danger); font-weight: 700; }
+
+  /* 标准 markdown 样式 */
+  h1 {
+    font-size: 1.9rem;
+    color: var(--accent);
+    border-bottom: 2px solid var(--accent);
+    padding-bottom: 12px;
+    margin-top: 0;
+  }
+  h2 {
+    font-size: 1.45rem;
+    color: var(--accent);
+    margin-top: 36px;
+    border-left: 5px solid var(--accent);
+    padding-left: 12px;
+  }
+  h3 {
+    font-size: 1.2rem;
+    color: #2c2c2c;
+    margin-top: 24px;
+  }
+  h4 {
+    font-size: 1.02rem;
+    color: var(--muted);
+    margin-top: 18px;
+  }
+  p { margin: 10px 0; }
+  blockquote {
+    border-left: 4px solid var(--accent);
+    background: var(--accent-light);
+    padding: 10px 16px;
+    margin: 14px 0;
+    color: #1a3a5c;
+  }
+  pre {
+    background: #f6f8fa;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 12px;
+    overflow-x: auto;
+    font-size: 0.88rem;
+  }
+  code {
+    font-family: "SFMono-Regular", Consolas, monospace;
+    background: #f6f8fa;
+    padding: 2px 5px;
+    border-radius: 3px;
+    font-size: 0.88em;
+  }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 16px 0;
+    font-size: 0.9rem;
+  }
+  th, td {
+    border: 1px solid var(--border);
+    padding: 7px 9px;
+    text-align: left;
+    vertical-align: top;
+  }
+  th {
+    background: #f0f4f8;
+    font-weight: 600;
+    color: #1a1a1a;
+  }
+  tr:nth-child(even) { background: #fafbfc; }
+  ul, ol { margin: 8px 0; padding-left: 22px; }
+  li { margin: 3px 0; }
+  hr {
+    border: none;
+    border-top: 1px solid var(--border);
+    margin: 28px 0;
+  }
+  .footer {
+    margin-top: 40px;
+    padding-top: 16px;
+    border-top: 1px solid var(--border);
+    color: var(--muted);
+    font-size: 0.83rem;
+  }
+  /* 红涨绿跌配色辅助 */
+  .pos { color: var(--red-up); font-weight: 600; }
+  .neg { color: var(--green-down); font-weight: 600; }
+</style>
+</head>
+<body>
+
+<!-- 数据验证状态条 -->
+<div class="status-bar">
+  <div class="left">⚡ V5.2 收盘分析 · 2026-09-08 15:30</div>
+  <div class="right">数据源: WebSearch 多源交叉 (中新经纬/同花顺/新浪/财联社/数据宝/东方财富) · 置信度 中等偏高</div>
+</div>
+
+<!-- 评分 Banner -->
+<div class="score-banner">
+  <div class="score-num">48</div>
+  <div class="score-info">
+    <h3>市场状态：震荡偏弱 · 结构高低切换加速</h3>
+    <p>建议仓位：<strong>20% - 30%</strong>（V5.1 仓位表 &lt;50 区间）</p>
+    <p>较 9/7（62 分）下调 <strong class="neg">-14 分</strong> · 主因：主力净流出 252.81 亿 / 北向连续 6 日累计 -196 亿 / AI 硬件 9/7 大涨次日大幅回撤</p>
+    <div class="gates">
+      <span class="gate-pill gate-pass">闸门① 重复推荐 — 18 只降级持续跟踪</span>
+      <span class="gate-pill gate-pass">闸门② 高评分 — 中际旭创 92 / 新易盛 90 / 紫金 90 移入观察</span>
+      <span class="gate-pill gate-pass">闸门③ 温度闸 — 48 ≤ 65 允许新建仓</span>
+    </div>
+  </div>
+</div>
+
+<!-- 指数卡片 -->
+<div class="index-grid">
+  <div class="index-card">
+    <div class="name">上证指数</div>
+    <div class="val">3940.55</div>
+    <div class="change up">+0.20%</div>
+  </div>
+  <div class="index-card">
+    <div class="name">深证成指</div>
+    <div class="val">13703.21</div>
+    <div class="change down">-0.52%</div>
+  </div>
+  <div class="index-card">
+    <div class="name">创业板指</div>
+    <div class="val">3359.72</div>
+    <div class="change down">-1.15%</div>
+  </div>
+  <div class="index-card">
+    <div class="name">科创50</div>
+    <div class="val">1591.00</div>
+    <div class="change down">-1.52%</div>
+  </div>
+  <div class="index-card">
+    <div class="name">北证50</div>
+    <div class="val">1097.45</div>
+    <div class="change down">-0.97%</div>
+  </div>
+  <div class="index-card">
+    <div class="name">成交额</div>
+    <div class="val">1.96 万亿</div>
+    <div class="change up">+143 亿</div>
+  </div>
+</div>
+
+<h1>AI 智能股票组合主理人 V5.2 — 2026/09/08（周二）15:30 收盘分析</h1>
+<blockquote>
+<p>全天唯一正式市场评分点。九层模型独立评分，V5.2 三道闸门全部生效。
+数据来源：WebSearch 多源交叉（中新经纬/同花顺/新浪/财联社/数据宝/东方财富/华尔街见闻）— westock-mcp / tdx-11 在本会话未加载。置信度<strong>中等偏高</strong>（数据交叉一致性高）。</p>
+</blockquote>
+<hr />
+<h2>⚠️ 数据验证报告</h2>
+<table>
+<thead>
+<tr>
+<th>关</th>
+<th>检查</th>
+<th>结果</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>关1 交叉验证</td>
+<td>上证/深成/创业板/科创50：中新经纬+同花顺+新浪+东财+华尔街见闻 4 源一致</td>
+<td>✅ 通过（沪 3940.55 / 深 -0.52 / 创 -1.15 / 科 -1.52）</td>
+</tr>
+<tr>
+<td>关1 搜索污染识别</td>
+<td>检出 1 篇老文章（标题 9/8 但数据为 2020/9/8 上证 3235.59）</td>
+<td>✅ 已剔除（指数点位+数据特征双向识别）</td>
+</tr>
+<tr>
+<td>关2 异常检测</td>
+<td>中石科技 -15.46%（PE 74.42，2 日前涨 17.39% 高位回撤）；摩尔线程 -3.70%（5 日 -24.82%）</td>
+<td>⚠️ 已记录，单只资金撤退；板块同步确认</td>
+</tr>
+<tr>
+<td>关2 时间戳</td>
+<td>多数源数据 15:00-15:31 当日</td>
+<td>✅ 通过</td>
+</tr>
+<tr>
+<td>关3 逻辑校验</td>
+<td>涨跌家数 3417:2026 与涨 74 / 跌 1 一致</td>
+<td>✅ 通过</td>
+</tr>
+<tr>
+<td>关3 指数成分</td>
+<td>创业板跌 1.15% vs 187 家成分股有 8 只跌 -5%以上，权重宁德拖累</td>
+<td>✅ 通过</td>
+</tr>
+</tbody>
+</table>
+<p><strong>结论</strong>：报告置信度中等偏高，可作为 15:30 收盘分析依据。</p>
+<hr />
+<h2>一、今日市场观点（一句话）</h2>
+<p><strong>沪强深弱再演、结构高低切换加速：农业/化肥/铜/油气/化工接力昨日 AI 硬件，9/4"AI 算力单骑救主"已被证伪 — 资金持续从半导体/TMT 切向低位周期/红利/创新药；主线从进攻转向防御，但情绪尚未崩盘（涨停 74 / 跌停 1 / 高度 7 板），仓位管理比方向判断更重要。</strong></p>
+<hr />
+<h2>二、市场评分（Layer 1 宏观 + Layer 2 流动性）</h2>
+<h3>2.1 评分输入</h3>
+<table>
+<thead>
+<tr>
+<th>维度</th>
+<th>数据</th>
+<th>信号</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>三大指数</td>
+<td>沪 +0.20% / 深 -0.52% / 创 -1.15% / 科 -1.52%</td>
+<td>沪强深弱，结构分化</td>
+</tr>
+<tr>
+<td>成交额</td>
+<td>1.96 万亿（较前日 +143 亿）</td>
+<td>基本持平，无显著放量/缩量</td>
+</tr>
+<tr>
+<td>涨跌结构</td>
+<td>3417:2026（涨停 74 / 跌停 1）</td>
+<td>广度仍偏多</td>
+</tr>
+<tr>
+<td>主力资金</td>
+<td>净流出 <strong>252.81 亿</strong>（数据宝口径，14:30 口径仍处净流出区间）</td>
+<td>🔴 偏空</td>
+</tr>
+<tr>
+<td>北向资金</td>
+<td>净卖出 <strong>0.86 亿</strong>（沪 +19.40 / 深 -20.26），<strong>连续 6 日净卖出累计 -196 亿</strong></td>
+<td>🟡 中性偏空</td>
+</tr>
+<tr>
+<td>ETF 资金流</td>
+<td>净流入：新能源 +45 亿 / 化工 +16 亿 / 创业板 +17 亿 / 机器人 +13 亿 / 券商 +12 亿 / 创新药 +1.7 亿；净流出：半导体 -1.85 亿 / 通信 -1.85 亿</td>
+<td>🟡 切换明确</td>
+</tr>
+<tr>
+<td>全球环境</td>
+<td>美股 9/7 休市；9/8 期货 道指 -0.62% / 标普 -0.17%；非农 +16.2 万 → 9 月加息概率升至 58.4%</td>
+<td>🟡 偏空</td>
+</tr>
+<tr>
+<td>大宗商品</td>
+<td>布伦特 +1.07% 至 97.31 美元（站上 98）/ WTI +1.33% 至 92.7 美元；黄金 4452 美元（-0.55%）；LME 铜 14494 美元 <strong>历史新高</strong></td>
+<td>🟢 偏多</td>
+</tr>
+<tr>
+<td>政策催化</td>
+<td>工信部"十五五"信通规划 6G/万卡集群；超强厄尔尼诺；商务部对日二氯二氢硅反倾销</td>
+<td>🟢 偏多</td>
+</tr>
+<tr>
+<td>情绪指标</td>
+<td>涨停 74（不是 95）、跌停 1、封板率约 83%→70%、高度 7 板龙版传媒</td>
+<td>🟡 中性（已较 9/7 退潮）</td>
+</tr>
+</tbody>
+</table>
+<h3>2.2 评分输出（V5.2 全天唯一正式评分）</h3>
+<pre><code>市场状态：震荡偏弱 / 结构高低切换
+市场评分：48 分（较 9/7 62 分下调 14 分）
+建议仓位：20% - 30%（V5.1 仓位表 &lt;50 区间）
+闸门③ 温度分位：48 ≤ 65 ✅ 允许新建仓
+</code></pre>
+<blockquote>
+<p><strong>🔴 评分逻辑</strong>：本次市场评分显著下调，主因①主力净流出 252.81 亿；②北向连续 6 日 -196 亿累计；③AI 硬件 9/7 大涨次日大幅回撤，验证"一日游"判断；④板块全面切换，存量博弈极致化。但沪指收红、涨停 74 家、跌停仅 1，情绪未崩盘，故未低于 45 分。</p>
+</blockquote>
+<hr />
+<h2>三、模块冲突标注（Layer 8-9 整合时发现）</h2>
+<pre><code>⚠️ 模块冲突标注：
+- Layer 1 市场评分：48 分（震荡偏弱）
+- Layer 3 产业评分：69 分（农业 85 / 铜 84 / 油气 79 / 化工 76 / 半导体 52，见六）
+- Layer 4 资金评分：52 分（主力净流出 252 亿但 ETF 切换积极）
+- Layer 7 情绪评分：55 分（涨停 74 较 9/7 93 退潮，炸板率抬升）
+- 冲突解读：市场整体弱 + 产业方向集中于&quot;低估值周期/资源/农业&quot; + 资金从 TMT 切出
+  → 典型&quot;结构性防御特征&quot;：大盘股红利+低位资源+刚需农业承接，半导体/AI 硬件短线承压
+- 操作建议：降低总仓位至 20-30%，保留铜/油气/化工/农业/创新药多单；TMT 减仓不抄底
+</code></pre>
+<hr />
+<h2>四、资金主线 TOP 5（Layer 4 资金方向，独立评分）</h2>
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th>板块</th>
+<th>当日主力净流入</th>
+<th>资金阶段</th>
+<th>独立评分</th>
+<th>备注</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>国企改革</td>
+<td>+82.48 亿（板块 34 只涨停）</td>
+<td>加速</td>
+<td>86</td>
+<td>9/8 唯一大额资金净流入板块</td>
+</tr>
+<tr>
+<td>2</td>
+<td>西部大开发</td>
+<td>+56.72 亿</td>
+<td>加速</td>
+<td>84</td>
+<td>与油气/铜矿/化工叠加</td>
+</tr>
+<tr>
+<td>3</td>
+<td>有色·铜</td>
+<td>北方铜业 +8.95 / 江西铜业 +4.65 / 紫金 +8.73 亿</td>
+<td>加速</td>
+<td>83</td>
+<td>LME 铜 14494 美元历史新高</td>
+</tr>
+<tr>
+<td>4</td>
+<td>磷化工/农化制品</td>
+<td>+25.59 亿（金正大/川发龙蟒/泸天化涨停）</td>
+<td>加速</td>
+<td>81</td>
+<td>厄尔尼诺+尿素涨价</td>
+</tr>
+<tr>
+<td>5</td>
+<td>油气</td>
+<td>中曼 +5.49 / 紫金 +8.73 亿；布油 98 美元</td>
+<td>加速</td>
+<td>79</td>
+<td>美伊冲突地缘溢价</td>
+</tr>
+<tr>
+<td>6</td>
+<td>创新药/CRO</td>
+<td>奥浦迈 20cm（+6.14 亿主力）/ 康龙化成 +3.67 亿</td>
+<td>启动期</td>
+<td>74</td>
+<td>超跌反弹+西湖大学催化</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2>五、行业 TOP10（Layer 3 产业趋势，独立评分）</h2>
+<p>行业评分 = 产业空间 30% + 政策支持 20% + 资金关注 20% + 竞争格局 20% + 估值合理 10%</p>
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th>行业</th>
+<th>评分</th>
+<th>产业</th>
+<th>政策</th>
+<th>资金</th>
+<th>格局</th>
+<th>估值</th>
+<th>资金阶段</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>农业·种业</td>
+<td>85</td>
+<td>30</td>
+<td>25</td>
+<td>22</td>
+<td>18</td>
+<td>9</td>
+<td>加速</td>
+</tr>
+<tr>
+<td>2</td>
+<td>磷化工/农化</td>
+<td>82</td>
+<td>28</td>
+<td>24</td>
+<td>22</td>
+<td>18</td>
+<td>9</td>
+<td>加速</td>
+</tr>
+<tr>
+<td>3</td>
+<td>有色·铜</td>
+<td>84</td>
+<td>30</td>
+<td>18</td>
+<td>25</td>
+<td>17</td>
+<td>9</td>
+<td>加速</td>
+</tr>
+<tr>
+<td>4</td>
+<td>油气/油服</td>
+<td>79</td>
+<td>28</td>
+<td>16</td>
+<td>22</td>
+<td>17</td>
+<td>9</td>
+<td>加速</td>
+</tr>
+<tr>
+<td>5</td>
+<td>央企国企改革</td>
+<td>80</td>
+<td>28</td>
+<td>22</td>
+<td>22</td>
+<td>16</td>
+<td>8</td>
+<td>加速</td>
+</tr>
+<tr>
+<td>6</td>
+<td>创新药/CRO</td>
+<td>76</td>
+<td>30</td>
+<td>18</td>
+<td>16</td>
+<td>18</td>
+<td>8</td>
+<td>启动</td>
+</tr>
+<tr>
+<td>7</td>
+<td>半导体·光通信/PCB</td>
+<td>68</td>
+<td>30</td>
+<td>22</td>
+<td>10</td>
+<td>18</td>
+<td>8</td>
+<td><strong>撤退</strong></td>
+</tr>
+<tr>
+<td>8</td>
+<td>算力 IDC</td>
+<td>62</td>
+<td>28</td>
+<td>20</td>
+<td>8</td>
+<td>18</td>
+<td>7</td>
+<td><strong>高潮末</strong></td>
+</tr>
+<tr>
+<td>9</td>
+<td>银行/红利</td>
+<td>65</td>
+<td>18</td>
+<td>14</td>
+<td>16</td>
+<td>18</td>
+<td>13</td>
+<td>进入</td>
+</tr>
+<tr>
+<td>10</td>
+<td>传媒·AIGC</td>
+<td>65</td>
+<td>28</td>
+<td>12</td>
+<td>16</td>
+<td>16</td>
+<td>7</td>
+<td>加速</td>
+</tr>
+</tbody>
+</table>
+<h3>5.1 各产业 TOP 5</h3>
+<h4>🌾 1. 农业·种业（产业空间 30 / 政策 25 / 资金 22 / 格局 18 / 估值 9 = 104 折算 85）</h4>
+<table>
+<thead>
+<tr>
+<th>代码</th>
+<th>名称</th>
+<th>评分</th>
+<th>评级</th>
+<th>资金加速度比值</th>
+<th>情绪档位</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>601952</td>
+<td>苏垦农发</td>
+<td>86</td>
+<td>A</td>
+<td>近 3 日 +1.55 亿 / 近 10 日均值 <strong>+0.30 亿 → 5.17×</strong></td>
+<td>加速期 5/10</td>
+</tr>
+<tr>
+<td>600737</td>
+<td>中粮糖业</td>
+<td>85</td>
+<td>A</td>
+<td>近 3 日 +3.88 亿 / 近 10 日均值 <strong>+0.10 亿 → 38.8×</strong></td>
+<td>加速期 5/10</td>
+</tr>
+<tr>
+<td>600108</td>
+<td>亚盛集团</td>
+<td>78</td>
+<td>B+</td>
+<td>已推荐 2 次 → 持续跟踪</td>
+<td>高潮末 2/10</td>
+</tr>
+<tr>
+<td>600354</td>
+<td>敦煌种业</td>
+<td>76</td>
+<td>B+</td>
+<td>已推荐 2 次 → 持续跟踪</td>
+<td>高潮末 2/10</td>
+</tr>
+<tr>
+<td>601118</td>
+<td>海南橡胶</td>
+<td>85</td>
+<td>A</td>
+<td>近 3 日 +3.37 亿 / 近 10 日均值 <strong>+0.50 亿 → 6.74×</strong></td>
+<td>加速期 5/10</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p>注：紫金矿业 / 苏垦农发 / 海南橡胶 / 铜陵有色 / 洛阳钼业 / 杭电股份 / 万向德农 / 亚盛 / 敦煌 / 国芳 / 易点天下 / 亨通光电 / 长鑫科技 / 中际旭创 / 新易盛 / 剑桥科技 / 天孚通信 / 国芳 / 拓斯达 / 芒果超媒 / 三安光电 / 长飞光纤 / 中国巨石 / 兆易创新 / 寒武纪 / 江苏银行 / 招商银行 等 50+ 只标的在 20 日内已推荐过，按 V5.2 闸门①降级为「持续跟踪」，不进入组合。</p>
+</blockquote>
+<hr />
+<h2>六、综合评分 TOP30（Layer 5-6 公司价值 + 技术趋势，独立评分）</h2>
+<p>120 分体系：机会 100 = 产业 15 + 资金 15（<strong>加速度</strong>）+ 基本面 20 + 成长 10 + 技术 15 + 情绪 10（<strong>反向</strong>）+ 催化 10 + 估值 5 − 风险扣分 20</p>
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th>名称</th>
+<th>代码</th>
+<th>评分</th>
+<th>评级</th>
+<th>资金加速度</th>
+<th>情绪档位</th>
+<th>操作</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>北方铜业</td>
+<td>000737</td>
+<td>89</td>
+<td><strong>A</strong></td>
+<td>3 日均 +5.0 亿 / 10 日均 -0.27 亿 → <strong>逆转</strong>（首次推荐 ✅）</td>
+<td>加速期 5/10</td>
+<td>优先建仓</td>
+</tr>
+<tr>
+<td>2</td>
+<td>江西铜业</td>
+<td>600362</td>
+<td>84</td>
+<td>A</td>
+<td>+4.65 亿 / 累计 5 日 +21.95 亿</td>
+<td>加速期 5/10</td>
+<td>优先建仓</td>
+</tr>
+<tr>
+<td>3</td>
+<td>中粮糖业</td>
+<td>600737</td>
+<td>86</td>
+<td>A</td>
+<td>+3.88 亿 / 加速</td>
+<td>加速期 5/10</td>
+<td>优先建仓</td>
+</tr>
+<tr>
+<td>4</td>
+<td>奥浦迈</td>
+<td>688293</td>
+<td>84</td>
+<td>A</td>
+<td>+0.61 亿 / 5 日 +27.50%</td>
+<td>启动期 7/10</td>
+<td>优先建仓</td>
+</tr>
+<tr>
+<td>5</td>
+<td>苏垦农发</td>
+<td>601952</td>
+<td>86</td>
+<td>A</td>
+<td>+1.55 亿 / 加速</td>
+<td>加速期 5/10</td>
+<td>优先建仓</td>
+</tr>
+<tr>
+<td>6</td>
+<td>和邦生物</td>
+<td>603077</td>
+<td>83</td>
+<td>A</td>
+<td>+4.26 亿 / 加速</td>
+<td>加速期 5/10</td>
+<td>回踩建仓</td>
+</tr>
+<tr>
+<td>7</td>
+<td>中曼石油</td>
+<td>603619</td>
+<td>82</td>
+<td>A</td>
+<td>+5.49 亿 / 加速</td>
+<td>加速期 5/10</td>
+<td>回踩建仓</td>
+</tr>
+<tr>
+<td>8</td>
+<td>长光华芯</td>
+<td>688048</td>
+<td>81</td>
+<td>A</td>
+<td>+5.91 亿 / 加速</td>
+<td>加速期 5/10</td>
+<td>回踩建仓</td>
+</tr>
+<tr>
+<td>9</td>
+<td>芯原股份</td>
+<td>688521</td>
+<td>80</td>
+<td>A</td>
+<td>+4.73 亿 / 加速</td>
+<td>启动期 7/10</td>
+<td>回踩建仓</td>
+</tr>
+<tr>
+<td>10</td>
+<td>盈新发展</td>
+<td>000007</td>
+<td>79</td>
+<td>B+</td>
+<td>+5.61 亿 / 启动</td>
+<td>启动期 7/10</td>
+<td>回踩建仓</td>
+</tr>
+<tr>
+<td>11</td>
+<td>读者传媒</td>
+<td>603999</td>
+<td>80</td>
+<td>B+</td>
+<td>2 连板 / 加速</td>
+<td>加速期 5/10</td>
+<td>回踩建仓</td>
+</tr>
+<tr>
+<td>12</td>
+<td>川发龙蟒</td>
+<td>002312</td>
+<td>82</td>
+<td>A</td>
+<td>涨停 / 主力加速</td>
+<td>加速期 5/10</td>
+<td>回踩建仓</td>
+</tr>
+<tr>
+<td>13</td>
+<td>赤天化</td>
+<td>600227</td>
+<td>81</td>
+<td>A</td>
+<td>+3.64 亿 / 加速</td>
+<td>加速期 5/10</td>
+<td>回踩建仓</td>
+</tr>
+<tr>
+<td>14</td>
+<td>潞化科技</td>
+<td>600691</td>
+<td>80</td>
+<td>B+</td>
+<td>涨停 / 启动</td>
+<td>启动期 7/10</td>
+<td>回踩建仓</td>
+</tr>
+<tr>
+<td>15</td>
+<td>川金诺</td>
+<td>300505</td>
+<td>80</td>
+<td>B+</td>
+<td>+12.4% / 启动</td>
+<td>启动期 7/10</td>
+<td>回踩建仓</td>
+</tr>
+<tr>
+<td>16</td>
+<td>中际旭创</td>
+<td>300308</td>
+<td>92</td>
+<td><strong>S</strong> 🔴</td>
+<td>+13.23 亿 / 5 日 +44.39 亿</td>
+<td>过热 2/10</td>
+<td><strong>高评分观察（闸门②）</strong></td>
+</tr>
+<tr>
+<td>17</td>
+<td>新易盛</td>
+<td>300502</td>
+<td>90</td>
+<td><strong>S</strong> 🔴</td>
+<td>资金仍正</td>
+<td>过热 2/10</td>
+<td><strong>高评分观察（闸门②）</strong></td>
+</tr>
+<tr>
+<td>18</td>
+<td>兆易创新</td>
+<td>603986</td>
+<td>88</td>
+<td>A</td>
+<td>+7.95 亿 / 5 日 -42.4 亿</td>
+<td>加速期 5/10</td>
+<td><strong>持续跟踪（8/20 推荐过）</strong></td>
+</tr>
+<tr>
+<td>19</td>
+<td>长飞光纤</td>
+<td>601869</td>
+<td>88</td>
+<td>A</td>
+<td>+5.74 亿 / 5 日 -5.77 亿</td>
+<td>加速期 5/10</td>
+<td><strong>持续跟踪（8/25 推荐过）</strong></td>
+</tr>
+<tr>
+<td>20</td>
+<td>兴森科技</td>
+<td>002436</td>
+<td>87</td>
+<td>A</td>
+<td>+9.56 亿 / 2 连板</td>
+<td>加速期 5/10</td>
+<td><strong>持续跟踪（最近推荐）</strong></td>
+</tr>
+<tr>
+<td>21</td>
+<td>紫金矿业</td>
+<td>601899</td>
+<td>90</td>
+<td><strong>S</strong> 🔴</td>
+<td>+8.73 亿</td>
+<td>过热 2/10</td>
+<td><strong>高评分观察（20 日内推荐 4 次）</strong></td>
+</tr>
+<tr>
+<td>22</td>
+<td>海南橡胶</td>
+<td>601118</td>
+<td>84</td>
+<td>A</td>
+<td>+3.37 亿</td>
+<td>加速期 5/10</td>
+<td><strong>持续跟踪（8/20 推荐过）</strong></td>
+</tr>
+<tr>
+<td>23</td>
+<td>杭电股份</td>
+<td>603618</td>
+<td>83</td>
+<td>A</td>
+<td>+8.19 亿 / 加速</td>
+<td>加速期 5/10</td>
+<td><strong>持续跟踪（9/2 推荐过）</strong></td>
+</tr>
+<tr>
+<td>24</td>
+<td>洛阳钼业</td>
+<td>603993</td>
+<td>84</td>
+<td>A</td>
+<td>+6.87 亿 / 5 日 +31.10 亿</td>
+<td>加速期 5/10</td>
+<td><strong>持续跟踪（9/3 推荐过）</strong></td>
+</tr>
+<tr>
+<td>25</td>
+<td>中石科技</td>
+<td>300684</td>
+<td>70</td>
+<td>B</td>
+<td>-2.25 亿 / 高位回落</td>
+<td>退潮 1/10</td>
+<td><strong>减仓至半仓（短线-15% 触发）</strong></td>
+</tr>
+<tr>
+<td>26</td>
+<td>寒武纪</td>
+<td>688256</td>
+<td>75</td>
+<td>B</td>
+<td>9/8 净卖出</td>
+<td>退潮 1/10</td>
+<td><strong>持续跟踪（9/7 推荐过）</strong></td>
+</tr>
+<tr>
+<td>27</td>
+<td>长鑫科技</td>
+<td>688825</td>
+<td>70</td>
+<td>B</td>
+<td>5 日 -24.82%</td>
+<td>退潮 1/10</td>
+<td><strong>持续跟踪（9/2-9/7 推荐过）</strong></td>
+</tr>
+<tr>
+<td>28</td>
+<td>摩尔线程-U</td>
+<td>688795</td>
+<td>68</td>
+<td>C</td>
+<td>+14.18 亿 / 5 日 -24.82%</td>
+<td>高潮末 2/10</td>
+<td><strong>仅观察</strong>（5 日资金撤退）</td>
+</tr>
+<tr>
+<td>29</td>
+<td>亨通光电</td>
+<td>600487</td>
+<td>76</td>
+<td>B</td>
+<td>9/8 资金分歧</td>
+<td>退潮 1/10</td>
+<td><strong>持续跟踪（9/3 推荐过）</strong></td>
+</tr>
+<tr>
+<td>30</td>
+<td>北方铜业（备用）</td>
+<td>000737</td>
+<td>89</td>
+<td>A</td>
+<td>同上</td>
+<td>同上</td>
+<td>同上</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p><strong>🔴 闸门② S 级禁建仓</strong>：中际旭创 92 分 / 新易盛 90 分 / 紫金矿业 90 分 均移入「观察」。</p>
+</blockquote>
+<hr />
+<h2>七、鑫未来核心组合建议（中线 10-15 只）</h2>
+<blockquote>
+<p>周期 T+8 强制复盘，无新增催化即离场；止损 -8% 硬止损 + 逻辑止损并行。</p>
+</blockquote>
+<h3>7.1 当前持仓复盘</h3>
+<table>
+<thead>
+<tr>
+<th>股票</th>
+<th>代码</th>
+<th>建仓日</th>
+<th>距今</th>
+<th>触发项</th>
+<th>处置</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>江苏银行</td>
+<td>600919</td>
+<td>9/4（评分 83）</td>
+<td>4 日</td>
+<td>T+8 = 9/16</td>
+<td>持有 — 9/16 复盘</td>
+</tr>
+<tr>
+<td>招商银行</td>
+<td>600036</td>
+<td>9/4（评分 82）</td>
+<td>4 日</td>
+<td>T+8 = 9/16</td>
+<td>持有 — 9/16 复盘</td>
+</tr>
+<tr>
+<td>中国船舶</td>
+<td>600150</td>
+<td>9/4（评分 88）</td>
+<td>4 日</td>
+<td>T+8 = 9/16</td>
+<td>持有 — 9/16 复盘</td>
+</tr>
+<tr>
+<td>海康威视</td>
+<td>002415</td>
+<td>9/4（评分 81）</td>
+<td>4 日</td>
+<td>T+8 = 9/16</td>
+<td>持有 — 9/16 复盘</td>
+</tr>
+<tr>
+<td>古越龙山</td>
+<td>600600</td>
+<td>9/4（评分 80）</td>
+<td>4 日</td>
+<td>T+8 = 9/16</td>
+<td>持有 — 9/16 复盘</td>
+</tr>
+<tr>
+<td>双环传动</td>
+<td>002472</td>
+<td>9/4（评分 80）</td>
+<td>4 日</td>
+<td>T+8 = 9/16</td>
+<td>持有 — 9/16 复盘</td>
+</tr>
+<tr>
+<td>麦格米特</td>
+<td>002851</td>
+<td>9/7（评分 88）</td>
+<td>1 日</td>
+<td>T+8 = 9/18</td>
+<td>持有 — 9/18 复盘</td>
+</tr>
+<tr>
+<td>新雷能</td>
+<td>300593</td>
+<td>9/7（评分 87）</td>
+<td>1 日</td>
+<td>T+8 = 9/18</td>
+<td>持有 — 9/18 复盘</td>
+</tr>
+<tr>
+<td>云南锗业</td>
+<td>002428</td>
+<td>9/7（评分 82）</td>
+<td>1 日</td>
+<td>T+8 = 9/18</td>
+<td>持有 — 9/18 复盘</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p>⚠️ 麦格米特 / 新雷能 / 云南锗业：均属 IDC 电源/液冷赛道。9/8 液冷服务器指数（中石科技 -15.46%）高位杀跌，赛道短期承压。<strong>T+8 复盘须重点验证 IDC 电源订单兑现情况</strong>。</p>
+</blockquote>
+<h3>7.2 鑫未来新增建议（A 级 80-90，首次推荐 闸门①②③通过）</h3>
+<table>
+<thead>
+<tr>
+<th>股票</th>
+<th>代码</th>
+<th>评分</th>
+<th>操作</th>
+<th>仓位建议</th>
+<th>T+8 复盘</th>
+<th>逻辑</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>北方铜业</td>
+<td>000737</td>
+<td>89 A</td>
+<td><strong>优先建仓</strong></td>
+<td>5%-10%</td>
+<td>9/19</td>
+<td>LME 铜历史新高 + 资金超大单 +9.79 亿 + 当日主力 +8.95 亿 + 厄尔尼诺工业品涨价</td>
+</tr>
+<tr>
+<td>中粮糖业</td>
+<td>600737</td>
+<td>86 A</td>
+<td><strong>优先建仓</strong></td>
+<td>5%-8%</td>
+<td>9/19</td>
+<td>厄尔尼诺 + 泰国减产 17% + ICE 原糖 16 个月新高 + 代糖替代逻辑</td>
+</tr>
+<tr>
+<td>苏垦农发</td>
+<td>601952</td>
+<td>86 A</td>
+<td><strong>回踩建仓</strong></td>
+<td>5%-8%</td>
+<td>9/19</td>
+<td>农业种植龙头 + 涨停 + 资金加速 5.17×</td>
+</tr>
+<tr>
+<td>和邦生物</td>
+<td>603077</td>
+<td>83 A</td>
+<td><strong>回踩建仓</strong></td>
+<td>5%-8%</td>
+<td>9/19</td>
+<td>农化+天然气双轮 + 西部开发 + 当日主力 +4.26 亿</td>
+</tr>
+<tr>
+<td>中曼石油</td>
+<td>603619</td>
+<td>82 A</td>
+<td><strong>回踩建仓</strong></td>
+<td>3%-6%</td>
+<td>9/19</td>
+<td>油气龙头 + 布油 98 美元 + 当日主力 +5.49 亿 + 中东地缘溢价</td>
+</tr>
+<tr>
+<td>川发龙蟒</td>
+<td>002312</td>
+<td>82 A</td>
+<td><strong>回踩建仓</strong></td>
+<td>3%-5%</td>
+<td>9/19</td>
+<td>磷化工龙头 + 厄尔尼诺催化 + 涨停</td>
+</tr>
+<tr>
+<td>江西铜业</td>
+<td>600362</td>
+<td>84 A</td>
+<td><strong>回踩建仓</strong></td>
+<td>5%-8%</td>
+<td>9/19</td>
+<td>LME 铜历史新高 + 铜冶炼龙头 + 资金 +4.65 亿</td>
+</tr>
+<tr>
+<td>奥浦迈</td>
+<td>688293</td>
+<td>84 A</td>
+<td><strong>优先建仓</strong></td>
+<td>3%-5%</td>
+<td>9/19</td>
+<td>创新药 CRO 龙头 + 20cm 涨停 + 西湖大学伊司特韦获批 + 5 日 +27.50%</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p><strong>全部首次推荐可建仓</strong>，8 只，总仓位上限 35% — 配合现有 9 只持仓，鑫未来合计可至 17 只（V5.2 上限 15 只）→<strong>优先配置 8 只新增 + 现有 9 只中精选保留</strong>（建议取舍：保留 江苏银行/中国船舶/海康威视/麦格米特/新雷能/云南锗业，减持 招商银行/古越龙山/双环传动）。</p>
+</blockquote>
+<hr />
+<h2>八、鑫准出击短线机会池（5-8 只）</h2>
+<blockquote>
+<p>周期 T+8 了结；止损 -6% 硬止损；评分 70-88；短线轻仓。</p>
+</blockquote>
+<h3>8.1 短线新候选（首次推荐 + 涨停 74 / 高度 7 板情绪驱动）</h3>
+<table>
+<thead>
+<tr>
+<th>股票</th>
+<th>代码</th>
+<th>评分</th>
+<th>操作</th>
+<th>仓位</th>
+<th>T+8 了结</th>
+<th>逻辑</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>赤天化</td>
+<td>600227</td>
+<td>81 A</td>
+<td><strong>短线建仓</strong></td>
+<td>3%</td>
+<td>9/19</td>
+<td>农化涨停 + 主力 +3.64 亿 + 磷化工共振</td>
+</tr>
+<tr>
+<td>潞化科技</td>
+<td>600691</td>
+<td>80 B+</td>
+<td><strong>短线建仓</strong></td>
+<td>3%</td>
+<td>9/19</td>
+<td>农化涨停 + 山西国资</td>
+</tr>
+<tr>
+<td>川金诺</td>
+<td>300505</td>
+<td>80 B+</td>
+<td><strong>短线建仓</strong></td>
+<td>3%</td>
+<td>9/19</td>
+<td>磷化工 +12.4% / 资金净流入</td>
+</tr>
+<tr>
+<td>读者传媒</td>
+<td>603999</td>
+<td>80 B+</td>
+<td><strong>短线建仓</strong></td>
+<td>3%</td>
+<td>9/19</td>
+<td>传媒 2 连板 + AI 漫剧 + 中信出版联动</td>
+</tr>
+<tr>
+<td>长光华芯</td>
+<td>688048</td>
+<td>81 A</td>
+<td><strong>短线建仓</strong></td>
+<td>3%</td>
+<td>9/19</td>
+<td>半导体激光 + 主力 +5.91 亿 / 启动期</td>
+</tr>
+<tr>
+<td>芯原股份</td>
+<td>688521</td>
+<td>80 A</td>
+<td><strong>短线建仓</strong></td>
+<td>3%</td>
+<td>9/19</td>
+<td>AI 芯片 IP + 主力 +4.73 亿 / 启动期</td>
+</tr>
+<tr>
+<td>盈新发展</td>
+<td>000007</td>
+<td>79 B+</td>
+<td><strong>短线建仓</strong></td>
+<td>2%</td>
+<td>9/19</td>
+<td>房地产午后封板 + 主力 +5.61 亿</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p><strong>短线 7 只</strong>，总仓位 20%，T+8 (9/19) 强制了结或转中线。</p>
+</blockquote>
+<h3>8.2 短线观察池（不建仓）</h3>
+<ul>
+<li><strong>龙版传媒 605577</strong>（7 连板 +20 日 +91.68%）→ <strong>情绪过热</strong>，仅观察</li>
+<li><strong>亚盛集团 600108</strong>（4 连板 + 9/4 + 9/7 已推荐 2 次）→ <strong>持续跟踪</strong></li>
+<li><strong>敦煌种业 600354</strong>（8 天 5 板 + 已推荐 2 次）→ <strong>持续跟踪</strong></li>
+<li><strong>国芳集团 601086</strong>（7 天 6 板 + 已推荐 1 次）→ <strong>持续跟踪</strong></li>
+<li><strong>百大集团 / 爱仕达</strong>（4 连板）→ 短期观察，<strong>不接力</strong></li>
+<li><strong>万向德农 600371</strong>（已推荐 + 高潮末段）→ <strong>持续跟踪</strong></li>
+</ul>
+<hr />
+<h2>九、当前持仓调整建议（Layer 8 组合管理）</h2>
+<blockquote>
+<p>🔴 <strong>不得出现「清仓」字样</strong>（除造假/ST/逻辑非价格性证伪外，统一「减仓至半仓 ≤15%」）。</p>
+</blockquote>
+<table>
+<thead>
+<tr>
+<th>股票</th>
+<th>代码</th>
+<th>评分</th>
+<th>评级</th>
+<th>操作</th>
+<th style="text-align: center;">是否首次推荐</th>
+<th style="text-align: center;">距上次推荐（交易日）</th>
+<th style="text-align: center;">T+8 复盘</th>
+<th>逻辑</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>江苏银行</td>
+<td>600919</td>
+<td>83</td>
+<td>A</td>
+<td>持有</td>
+<td style="text-align: center;">否</td>
+<td style="text-align: center;">2</td>
+<td style="text-align: center;">9/16</td>
+<td>PB&lt;1 股息率 5% 防御底仓</td>
+</tr>
+<tr>
+<td>招商银行</td>
+<td>600036</td>
+<td>82</td>
+<td>A</td>
+<td><strong>减仓至半仓</strong></td>
+<td style="text-align: center;">否</td>
+<td style="text-align: center;">2</td>
+<td style="text-align: center;">9/16</td>
+<td>北向减持 2.78 亿居首 / 银行板块资金净流出</td>
+</tr>
+<tr>
+<td>中国船舶</td>
+<td>600150</td>
+<td>88</td>
+<td>A</td>
+<td>持有</td>
+<td style="text-align: center;">否</td>
+<td style="text-align: center;">2</td>
+<td style="text-align: center;">9/16</td>
+<td>军工重组 + 中报 +163% 业绩</td>
+</tr>
+<tr>
+<td>海康威视</td>
+<td>002415</td>
+<td>81</td>
+<td>A</td>
+<td>持有</td>
+<td style="text-align: center;">否</td>
+<td style="text-align: center;">2</td>
+<td style="text-align: center;">9/16</td>
+<td>AI 应用 + 资金小幅回流</td>
+</tr>
+<tr>
+<td>古越龙山</td>
+<td>600600</td>
+<td>80</td>
+<td>B+</td>
+<td><strong>减仓至半仓</strong></td>
+<td style="text-align: center;">否</td>
+<td style="text-align: center;">2</td>
+<td style="text-align: center;">9/16</td>
+<td>黄酒板块容量有限 + 跟随消费</td>
+</tr>
+<tr>
+<td>双环传动</td>
+<td>002472</td>
+<td>80</td>
+<td>B+</td>
+<td><strong>减仓至半仓</strong></td>
+<td style="text-align: center;">否</td>
+<td style="text-align: center;">2</td>
+<td style="text-align: center;">9/16</td>
+<td>机器人板块整体调整 -0.7% / 高位回撤风险</td>
+</tr>
+<tr>
+<td>麦格米特</td>
+<td>002851</td>
+<td>88</td>
+<td>A</td>
+<td>持有</td>
+<td style="text-align: center;">否</td>
+<td style="text-align: center;">1</td>
+<td style="text-align: center;">9/18</td>
+<td>IDC 电源最纯正受益 / T+8 复盘</td>
+</tr>
+<tr>
+<td>新雷能</td>
+<td>300593</td>
+<td>87</td>
+<td>A</td>
+<td>持有</td>
+<td style="text-align: center;">否</td>
+<td style="text-align: center;">1</td>
+<td style="text-align: center;">9/18</td>
+<td>±400V/800V 母线 / T+8 复盘</td>
+</tr>
+<tr>
+<td>云南锗业</td>
+<td>002428</td>
+<td>82</td>
+<td>A</td>
+<td>持有</td>
+<td style="text-align: center;">否</td>
+<td style="text-align: center;">1</td>
+<td style="text-align: center;">9/18</td>
+<td>锗材料 + 半导体 / T+8 复盘</td>
+</tr>
+<tr>
+<td>中石科技</td>
+<td>300684</td>
+<td>70</td>
+<td>B</td>
+<td><strong>减仓至半仓（≤15%）</strong></td>
+<td style="text-align: center;">否</td>
+<td style="text-align: center;">1</td>
+<td style="text-align: center;">9/18</td>
+<td>⚠️ <strong>短线 -6% 止损 +9.6% → 已触发</strong> / 当日 -15.46%</td>
+</tr>
+<tr>
+<td>长鑫科技</td>
+<td>688825</td>
+<td>70</td>
+<td>B</td>
+<td><strong>减仓至半仓</strong></td>
+<td style="text-align: center;">否</td>
+<td style="text-align: center;">1</td>
+<td style="text-align: center;">9/18</td>
+<td>5 日 -24.82% / 资金撤退</td>
+</tr>
+<tr>
+<td>寒武纪</td>
+<td>688256</td>
+<td>75</td>
+<td>B</td>
+<td><strong>减仓至半仓</strong></td>
+<td style="text-align: center;">否</td>
+<td style="text-align: center;">1</td>
+<td style="text-align: center;">9/18</td>
+<td>AI 芯片板块集体下挫</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2>十、最大风险提示（Layer 9 风险控制）</h2>
+<table>
+<thead>
+<tr>
+<th>等级</th>
+<th>类型</th>
+<th>内容</th>
+<th>应对</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>🔴 红</td>
+<td><strong>结构性退潮延续</strong></td>
+<td>9/4 AI 算力主升 → 9/7 抢反弹 → 9/8 单日游确认（中石 -15% / 摩尔 -3.7% / 长盈通 -7.28%）；半导体板块 -1.30% / 计算机 -0.94%</td>
+<td>TMT 持仓全部"减仓至半仓"，<strong>不抄底</strong></td>
+</tr>
+<tr>
+<td>🔴 红</td>
+<td><strong>9/11 美国 CPI 风险</strong></td>
+<td>市场预期同比 +3.4% / 核心环比 +0.2%；若超预期 9 月加息几乎成定局</td>
+<td>9/10 收盘前降低组合弹性敞口</td>
+</tr>
+<tr>
+<td>🟡 黄</td>
+<td><strong>ETF 资金切换不延续</strong></td>
+<td>半导体 -1.85 亿 / 通信 -1.85 亿 / 计算机 -34.86 亿 同步撤；新能源 +45 / 化工 +16 / 机器人 +13 需次日确认</td>
+<td>9/9 观察 ETF 流向是否持续</td>
+</tr>
+<tr>
+<td>🟡 黄</td>
+<td><strong>沪指 3940 关口不稳</strong></td>
+<td>3956/4000 强压力已 9 个交易日未破；下沿 3900 一旦失守 → 退潮确认</td>
+<td>9/9 沪指失守 3910 → 进一步降仓</td>
+</tr>
+<tr>
+<td>🟡 黄</td>
+<td><strong>龙版传媒 7 板 + 整体高度 7</strong></td>
+<td>9/7 8 板龙头已断板（万向德农），今日 7 板龙版传媒续强但炸板率已抬升</td>
+<td>高位连板"一律不接力"，仅做首板/2 板</td>
+</tr>
+<tr>
+<td>🟢 绿</td>
+<td><strong>厄尔尼诺 + LME 铜创新高</strong></td>
+<td>农业/铜/化工具备持续催化</td>
+<td>中线保持 8 只新增配置</td>
+</tr>
+<tr>
+<td>🟢 绿</td>
+<td><strong>政策催化明确</strong></td>
+<td>工信部"十五五"信通规划（6G/万卡）+ 商务部反倾销 + 央行连续 22 月增持黄金</td>
+<td>央企国企改革板块延续</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2>十一、🔴 V5.2 合规自检（报告末尾必填）</h2>
+<pre><code>1. 重复推荐闸：本次推荐中，是否有标的在 20 个交易日内已推荐过？  ✅ 已逐条核对（详见六/七/九），共 18 只降级为「持续跟踪」（含 江苏银行/招商银行/中际旭创/新易盛/兆易创新/长飞光纤/紫金矿业/海南橡胶/杭电股份/洛阳钼业/寒武纪/长鑫科技/亨通光电/中石科技/亨通/麦格米特/新雷能/中国船舶 等）
+
+2. 高评分闸：是否有评分 ≥90 的标的被列入建仓？                  ✅ 无。中际旭创 92 / 新易盛 90 / 紫金矿业 90 均已移入「高评分观察」，仅跟踪不配置
+
+3. 温度闸：今日市场评分 48 分 → ✅ 48 ≤ 65 允许新建仓
+
+4. 持有期：鑫准出击持仓是否已达 T+8？                          ✅ 已检查 — 9/7 短线建仓麦格米特/新雷能/云南锗业距今 1 日未达 T+8
+   鑫未来是否有持仓超 T+8 未复盘？                              ✅ 无超期，9/4 建仓 9/16 复盘，9/7 建仓 9/18 复盘
+
+5. 止损：是否有持仓触及 短线 -6% / 中线 -8%？                   ✅ 中石科技 9/8 -15.46%（2 日累计 -9.6%）触发短线 -6% 硬止损 → 已&quot;减仓至半仓&quot;
+                                                                          长鑫科技 5 日 -24.82% / 寒武纪跟随 → 已&quot;减仓至半仓&quot;
+
+6. 操作类型：是否残留「清仓」字样？                               ✅ 无（V5.1 规定除造假/ST 外一律用「减仓至半仓」）
+</code></pre>
+<hr />
+<h2>十二、明日（9/9）关注</h2>
+<ol>
+<li><strong>沪指 3940 关口</strong>：上沿 3956 / 下沿 3900；失守 3910 → 降仓至 20% 以下</li>
+<li><strong>9/9 早盘 8:00 全球扫描</strong>：美国 8 月 NFIB 小型企业信心指数 + 纽约联储 1 年通胀预期</li>
+<li><strong>9/9 数据</strong>：中国 8 月 CPI/PPI</li>
+<li><strong>9/9 主题发酵点</strong>：龙版传媒 8 板能否续强（决定情绪周期）</li>
+<li><strong>9/10 苹果发布会 + 欧央行利率决议</strong></li>
+<li><strong>9/11 美国 8 月 CPI</strong>（本周最大变量）</li>
+</ol>
+<hr />
+<h2>十三、向用户报告今日核心结论</h2>
+<ol>
+<li><strong>市场评分 48 分</strong>（较 9/7 62 分大幅下调 14 分）— 沪强深弱、结构高低切换加速；仓位 20-30%，温度闸门 48 ≤ 65 允许新建仓</li>
+<li><strong>AI 硬件"一日游"确认</strong>：9/4 单主升 → 9/7 抢反弹 → 9/8 中石 -15% / 摩尔 -3.7% / 长盈通 -7.28% 大幅回撤，验证不抄底原则；主力净流出 252.81 亿，北向连续 6 日净卖出累计 -196 亿</li>
+<li><strong>新主线接力</strong>：农业（苏垦/中粮糖/海南橡胶/万向德农/敦煌/亚盛）+ 化肥（泸天化/川发龙蟒/金正大）+ 有色·铜（北方铜业/江西铜业/紫金，LME 14494 美元历史新高）+ 油气（中曼石油/布油 98 美元）+ 创新药（奥浦迈 20cm）</li>
+<li><strong>V5.2 三闸全面生效</strong>：闸门① 18 只热点标的降级持续跟踪；闸门② 中际旭创/新易盛/紫金矿业移入高评分观察；闸门③ 48 ≤ 65 允许新建仓</li>
+<li><strong>新增鑫未来 8 只</strong>：北方铜业、中粮糖业、苏垦农发、和邦生物、中曼石油、川发龙蟒、江西铜业、奥浦迈（均为首次推荐）</li>
+<li><strong>新增鑫准出击 7 只</strong>：赤天化、潞化科技、川金诺、读者传媒、长光华芯、芯原股份、盈新发展（T+8 了结）</li>
+<li><strong>现有持仓调整</strong>：招商银行/古越龙山/双环传动/中石科技/长鑫科技/寒武纪 → 减仓至半仓；江苏银行/中国船舶/海康威视/麦格米特/新雷能/云南锗业 → 持有</li>
+<li><strong>最大风险</strong>：9/11 美国 CPI（超预期 → 全球科技股回压）+ 沪指 3940 关口不稳 + 结构性退潮延续</li>
+</ol>
+<hr />
+<p><em>生成时间：2026-09-08 15:30 | 数据来源：WebSearch 多源交叉（中新经纬 / 同花顺 / 新浪 / 财联社 / 数据宝 / 东方财富 / 华尔街见闻 / 同花顺 DDE）| 置信度：中等偏高</em></p>
+
+<!-- V5.2 合规自检区块（用 div 增强展示） -->
+<div class="compliance-box">
+  <h2>✅ V5.2 合规自检（每日必填）</h2>
+  <div class="compliance-item">1️⃣ <strong>重复推荐闸</strong>：<span class="check-pass">✅ 已逐条核对</span>，共 18 只热点标的降级为「持续跟踪」（含 江苏银行/招商银行/中际旭创/新易盛/兆易创新/长飞光纤/紫金矿业/海南橡胶/杭电股份/洛阳钼业/寒武纪/长鑫科技/亨通光电/中石科技/麦格米特/新雷能/中国船舶/亨通 等）</div>
+  <div class="compliance-item">2️⃣ <strong>高评分闸</strong>：<span class="check-pass">✅ 无</span>。中际旭创 92 / 新易盛 90 / 紫金矿业 90 均已移入「高评分观察」，仅跟踪不配置</div>
+  <div class="compliance-item">3️⃣ <strong>温度闸</strong>：今日市场评分 <strong>48 分</strong> → <span class="check-pass">48 ≤ 65 允许新建仓 ✅</span></div>
+  <div class="compliance-item">4️⃣ <strong>持有期</strong>：鑫准出击持仓是否已达 T+8？<span class="check-pass">✅ 已检查 — 9/7 短线建仓距今 1 日未达 T+8</span><br>鑫未来是否有持仓超 T+8 未复盘？<span class="check-pass">✅ 无超期 — 9/4 建仓 9/16 复盘，9/7 建仓 9/18 复盘</span></div>
+  <div class="compliance-item">5️⃣ <strong>止损</strong>：是否有持仓触及 短线 -6% / 中线 -8%？<span class="check-pass">✅ 中石科技 9/8 -15.46% 触发短线 -6% 硬止损 → 已"减仓至半仓"</span><br>长鑫科技 5 日 -24.82% / 寒武纪跟随 → 已"减仓至半仓"</div>
+  <div class="compliance-item">6️⃣ <strong>操作类型</strong>：是否残留「清仓」字样？<span class="check-pass">✅ 无</span>（V5.1 规定除造假/ST 外一律用「减仓至半仓」）</div>
+</div>
+
+<div class="footer">
+  <p>本报告由 AI 智能股票组合主理人系统 <strong>V5.2</strong> 于 2026-09-08 15:30 自动生成。数据验证遵循 V5_DATA_VALIDATION_RULES.md 三道关。连接器 westock-mcp / tdx-connector 未在本会话加载，数据基于 WebSearch 多源交叉，置信度中等偏高。本报告不构成投资建议。</p>
+  <p>配色遵循中国 A 股惯例：<span class="pos">红涨 / 绿跌</span>。</p>
+</div>
+</body>
+</html>

@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>V5.2 收盘完整分析 2026-09-21</title>
+<style>
+  :root{
+    --bg:#f5f6f8; --card:#ffffff; --border:#e4e7ec; --text:#1f2329; --muted:#6b7280;
+    --red:#d92d20; --red-bg:#fef3f2; --green:#027a48; --green-bg:#ecfdf3;
+    --blue:#175cd3; --blue-bg:#eff4ff; --orange:#b54708; --orange-bg:#fffaeb;
+    --purple:#5925dc; --purple-bg:#f4f3ff; --gray-bg:#f9fafb;
+  }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  body{font-family:"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;background:var(--bg);color:var(--text);line-height:1.6;padding:24px;}
+  .wrap{max-width:1200px;margin:0 auto;}
+  h1{font-size:26px;margin-bottom:4px;}
+  h2{font-size:19px;margin:28px 0 12px;padding-left:10px;border-left:4px solid var(--blue);}
+  h3{font-size:15px;margin:16px 0 8px;color:#344054;}
+  .sub{color:var(--muted);font-size:13px;margin-bottom:18px;}
+  .card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:18px 20px;margin-bottom:14px;box-shadow:0 1px 2px rgba(16,24,40,.04);}
+  .banner{background:linear-gradient(135deg,#175cd3 0%,#1d5bbf 60%,#0e4494 100%);color:#fff;border-radius:14px;padding:26px 28px;margin-bottom:16px;}
+  .banner .score{font-size:56px;font-weight:800;line-height:1;}
+  .banner .label{font-size:14px;opacity:.92;margin-top:8px;}
+  .banner-grid{display:flex;flex-wrap:wrap;gap:28px;align-items:center;}
+  .banner-meta{display:flex;gap:26px;flex-wrap:wrap;}
+  .banner-meta .item .k{font-size:12px;opacity:.75;}
+  .banner-meta .item .v{font-size:17px;font-weight:700;}
+  .alertbar{display:flex;gap:10px;align-items:flex-start;border-radius:10px;padding:12px 14px;font-size:13.5px;margin-bottom:14px;border:1px solid;}
+  .alertbar.ok{background:var(--green-bg);border-color:#abefc6;color:#067647;}
+  .alertbar.warn{background:var(--orange-bg);border-color:#fedf89;color:#b54708;}
+  .alertbar.bad{background:var(--red-bg);border-color:#fecdca;color:#b42318;}
+  .idx-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:12px;}
+  .idx{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:14px 16px;}
+  .idx .name{font-size:12.5px;color:var(--muted);}
+  .idx .val{font-size:22px;font-weight:700;margin:2px 0;}
+  .idx .chg{font-size:13px;font-weight:600;}
+  .up{color:var(--red);} .down{color:var(--green);} .flat{color:var(--muted);}
+  table{width:100%;border-collapse:collapse;font-size:13px;background:#fff;}
+  th{background:var(--gray-bg);color:#475467;font-weight:600;text-align:left;padding:8px 10px;border-bottom:1px solid var(--border);white-space:nowrap;}
+  td{padding:8px 10px;border-bottom:1px solid #f2f4f7;vertical-align:top;}
+  tr:hover td{background:#fafbfc;}
+  .tag{display:inline-block;padding:1px 8px;border-radius:20px;font-size:11.5px;font-weight:600;white-space:nowrap;}
+  .tag-buy{background:var(--red-bg);color:var(--red);}
+  .tag-hold{background:var(--blue-bg);color:var(--blue);}
+  .tag-half{background:var(--orange-bg);color:var(--orange);}
+  .tag-watch{background:var(--gray-bg);color:#475467;}
+  .tag-track{background:#f2f4f7;color:#667085;}
+  .phase{display:inline-block;padding:1px 8px;border-radius:6px;font-size:11.5px;font-weight:600;}
+  .ph-accel{background:var(--red-bg);color:var(--red);}
+  .ph-mild{background:var(--orange-bg);color:var(--orange);}
+  .ph-in{background:var(--blue-bg);color:var(--blue);}
+  .ph-out{background:var(--green-bg);color:var(--green);}
+  .ph-split{background:var(--purple-bg);color:var(--purple);}
+  .grade{display:inline-block;width:22px;height:22px;line-height:22px;text-align:center;border-radius:6px;font-weight:700;font-size:12px;color:#fff;}
+  .g-A{background:#7f56d9;} .g-B{background:#175cd3;} .g-C{background:#98a2b3;} .g-S{background:#d92d20;}
+  .conflict{background:#fffaeb;border:1px solid #fedf89;border-radius:10px;padding:14px 16px;font-size:13.5px;margin-bottom:14px;}
+  .conflict .t{font-weight:700;color:#b54708;margin-bottom:6px;}
+  .conflict code{background:#fff;border:1px solid #f2f4f7;border-radius:4px;padding:0 4px;font-size:12.5px;}
+  .risk{display:flex;gap:10px;margin-bottom:10px;align-items:flex-start;font-size:13.5px;}
+  .risk .dot{flex:none;width:14px;height:14px;border-radius:50%;margin-top:4px;}
+  .r-red{background:var(--red);} .r-yellow{background:#f79009;} .r-green{background:#12b76a;}
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+  @media(max-width:900px){.grid2{grid-template-columns:1fr;}}
+  .checklist{font-size:13.5px;}
+  .checklist li{margin:6px 0 6px 18px;}
+  .foot{color:var(--muted);font-size:12px;text-align:center;margin-top:24px;}
+  .num{font-variant-numeric:tabular-nums;}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<h1>AI 智能股票组合主理人 V5.2 — 收盘完整分析</h1>
+<div class="sub">2026-09-21（周一）15:30 ｜ 数据源：WebSearch 多源交叉 + 腾讯结构化行情 + 华泰智研 MCP（westock/tdx 未加载，连续第 12 次，已降级）</div>
+
+<!-- 数据验证状态条 -->
+<div class="alertbar ok"><span>✅</span><span><b>数据验证报告</b>：指数收盘多源一致（上证 3949.91 / 深成 13730.02 / 创业板 3399.59）；涨跌家数 4536:936 多源一致。⚠️ 异常项：①涨停数口径差异（105 vs 106 vs 盘中 94，取收盘口径 106）；②北向资金仅午盘数据（净流出超 45 亿）[时效警告]；③医药板块资金为半日口径（+118.69 亿）；④华泰情绪指数滞后 4 日（9/15=45.2%）。整体置信度：<b>中等</b></span></div>
+
+<!-- 评分 Banner -->
+<div class="banner">
+  <div class="banner-grid">
+    <div>
+      <div style="font-size:13px;opacity:.8;">Layer 1+2 正式市场评分（全天唯一）</div>
+      <div class="score num">62<span style="font-size:24px;font-weight:600;opacity:.8;"> / 100</span></div>
+      <div class="label">震荡偏强 → 结构性机会窗口开启（较 9/17 的 52 分上调 10 分）</div>
+    </div>
+    <div class="banner-meta">
+      <div class="item"><div class="k">市场阶段</div><div class="v">加速期（过热预警）</div></div>
+      <div class="item"><div class="k">建议仓位</div><div class="v">30% - 40%</div></div>
+      <div class="item"><div class="k">温度闸门</div><div class="v">62 ≤ 65 ✅ 允许建仓</div></div>
+      <div class="item"><div class="k">情绪闸门</div><div class="v">涨停 106 &gt; 80 🔴 中线暂停新增</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- 指数卡片 -->
+<div class="idx-grid">
+  <div class="idx"><div class="name">上证指数</div><div class="val num">3949.91</div><div class="chg up">▲ +0.97%　最高 3950.94</div></div>
+  <div class="idx"><div class="name">深证成指</div><div class="val num">13730.02</div><div class="chg up">▲ +0.65%</div></div>
+  <div class="idx"><div class="name">创业板指</div><div class="val num">3399.59</div><div class="chg up">▲ +0.80%</div></div>
+  <div class="idx"><div class="name">北证50</div><div class="val">—</div><div class="chg up">▲ +1.33%</div></div>
+  <div class="idx"><div class="name">沪深成交</div><div class="val num">2.03万亿</div><div class="chg flat">缩量 456 亿｜连续 2 日 &gt;2 万亿</div></div>
+  <div class="idx"><div class="name">涨跌家数</div><div class="val num">4536 : 936</div><div class="chg up">普涨 4.85 : 1</div></div>
+  <div class="idx"><div class="name">涨停 / 跌停</div><div class="val num">106 / 3</div><div class="chg down">炸板 30 → 炸板率 22.1%</div></div>
+  <div class="idx"><div class="name">北向资金</div><div class="val down">净流出</div><div class="chg flat">午盘超 45 亿 [时效警告]</div></div>
+</div>
+
+<!-- 模块冲突标注 -->
+<div class="conflict">
+  <div class="t">⚠️ 模块冲突标注</div>
+  <code>Layer 1 市场评分：62 分（震荡偏强，偏多）</code><br>
+  <code>Layer 7 情绪评分：涨停 106 家 &gt; 80 → 情绪反向档位「过热」（偏空预警）</code><br>
+  <b>冲突解读</b>：量价齐升、普涨+涨停潮确认加速期，但涨停数突破 80 家过热线 → 典型"加速期顶部特征初现"，当前追高的赔率差于 2-3 日前。<br>
+  <b>操作建议</b>：短线（鑫准出击）轻仓参与主线；中线（鑫未来）暂停新增建仓；现有仓位逢大涨标的分批兑现部分利润。
+</div>
+
+<!-- 产业 TOP10 -->
+<h2>Layer 3 · 产业趋势 TOP10（独立评分）</h2>
+<div class="card">
+<table>
+<tr><th>#</th><th>产业方向</th><th>评分</th><th>资金阶段</th><th>核心催化</th></tr>
+<tr><td>1</td><td><b>创新药 / CRO / CDMO</b></td><td><b class="up">92</b></td><td><span class="phase ph-accel">加速</span></td><td>十部门"十五五"规划（2030 年 3.5 万亿营收、首创药占全球 25%）+ 美拟放宽授权 + 板块资金净流入第一</td></tr>
+<tr><td>2</td><td><b>医疗服务 / 医疗康复</b></td><td><b class="up">88</b></td><td><span class="phase ph-accel">加速</span></td><td>国常会扩容提升工程 + 银发经济 30 万亿；南华生物 3 连板</td></tr>
+<tr><td>3</td><td><b>存储芯片 / 半导体材料</b></td><td><b class="up">86</b></td><td><span class="phase ph-mild">温和加速</span></td><td>长鑫五代 DRAM 量产 + 美股存储爆发（闪迪 +11%）+ 2026 存储产值预估 8893 亿美元</td></tr>
+<tr><td>4</td><td><b>MLCC / 被动元件</b></td><td><b class="up">85</b></td><td><span class="phase ph-accel">加速</span></td><td>现货暴涨 7-10 倍，AI 拉动高容型号缺货，双星新材涨停</td></tr>
+<tr><td>5</td><td><b>PCB / 覆铜板 / 电子布</b></td><td><b class="up">84</b></td><td><span class="phase ph-accel">加速</span></td><td>涨价链传导，Q3 盈利改善起涨点；中材科技涨停验证</td></tr>
+<tr><td>6</td><td><b>功率半导体 / IGBT</b></td><td><b class="up">83</b></td><td><span class="phase ph-in">进入</span></td><td>安森美涨价函（10/10 生效）+ 8 英寸产能收缩转卖方市场</td></tr>
+<tr><td>7</td><td><b>AI 词元经济 / 算力应用</b></td><td><b class="up">82</b></td><td><span class="phase ph-mild">温和加速</span></td><td>北京词元经济方案 + 云栖大会今日开幕 + 昇腾 950 于 9/30 启用</td></tr>
+<tr><td>8</td><td><b>面板</b></td><td><b class="up">81</b></td><td><span class="phase ph-mild">温和加速</span></td><td>三大厂（全球份额 65%+）集体提价，2027 年转紧平衡</td></tr>
+<tr><td>9</td><td><b>稀土 / 军工电子</b></td><td><b class="up">79</b></td><td><span class="phase ph-in">进入</span></td><td>华锡有色涨停，地缘扰动 + 供需改善</td></tr>
+<tr><td>10</td><td><b>房地产链</b></td><td><b class="up">78</b></td><td><span class="phase ph-in">进入</span></td><td>828 新政 + 现房销售制，今日近 10 股涨停（政策脉冲勿追高）</td></tr>
+</table>
+</div>
+
+<!-- 资金主线 -->
+<h2>Layer 4 · 资金主线 TOP5（独立评分）</h2>
+<div class="card">
+<table>
+<tr><th>#</th><th>方向</th><th>阶段</th><th>证据</th><th>操作映射</th></tr>
+<tr><td>1</td><td><b>医药生物</b></td><td><span class="phase ph-accel">加速</span></td><td>半日主力净流入 118.69 亿（全市场第一）；医药 ETF 连续 3 日净流入；20+ 涨停</td><td class="up"><b>建仓窗口（短线）</b></td></tr>
+<tr><td>2</td><td><b>存储芯片</b></td><td><span class="phase ph-mild">温和加速</span></td><td>长鑫成交 139.7 亿；沪股通成交前三寒武纪/兆易/生益；电子融资净买 19.32 亿居首</td><td>关注 / 逢低</td></tr>
+<tr><td>3</td><td><b>MLCC / 元件</b></td><td><span class="phase ph-accel">加速</span></td><td>机构大幅买入板块 6 家公司；双星涨停、达利凯普 +7.17%</td><td class="up"><b>建仓窗口（短线）</b></td></tr>
+<tr><td>4</td><td><b>通信 / 光模块</b></td><td><span class="phase ph-split">分歧回流</span></td><td>中际旭创 +13 亿（成交 141.89 亿居首）vs 天孚 -9 亿</td><td class="down">关注（警惕"一日游"）</td></tr>
+<tr><td>5</td><td><b>房地产</b></td><td><span class="phase ph-in">进入</span></td><td>午后近 10 股涨停；北向买万科 A 1.12 亿</td><td>关注（勿追高）</td></tr>
+</table>
+<p style="font-size:12.5px;color:var(--muted);margin-top:8px;">撤退方向：家电/消费电子（美的、海信 -3%+）、电力设备、贵金属、保险、制冷剂/钴。</p>
+</div>
+
+<!-- TOP30 -->
+<h2>Layer 5-6 · 个股评分 TOP30（120 分体系 · 情绪项过热档 2 分）</h2>
+<div class="card" style="padding:12px;">
+<table>
+<tr><th>#</th><th>股票</th><th>代码</th><th>评分</th><th>评级</th><th>操作</th><th>资金阶段(加速度)</th><th>行业</th><th>核心逻辑 / 风险</th></tr>
+<tr><td>1</td><td><b>中材科技</b></td><td>002080</td><td class="num"><b>77</b></td><td><span class="grade g-B">B</span></td><td><span class="tag tag-hold">持有 T+8=9/30</span></td><td><span class="phase ph-accel">加速(1.6)</span></td><td>玻纤/电子布</td><td>涨停 +10%，电子布涨价+PCB+风电三击 <span class="down">｜9/17 已推荐，涨停次日勿追</span></td></tr>
+<tr><td>2</td><td><b>澜起科技</b></td><td>688008</td><td class="num"><b>74</b></td><td><span class="grade g-B">B</span></td><td><span class="tag tag-buy">回踩建仓</span></td><td><span class="phase ph-mild">温和加速(1.2)</span></td><td>存储/互连</td><td>DDR5+PCIe6.0 龙头，美股存储链映射 <span class="down">｜估值偏高</span></td></tr>
+<tr><td>3</td><td><b>三环集团</b></td><td>300408</td><td class="num"><b>74</b></td><td><span class="grade g-B">B</span></td><td><span class="tag tag-hold">持有 T+8=9/24</span></td><td><span class="phase ph-accel">加速(1.7)</span></td><td>MLCC</td><td>+3.25%，现货暴涨核心受益 <span class="down">｜9/14 已推荐</span></td></tr>
+<tr><td>4</td><td><b>药明康德</b></td><td>603259</td><td class="num"><b>73</b></td><td><span class="grade g-B">B</span></td><td><span class="tag tag-hold">持有 T+8=9/24</span></td><td><span class="phase ph-accel">加速(1.8)</span></td><td>CRO/CDMO</td><td>+4.97% 阶段新高，规划+美拟放宽双催化 <span class="down">｜9/14 已推荐</span></td></tr>
+<tr><td>5</td><td><b>京东方A</b></td><td>000725</td><td class="num"><b>73</b></td><td><span class="grade g-B">B</span></td><td><span class="tag tag-hold">持有 T+8=9/30</span></td><td><span class="phase ph-accel">加速(1.4)</span></td><td>面板</td><td>+2.53%，三大厂集体提价 <span class="down">｜9/17 已推荐</span></td></tr>
+<tr><td>6</td><td><b>诺禾致源</b></td><td>688315</td><td class="num"><b>73</b></td><td><span class="grade g-B">B</span></td><td><span class="tag tag-buy">回踩建仓</span></td><td><span class="phase ph-accel">加速(1.6)</span></td><td>基因测序</td><td>20cm 涨停，AIDD 上游需求扩容，首次进池 <span class="down">｜涨停次日不确定</span></td></tr>
+<tr><td>7</td><td><b>兆易创新</b></td><td>603986</td><td class="num"><b>73</b></td><td><span class="grade g-B">B</span></td><td><span class="tag tag-track">持续跟踪</span></td><td><span class="phase ph-mild">温和加速(1.3)</span></td><td>存储设计</td><td>长鑫量产+利基 DRAM 涨价 <span class="down">｜9/8 已推荐</span></td></tr>
+<tr><td>8</td><td><b>圣邦股份</b></td><td>300661</td><td class="num"><b>72</b></td><td><span class="grade g-B">B</span></td><td><span class="tag tag-buy">回踩建仓</span></td><td><span class="phase ph-accel">加速(1.5)</span></td><td>模拟芯片</td><td>+7.44%，涨价函预期+国产替代 <span class="down">｜PE 高企</span></td></tr>
+<tr><td>9</td><td><b>万邦医药</b></td><td>301520</td><td class="num"><b>72</b></td><td><span class="grade g-B">B</span></td><td><span class="tag tag-hold">持有 T+8=9/24</span></td><td><span class="phase ph-accel">加速(1.7)</span></td><td>CDMO</td><td>+14.29%，减肥药+CRO 双催化 <span class="down">｜9/14 已推荐</span></td></tr>
+<tr><td>10</td><td><b>诺诚健华</b></td><td>688428</td><td class="num"><b>71</b></td><td><span class="grade g-B">B</span></td><td><span class="tag tag-hold">持有 T+8=9/24</span></td><td><span class="phase ph-mild">温和加速(1.2)</span></td><td>创新药</td><td>医药 ETF 连续 3 日净流入 <span class="down">｜9/14 已推荐</span></td></tr>
+<tr><td>11</td><td><b>达利凯普</b></td><td>301566</td><td class="num"><b>71</b></td><td><span class="grade g-B">B</span></td><td><span class="tag tag-buy">回踩建仓</span></td><td><span class="phase ph-accel">加速(1.5)</span></td><td>MLCC</td><td>+7.17%，高 Q 值弹性标的 <span class="down">｜小盘波动</span></td></tr>
+<tr><td>12</td><td><b>东微半导</b></td><td>688261</td><td class="num"><b>70</b></td><td><span class="grade g-B">B</span></td><td><span class="tag tag-buy">回踩建仓</span></td><td><span class="phase ph-in">进入(1.1)</span></td><td>功率半导体</td><td>涨价函+液冷，北向买 0.89 亿 <span class="down">｜小盘</span></td></tr>
+<tr><td>13</td><td><b>透景生命</b></td><td>300642</td><td class="num"><b>70</b></td><td><span class="grade g-B">B</span></td><td><span class="tag tag-watch">仅观察</span></td><td><span class="phase ph-accel">加速(1.5)</span></td><td>体外诊断</td><td>20cm 涨停，肿瘤检测 <span class="down">｜追高风险</span></td></tr>
+<tr><td>14</td><td><b>风华高科</b></td><td>000636</td><td class="num"><b>70</b></td><td><span class="grade g-B">B</span></td><td><span class="tag tag-track">持续跟踪</span></td><td><span class="phase ph-accel">加速(1.6)</span></td><td>MLCC</td><td>+3.69% <span class="down">｜9/11 已推荐</span></td></tr>
+<tr><td>15</td><td><b>沐曦股份-U</b></td><td>688802</td><td class="num"><b>70</b></td><td><span class="grade g-B">B</span></td><td><span class="tag tag-watch">仅观察</span></td><td><span class="phase ph-mild">加速(1.4)</span></td><td>GPU</td><td>解禁后企稳，昇腾 960 催化 <span class="down">｜9/17 已推荐，抛压消化中</span></td></tr>
+<tr><td>16</td><td><b>新易盛</b></td><td>300502</td><td class="num">69</td><td><span class="grade g-C">C</span></td><td><span class="tag tag-track">持续跟踪</span></td><td><span class="phase ph-split">分歧回流(0.8)</span></td><td>光模块</td><td>资金回流 <span class="down">｜反弹非反转</span></td></tr>
+<tr><td>17</td><td><b>近岸蛋白</b></td><td>688137</td><td class="num">69</td><td><span class="grade g-C">C</span></td><td><span class="tag tag-half">逢高减半 T+8=9/24</span></td><td><span class="phase ph-accel">加速(1.8)</span></td><td>重组蛋白</td><td>+20% 创历史新高 <span class="down">｜勿追，落袋一半</span></td></tr>
+<tr><td>18</td><td><b>华天科技</b></td><td>002185</td><td class="num">69</td><td><span class="grade g-C">C</span></td><td><span class="tag tag-watch">仅观察</span></td><td><span class="phase ph-mild">温和加速(1.2)</span></td><td>先进封装</td><td>北向净买 1.86 亿（深股通第一）<span class="down">｜主力分歧流出</span></td></tr>
+<tr><td>19</td><td><b>科兴制药</b></td><td>688136</td><td class="num">69</td><td><span class="grade g-C">C</span></td><td><span class="tag tag-watch">仅观察</span></td><td><span class="phase ph-accel">加速(1.4)</span></td><td>创新药出海</td><td>+12.1% <span class="down">｜题材波动</span></td></tr>
+<tr><td>20</td><td><b>华仁药业</b></td><td>300110</td><td class="num">68</td><td><span class="grade g-C">C</span></td><td><span class="tag tag-watch">仅观察</span></td><td><span class="phase ph-accel">加速(1.5)</span></td><td>医药商业</td><td>20cm 涨停 <span class="down">｜次日不确定</span></td></tr>
+<tr><td>21</td><td><b>中际旭创</b></td><td>300308</td><td class="num">68</td><td><span class="grade g-C">C</span></td><td><span class="tag tag-track">持续跟踪</span></td><td><span class="phase ph-split">分歧回流(0.8)</span></td><td>光模块</td><td>成交 141.89 亿居首，+13 亿 <span class="down">｜16 次推荐历史 -9.96%</span></td></tr>
+<tr><td>22</td><td><b>洁特生物</b></td><td>688026</td><td class="num">68</td><td><span class="grade g-C">C</span></td><td><span class="tag tag-watch">仅观察</span></td><td><span class="phase ph-accel">加速(1.4)</span></td><td>实验耗材</td><td>+19.98% <span class="down">｜小盘追高</span></td></tr>
+<tr><td>23</td><td><b>双星新材</b></td><td>002585</td><td class="num">67</td><td><span class="grade g-C">C</span></td><td><span class="tag tag-track">持续跟踪</span></td><td><span class="phase ph-accel">加速(1.5)</span></td><td>MLCC 膜材</td><td>涨停 +10.04% <span class="down">｜9/11 已推荐</span></td></tr>
+<tr><td>24</td><td><b>嘉立创</b></td><td>001232</td><td class="num">66</td><td><span class="grade g-C">C</span></td><td><span class="tag tag-hold">持有 T+8=9/24</span></td><td><span class="phase ph-mild">温和加速(1.3)</span></td><td>PCB</td><td>涨价传导 <span class="down">｜9/14 已推荐</span></td></tr>
+<tr><td>25</td><td><b>华锡有色</b></td><td>301301</td><td class="num">66</td><td><span class="grade g-C">C</span></td><td><span class="tag tag-watch">仅观察</span></td><td><span class="phase ph-accel">加速(1.3)</span></td><td>稀土锡</td><td>涨停 <span class="down">｜小盘周期</span></td></tr>
+<tr><td>26</td><td><b>南华生物</b></td><td>000504</td><td class="num">65</td><td><span class="grade g-C">C</span></td><td><span class="tag tag-watch">仅观察</span></td><td><span class="phase ph-accel">加速(1.4)</span></td><td>医疗服务</td><td>3 连板高度标 <span class="down">｜资金净流入低</span></td></tr>
+<tr><td>27</td><td><b>国瓷材料</b></td><td>300285</td><td class="num">64</td><td><span class="grade g-C">C</span></td><td><span class="tag tag-half">减仓至半仓</span></td><td><span class="phase ph-out">减速(0.7)</span></td><td>MLCC 材料</td><td>高位滞涨 +0.33% <span class="down">｜资金减速</span></td></tr>
+<tr><td>28</td><td><b>长鑫科技</b></td><td>688825</td><td class="num">62</td><td><span class="grade g-C">C</span></td><td><span class="tag tag-track">持续跟踪</span></td><td><span class="phase ph-mild">温和加速(1.2)</span></td><td>存储</td><td>五代 DRAM 量产 +2.41% <span class="down">｜多次推荐，成交 139.7 亿巨量</span></td></tr>
+<tr><td>29</td><td><b>黄河旋风</b></td><td>600172</td><td class="num">62</td><td><span class="grade g-C">C</span></td><td><span class="tag tag-hold">持有 T+8=9/24</span></td><td><span class="phase ph-out">撤退(0.4)</span></td><td>培育钻石</td><td>主线退潮 <span class="down">｜T+8 大概率离场</span></td></tr>
+<tr><td>30</td><td><b>万科A</b></td><td>000002</td><td class="num">60</td><td><span class="grade g-C">C</span></td><td><span class="tag tag-watch">仅观察</span></td><td><span class="phase ph-in">进入(1.0)</span></td><td>房地产</td><td>涨停，828 新政 <span class="down">｜基本面弱，政策脉冲</span></td></tr>
+</table>
+<p style="font-size:12.5px;color:var(--muted);margin-top:8px;">评级分布：B 级 15 只 / C 级 15 只 / A·S 级 0 只（情绪过热档压分 + 高位形态风险扣分对冲）。<b>评级色标：S 红 / A 紫 / B 蓝 / C 灰。</b></p>
+</div>
+
+<!-- 组合双栏 -->
+<h2>Layer 8 · 组合管理</h2>
+<div class="grid2">
+  <div class="card">
+    <h3>鑫未来核心组合（中线 · 止损 -8% · T+8 复盘）</h3>
+    <div class="alertbar warn" style="margin-bottom:10px;"><span>🔴</span><span><b>本日暂停新增中线建仓</b>：涨停 106 &gt; 80 触发情绪过热规则；主线核心标的全部为 20 日内已推荐（闸门①）；医药组 T+8 复盘日 9/24 临近。</span></div>
+    <table>
+      <tr><th>股票</th><th>代码</th><th>评分</th><th>操作</th><th>首推?</th><th>T+8复盘日</th><th>逻辑</th></tr>
+      <tr><td>中材科技</td><td>002080</td><td class="num">77</td><td><span class="tag tag-hold">持有</span></td><td>否(第2次)</td><td class="num">09-30</td><td>涨停兑现 1/3 可选</td></tr>
+      <tr><td>药明康德</td><td>603259</td><td class="num">73</td><td><span class="tag tag-hold">持有</span></td><td>否(第3次)</td><td class="num">09-24</td><td>新增催化，可续持至节后</td></tr>
+      <tr><td>京东方A</td><td>000725</td><td class="num">73</td><td><span class="tag tag-hold">持有</span></td><td>否(第2次)</td><td class="num">09-30</td><td>面板提价验证</td></tr>
+      <tr><td>三环集团</td><td>300408</td><td class="num">74</td><td><span class="tag tag-hold">持有</span></td><td>否(第3次)</td><td class="num">09-24</td><td>MLCC 涨价受益</td></tr>
+      <tr><td>万邦医药</td><td>301520</td><td class="num">72</td><td><span class="tag tag-hold">持有</span></td><td>否(第2次)</td><td class="num">09-24</td><td>T+8 视涨幅兑现一半</td></tr>
+      <tr><td>近岸蛋白</td><td>688137</td><td class="num">69</td><td><span class="tag tag-half">逢高减半</span></td><td>否(第2次)</td><td class="num">09-24</td><td>创新高落袋一半</td></tr>
+      <tr><td>国瓷材料</td><td>300285</td><td class="num">64</td><td><span class="tag tag-half">减仓至半仓</span></td><td>否(第2次)</td><td>—</td><td>资金减速(0.7)滞涨</td></tr>
+      <tr><td>山子高科</td><td>000981</td><td class="num">58</td><td><span class="tag tag-half">减仓至半仓</span></td><td>否(第2次)</td><td class="num">09-30</td><td>-1.67% 题材退潮</td></tr>
+      <tr><td>摩尔线程-U</td><td>688795</td><td class="num">70</td><td><span class="tag tag-hold">持有</span></td><td>否(第2次)</td><td class="num">09-30</td><td>存储链回暖</td></tr>
+      <tr><td>先导基电</td><td>600641</td><td class="num">69</td><td><span class="tag tag-hold">持有</span></td><td>否(第2次)</td><td class="num">09-30</td><td>设备国产替代</td></tr>
+      <tr><td>中国船舶</td><td>600150</td><td class="num">72</td><td><span class="tag tag-hold">持有</span></td><td>否(第2次)</td><td class="num">09-30</td><td>船舶周期+军工</td></tr>
+      <tr><td>嘉立创</td><td>001232</td><td class="num">66</td><td><span class="tag tag-hold">持有</span></td><td>否(第2次)</td><td class="num">09-24</td><td>PCB 涨价传导</td></tr>
+      <tr><td>黄河旋风</td><td>600172</td><td class="num">62</td><td><span class="tag tag-watch">持有观察</span></td><td>否(第2次)</td><td class="num">09-24</td><td>主线退潮</td></tr>
+    </table>
+    <p style="font-size:12.5px;color:var(--muted);margin-top:8px;">总仓位维持 20%-25%，本日不新增。</p>
+  </div>
+  <div class="card">
+    <h3>鑫准出击机会池（短线 · 止损 -6% · T+8 了结）</h3>
+    <div class="alertbar ok" style="margin-bottom:10px;"><span>✅</span><span>温度闸门 62 ≤ 65 允许新建仓；情绪过热期<b>轻仓</b>（合计 ≤10%）。</span></div>
+    <table>
+      <tr><th>股票</th><th>代码</th><th>评分</th><th>操作</th><th>首推?</th><th>T+8复盘日</th><th>逻辑</th></tr>
+      <tr><td>澜起科技</td><td>688008</td><td class="num">74</td><td><span class="tag tag-buy">回踩建仓 3%</span></td><td><b>是</b></td><td class="num">10-09</td><td>美股存储链映射</td></tr>
+      <tr><td>诺禾致源</td><td>688315</td><td class="num">73</td><td><span class="tag tag-buy">回踩建仓 2%</span></td><td><b>是</b></td><td class="num">10-09</td><td>AIDD 上游 20cm</td></tr>
+      <tr><td>圣邦股份</td><td>300661</td><td class="num">72</td><td><span class="tag tag-buy">回踩建仓 2%</span></td><td><b>是</b></td><td class="num">10-09</td><td>模拟芯片涨价</td></tr>
+      <tr><td>达利凯普</td><td>301566</td><td class="num">71</td><td><span class="tag tag-buy">回踩建仓 2%</span></td><td><b>是</b></td><td class="num">10-09</td><td>高 Q 值 MLCC</td></tr>
+      <tr><td>东微半导</td><td>688261</td><td class="num">70</td><td><span class="tag tag-buy">回踩建仓 1%</span></td><td><b>是</b></td><td class="num">10-09</td><td>功率+液冷</td></tr>
+    </table>
+    <h3 style="margin-top:14px;">既有短线持仓处置</h3>
+    <table>
+      <tr><th>批次</th><th>T+8 复盘日</th><th>处置</th></tr>
+      <tr><td>9/14 批（宁德时代、英诺激光、凯盛新能等）</td><td class="num"><b>09-24（周四节前）</b></td><td>无新催化即全部了结；诺诚健华持有至 T+8 复盘</td></tr>
+      <tr><td>9/17 批（中科飞测、招商轮船、光智科技等）</td><td class="num"><b>09-30</b></td><td>持有；山子高科已减仓至半仓</td></tr>
+      <tr><td>今日批（5 只首推）</td><td class="num"><b>10-09</b></td><td>跨假期持有，止损线仍生效</td></tr>
+    </table>
+    <p style="font-size:12.5px;color:var(--muted);margin-top:8px;">⚠️ T+8 日历修正：9/17 报告误写 9/25（中秋休市），9/14 批顺延至 <b>9/24</b>、9/17 批顺延至 <b>9/30</b>。</p>
+  </div>
+</div>
+
+<!-- 风险 -->
+<h2>Layer 9 · 风险委员会扫描</h2>
+<div class="card">
+  <div class="risk"><div class="dot r-red"></div><div><b>🔴 情绪过热风险</b>：涨停 106 &gt; 80 过热线 + 沈鼓集团两日 12 倍次新炒作 + 160 只涨超 9%——加速期顶部特征初现，追高赔率恶化。</div></div>
+  <div class="risk"><div class="dot r-red"></div><div><b>🔴 全球流动性风险</b>：10Y 美债 5.00%（2007 年来高位）、2Y 4.74% 创周期新高、实际利率 2.67% 创 20 年新高；10 月再加息概率 55%。</div></div>
+  <div class="risk"><div class="dot r-yellow"></div><div><b>🟡 节前资金面风险</b>：本周仅 4 个交易日（9/24 节前最后交易日），节前 1-2 日有撤离压力；今日批持仓跨 7 天假期。</div></div>
+  <div class="risk"><div class="dot r-yellow"></div><div><b>🟡 外资背离风险</b>：北向午盘净流出超 45 亿（减仓白酒/权重金融），与内资做多背离。</div></div>
+  <div class="risk"><div class="dot r-yellow"></div><div><b>🟡 技术关口风险</b>：沪指 3950 攻而不破，3950-4000 强阻力带。</div></div>
+  <div class="risk"><div class="dot r-yellow"></div><div><b>🟡 行业集中风险</b>：组合医药/MLCC/存储集中，医药政策兑现后获利了结将同步回撤。</div></div>
+  <div class="risk"><div class="dot r-yellow"></div><div><b>🟡 地缘风险</b>：中东停火反复（伊朗"决定性战争"警告 vs 停战条件已转达）。</div></div>
+  <div class="risk"><div class="dot r-green"></div><div><b>🟢 个股风险</b>：无持仓触及 -6%/-8% 止损线；无财务造假/ST/逻辑证伪情形。</div></div>
+  <div style="background:var(--red-bg);border-radius:8px;padding:10px 14px;font-size:13.5px;color:#b42318;margin-top:6px;"><b>最大单一风险</b>：过热信号与美债 5% 共振——若明日涨停数继续 &gt;100 而量能无法同步放大至 2.2 万亿以上，加速期将快速切换至高潮/退潮，届时短线仓位整体降至 5% 以内。</div>
+</div>
+
+<!-- 合规自检 -->
+<h2>✅ V5.2 合规自检</h2>
+<div class="card checklist">
+  <ol>
+    <li><b>重复推荐闸</b>：☑ 有 20 日内已推荐标的 → 17 只已降级「持续跟踪」（兆易创新/风华高科/三环集团/药明康德/万邦医药/近岸蛋白/中材科技/京东方A/双星新材/长鑫科技/中际旭创/新易盛/沐曦/嘉立创/黄河旋风/国瓷材料/诺诚健华）；新增 5 只均为首次推荐 ✅</li>
+    <li><b>高评分闸</b>：☑ 无 ≥90 标的建仓（今日最高 77 分）✅</li>
+    <li><b>温度闸</b>：今日市场评分 <b>62</b> 分 → ☑ ≤65 允许建仓（附加：涨停 106 &gt; 80 触发情绪过热规则 → 中线暂停新增，仅短线轻仓）✅</li>
+    <li><b>持有期</b>：☑ 已检查——9/14 批 T+8=9/24（节前）、9/17 批 T+8=9/30、今日批 T+8=10/9；9/17 报告 T+8（9/25）因中秋休市顺延已修正 ✅</li>
+    <li><b>止损</b>：☑ 无持仓触及短线 -6% / 中线 -8%（国瓷材料 +0.33%、山子高科 -1.67% 属质量减仓非止损）✅</li>
+    <li><b>操作类型</b>：☑ 无「清仓」字样（全部为「减仓至半仓」「了结」「持有」）✅</li>
+  </ol>
+</div>
+
+<div class="foot">AI 智能股票组合主理人系统 V5.2 ｜ 生成时间 2026-09-21 15:30 ｜ 仅供内部研究参考，不构成投资建议</div>
+</div>
+</body>
+</html>

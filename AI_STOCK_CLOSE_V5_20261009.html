@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>V5.2 收盘完整分析 | 2026-10-09</title>
+<style>
+:root{--red:#d93025;--green:#188038;--bg:#f8f9fa;--card:#ffffff;--ink:#202124;--muted:#5f6368;--line:#e0e0e0;--amber:#b26a00;--amberbg:#fef7e0;--blue:#1a73e8;--bluebg:#e8f0fe;--redbg:#fce8e6;--greenbg:#e6f4ea;}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:"Microsoft YaHei","PingFang SC",sans-serif;background:var(--bg);color:var(--ink);font-size:14px;line-height:1.65;padding:24px;}
+.wrap{max-width:1180px;margin:0 auto;}
+.banner{background:linear-gradient(135deg,#1a237e,#283593 60%,#3949ab);color:#fff;border-radius:14px;padding:26px 30px;margin-bottom:16px;}
+.banner h1{font-size:22px;margin-bottom:6px;}
+.banner .sub{opacity:.85;font-size:13px;}
+.scorebar{display:flex;gap:18px;flex-wrap:wrap;margin-top:16px;}
+.scorebox{background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.25);border-radius:10px;padding:12px 20px;}
+.scorebox .num{font-size:34px;font-weight:700;line-height:1.1;}
+.scorebox .lbl{font-size:12px;opacity:.85;}
+.valid{background:var(--amberbg);border:1px solid #f5d9a8;border-left:5px solid var(--amber);border-radius:10px;padding:14px 18px;margin-bottom:16px;font-size:13px;}
+.valid b{color:var(--amber);}
+.valid ul{margin:6px 0 0 18px;}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(168px,1fr));gap:12px;margin-bottom:16px;}
+.idx{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:14px 16px;}
+.idx .name{font-size:12px;color:var(--muted);}
+.idx .val{font-size:20px;font-weight:700;margin:2px 0;}
+.up{color:var(--red);} .down{color:var(--green);}
+.card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:20px 22px;margin-bottom:16px;}
+.card h2{font-size:17px;margin-bottom:12px;padding-bottom:8px;border-bottom:2px solid var(--line);}
+.card h3{font-size:14px;margin:14px 0 8px;color:var(--blue);}
+.tag{display:inline-block;font-size:11px;padding:2px 8px;border-radius:10px;margin-right:6px;font-weight:600;}
+.t-red{background:var(--redbg);color:var(--red);} .t-green{background:var(--greenbg);color:var(--green);}
+.t-blue{background:var(--bluebg);color:var(--blue);} .t-amber{background:var(--amberbg);color:var(--amber);}
+table{width:100%;border-collapse:collapse;font-size:13px;margin:8px 0;}
+th{background:#f1f3f4;text-align:left;padding:8px 10px;border-bottom:2px solid var(--line);white-space:nowrap;}
+td{padding:7px 10px;border-bottom:1px solid var(--line);vertical-align:top;}
+tr:hover td{background:#fafafa;}
+.rank{font-weight:700;color:var(--muted);}
+.score-cell{font-weight:700;}
+.sA{color:var(--red);} .sS{background:#1a237e;color:#fff;padding:2px 7px;border-radius:6px;font-size:12px;}
+.conflict{background:var(--amberbg);border:1px dashed var(--amber);border-radius:10px;padding:14px 18px;margin:10px 0;font-size:13px;}
+.conflict .t{font-weight:700;color:var(--amber);margin-bottom:6px;}
+.combo2{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+@media(max-width:900px){.combo2{grid-template-columns:1fr;}}
+.combo{background:#fafafa;border:1px solid var(--line);border-radius:10px;padding:14px;}
+.combo h4{font-size:14px;margin-bottom:8px;}
+.risk-red{background:var(--redbg);border-left:5px solid var(--red);border-radius:8px;padding:12px 16px;margin:8px 0;}
+.risk-green{background:var(--greenbg);border-left:5px solid var(--green);border-radius:8px;padding:12px 16px;margin:8px 0;}
+.risk-amber{background:var(--amberbg);border-left:5px solid var(--amber);border-radius:8px;padding:12px 16px;margin:8px 0;}
+.check{background:#f1f8e9;border:1px solid #c5e1a5;border-radius:10px;padding:16px 18px;font-size:13px;font-family:Consolas,monospace;white-space:pre-wrap;}
+.footer{text-align:center;color:var(--muted);font-size:12px;margin-top:18px;}
+.concl li{margin:7px 0;}
+.concl b{color:#1a237e;}
+</style>
+</head>
+<body><div class="wrap">
+
+<div class="banner">
+  <h1>🏦 V5.2 收盘完整分析 | 2026-10-09（周五）15:30</h1>
+  <div class="sub">AI 智能股票组合主理人系统 V5.2 · 九层投资决策模型 · 全天唯一正式市场评分点 · 国庆+中秋双节后首个交易日</div>
+  <div class="scorebar">
+    <div class="scorebox"><div class="num">43<span style="font-size:16px;opacity:.7">/100</span></div><div class="lbl">正式市场评分（上期 9/23：50）</div></div>
+    <div class="scorebox"><div class="num" style="font-size:19px;line-height:1.4">震荡偏弱下沿<br>结构性磨底期</div><div class="lbl">深 V 假阳线 · 待确认</div></div>
+    <div class="scorebox"><div class="num">20%–30%</div><div class="lbl">建议总仓位</div></div>
+    <div class="scorebox"><div class="num" style="font-size:19px;line-height:1.4">43 ≤ 65 ✅<br>允许新建仓</div><div class="lbl">V5.2 温度闸门 · 分批+次日确认</div></div>
+  </div>
+</div>
+
+<div class="valid">
+  <b>⚠️ 数据验证报告</b> —— 交叉验证：<b style="color:var(--green)">通过</b>（指数三源一致：腾讯行情 15:33 + 新华财经 + 东方财富；个股双源交叉）
+  <ul>
+    <li>westock-mcp / tdx-connector 连续第 17 日未加载 → 腾讯行情直连 API + 多源搜索兜底</li>
+    <li>个股 3/10 日历史资金流缺失 → 流入加速度为[推断口径]；北向节后两日未披露[低置信度]</li>
+    <li>跌停数采用大智慧"跌幅 9%+ 16 只"口径[近似]；全天主力净流出约 368 亿（财联社盯盘）</li>
+    <li>✅ <b>跨年污染拦截 3 批</b>：每经"沪指 -6.62% 报 3258.86"=2024/10/9；"沪指 3933.97 开门红 / 88 股涨停核电潮 / 道指 46601"=2025/10/9，均按昨收反推+周期特征剔除</li>
+    <li>单源待验证：《新型电池产业发展"十五五"规划》仅自媒体单源，评分已降权</li>
+  </ul>
+</div>
+
+<div class="grid">
+  <div class="idx"><div class="name">上证指数</div><div class="val up">3813.79 <small>+0.05%</small></div><div class="name">最低 3754.14 · 逼近 3741 前低</div></div>
+  <div class="idx"><div class="name">深证成指</div><div class="val up">12641.86 <small>+0.17%</small></div><div class="name">早盘一度 -2.5%</div></div>
+  <div class="idx"><div class="name">创业板指</div><div class="val up">3043.33 <small>+0.22%</small></div><div class="name">盘中 2932 年内新低</div></div>
+  <div class="idx"><div class="name">科创50</div><div class="val up">1457.27 <small>+0.02%</small></div><div class="name">盘中一度 -4%+</div></div>
+  <div class="idx"><div class="name">两市成交</div><div class="val">1.92 万亿</div><div class="name">放量 2185 亿</div></div>
+  <div class="idx"><div class="name">涨停 / 跌停</div><div class="val">69 / ~16</div><div class="name">封板率 83% · 炸板率 ~17%</div></div>
+  <div class="idx"><div class="name">主力净流出</div><div class="val down">-368 亿</div><div class="name">电子 -168.98 亿全市场第一</div></div>
+  <div class="idx"><div class="name">情绪周期</div><div class="val up">启动期</div><div class="name">冰点边缘 → 午后 V 反修复</div></div>
+</div>
+
+<div class="card">
+  <h2>🔎 盘面一句话</h2>
+  <p>早盘超 4300 家下跌、创指年内新低，OpenAI 营收传闻引发算力硬件二次杀跌；<b>午后汇金借道宽基 ETF 明确出手</b>（科创50ETF 破 90 亿、创业板ETF 破 70 亿，多只中证 1000/500ETF 半日超昨日全天）+ 券商（中证协：上半年净利 +23.5%）+ 传媒 AI 点火，指数深 V 翻红，3294 家上涨、112 只涨 9%+。<b>+0.05% 假阳线：止跌信号 ≠ 反转，下周一 3850 点得失是第一验证指标。</b></p>
+  <div class="conflict">
+    <div class="t">⚠️ 模块冲突标注</div>
+    Layer 1 市场评分：43 分（偏弱）　|　Layer 3 产业评分：电池 86 / 黄金 82（强）　|　Layer 4 资金：电子撤退 -168.98 亿 vs 电池加速（宁德 +24.59 亿第一）<br>
+    <b>冲突解读</b>：市场整体弱 + 旧主线兑现，但新主线资金加速明显 → 典型"结构性高低切换"，非系统性熊市延续。<br>
+    <b>操作建议</b>：总仓位 20%-30%；保留电池/黄金/农业/券商强势方向；光模块/PCB/MLCC 只减不加；反抽确认后再提升仓位。
+  </div>
+</div>
+
+<div class="card">
+  <h2>🏭 Layer 3 产业趋势 TOP10（独立评分）<span class="tag t-blue">电池 86 登顶</span></h2>
+  <table>
+    <tr><th>#</th><th>产业方向</th><th>评分</th><th>核心逻辑</th><th>代表标的</th></tr>
+    <tr><td class="rank">1</td><td><b>锂电池/固态电池</b></td><td class="score-cell up">86</td><td>10 月排产 214.6GWh 同比 +57%、正/负极/电解液 +48%+；宁德 24.59 亿净流入第一；连板梯队完整；"十五五"电池规划[单源]</td><td>宁德时代、天赐材料、德方纳米</td></tr>
+    <tr><td class="rank">2</td><td>贵金属/黄金</td><td class="score-cell up">82</td><td>金价历史高位+央行购金+避险；西部黄金涨停、板块尾盘 +5.2%</td><td>中金黄金、赤峰黄金、西部黄金</td></tr>
+    <tr><td class="rank">3</td><td>农业/种业</td><td class="score-cell up">80</td><td>WMO：厄尔尼诺 10–12 月海温创纪录、12 月达峰值 → 供给收缩</td><td>苏垦农发、万向德农、金健米业</td></tr>
+    <tr><td class="rank">4</td><td>券商/多元金融</td><td class="score-cell up">78</td><td>中证协：上半年净利 1387 亿 +23.5%；1.92 万亿成交直接受益；估值低位</td><td>东方财富、华鑫股份</td></tr>
+    <tr><td class="rank">5</td><td>传媒/AI 应用</td><td class="score-cell up">76</td><td>《三星堆：未来往事》AI 电影定档 10/23；影视院线 +7.5% 全天最强</td><td>中文在线、芒果超媒</td></tr>
+    <tr><td class="rank">6</td><td>有机硅</td><td class="score-cell up">72</td><td>反内卷+新能源半导体材料；东岳硅材 20cm（净流入 5.39 亿）</td><td>东岳硅材、晨光新材</td></tr>
+    <tr><td class="rank">7</td><td>煤炭/油气</td><td class="score-cell up">70</td><td>中东地缘推油价 → 通胀定价链</td><td>广汇能源、安泰集团</td></tr>
+    <tr><td class="rank">8</td><td>国产存储</td><td class="score-cell">68</td><td>苹果砍单侧面验证存储涨价；佰维 -1.18% 抗跌</td><td>佰维存储、兆易创新</td></tr>
+    <tr><td class="rank">9</td><td>医药/CXO</td><td class="score-cell">66</td><td>诺禾致源 +14.79% 个股性机会；板块静默</td><td>诺禾致源、药明康德</td></tr>
+    <tr><td class="rank">10</td><td>算力硬件（光模块/PCB/MLCC）</td><td class="score-cell down">65</td><td>中期逻辑未破（估值收缩非盈利下修），短期兑现第 2 日：5 日 -11.7%；四季度窗口需三条件验证</td><td>沪电股份、中际旭创（观察）</td></tr>
+  </table>
+</div>
+
+<div class="card">
+  <h2>💰 Layer 4 资金方向（独立评分）<span class="tag t-red">电子撤退第 2 日</span><span class="tag t-green">电池加速</span></h2>
+  <table>
+    <tr><th>主线</th><th>资金流</th><th>阶段</th><th>操作映射</th></tr>
+    <tr><td>电池/电力设备</td><td class="up">宁德 +24.59 亿（全市场第一）、天赐/东岳硅材居前</td><td><span class="tag t-green">加速</span></td><td>建仓窗口</td></tr>
+    <tr><td>贵金属/有色</td><td class="up">紫金矿业居前、西部黄金/中金黄金大涨</td><td><span class="tag t-green">加速</span></td><td>关注→回踩建仓</td></tr>
+    <tr><td>文化传媒</td><td class="up">影视院线 +7.5% 全天最强</td><td><span class="tag t-blue">进入</span></td><td>关注</td></tr>
+    <tr><td>农林牧渔</td><td class="up">金健米业早盘 +10.95 亿、板块 +4.8%</td><td><span class="tag t-blue">进入</span></td><td>关注</td></tr>
+    <tr><td>券商</td><td class="up">华鑫涨停、东方财富 +3.88%</td><td><span class="tag t-blue">进入</span></td><td>关注→建仓</td></tr>
+    <tr><td>电子（MLCC/PCB/CPO/存储）</td><td class="down">-168.98 亿全市场第一；新易盛 -10.39 亿居首</td><td><span class="tag t-red">撤退</span></td><td>卖出/回避</td></tr>
+    <tr><td>半导体/机械设备/军工</td><td class="down">融资 10/8 净卖出半导体 -17.29 亿</td><td><span class="tag t-red">撤退</span></td><td>回避</td></tr>
+  </table>
+</div>
+
+<div class="card">
+  <h2>📊 Layer 5-6 个股评分 TOP30（机会评分-风险扣分）</h2>
+  <table>
+    <tr><th>#</th><th>股票</th><th>代码</th><th>评分</th><th>评级</th><th>操作</th><th>资金加速度</th><th>情绪档</th><th>核心逻辑 / 风险</th></tr>
+    <tr><td class="rank">1</td><td>宁德时代</td><td>300750</td><td class="score-cell sS">91 S</td><td><span class="tag t-amber">观察不建仓</span></td><td>双闸锁定</td><td>加速</td><td>启动</td><td>排产+57%+回购预期+PE16.2 超跌；🔴 20 日内第 4 次 + ≥90 高评分</td></tr>
+    <tr><td class="rank">2</td><td>紫金矿业</td><td>601899</td><td class="score-cell sA">85 A</td><td>持续跟踪(第6次)</td><td>🔒</td><td>加速</td><td>启动</td><td>铜金双主线；20 日内已推荐</td></tr>
+    <tr><td class="rank">3</td><td>天赐材料</td><td>002709</td><td class="score-cell sA">81 A</td><td><span class="tag t-red">优先建仓(短线)</span></td><td>是</td><td>加速</td><td>启动</td><td>电解液第一+排产+48%+；涨停未封死回踩执行</td></tr>
+    <tr><td class="rank">4</td><td>东方财富</td><td>300059</td><td class="score-cell sA">80 A</td><td><span class="tag t-red">优先建仓(中线)</span></td><td>是</td><td>持平→加速</td><td>启动</td><td>券商中报+23.5%+1.92 万亿成交受益+估值低位</td></tr>
+    <tr><td class="rank">5</td><td>赤峰黄金</td><td>600988</td><td class="score-cell sA">80 A</td><td>持续跟踪</td><td>🔒14日</td><td>持平</td><td>启动</td><td>黄金成长股；距上次 14 交易日</td></tr>
+    <tr><td class="rank">6</td><td>德方纳米</td><td>300769</td><td class="score-cell">78 B</td><td>回踩建仓(短线)</td><td>是</td><td>加速</td><td>启动</td><td>磷酸铁锂正极+储能；+7.21%</td></tr>
+    <tr><td class="rank">7</td><td>芒果超媒</td><td>300413</td><td class="score-cell">78 B</td><td>持续跟踪</td><td>🔒9日</td><td>加速</td><td>启动</td><td>20cm 涨停+AI 内容；9/7 后 9 日</td></tr>
+    <tr><td class="rank">8</td><td>近岸蛋白</td><td>688137</td><td class="score-cell">78 B</td><td>持有(半仓)</td><td>持仓</td><td>加速</td><td>启动</td><td>+7.45% 逆势新高，基因合成扩容</td></tr>
+    <tr><td class="rank">9</td><td>石大胜华</td><td>603026</td><td class="score-cell">77 B</td><td>回踩建仓(短线)</td><td>是</td><td>加速</td><td>启动</td><td>电解液溶剂+碳酸锂涨价链</td></tr>
+    <tr><td class="rank">10</td><td>中金黄金</td><td>600489</td><td class="score-cell">77 B</td><td><span class="tag t-red">优先建仓(中线)</span></td><td>是</td><td>进入→加速</td><td>启动</td><td>黄金央企龙头+央行购金</td></tr>
+    <tr><td class="rank">11</td><td>科恒股份</td><td>300340</td><td class="score-cell">76 B</td><td>观察(次日勿追)</td><td>—</td><td>加速</td><td>启动</td><td>锂电设备+正极 +15.89% 20cm</td></tr>
+    <tr><td class="rank">12</td><td>澜起科技</td><td>688008</td><td class="score-cell">76 B</td><td><span class="tag t-amber">T+8 减仓至半仓</span></td><td>到期</td><td>减速</td><td>启动</td><td>抗跌但 T+8 到期无新催化</td></tr>
+    <tr><td class="rank">13</td><td>西部黄金</td><td>601069</td><td class="score-cell">75 B</td><td>回踩建仓(短线)</td><td>是</td><td>加速</td><td>启动</td><td>黄金小盘弹性；涨停次日回踩 5 日线</td></tr>
+    <tr><td class="rank">14</td><td>诺诚健华</td><td>688428</td><td class="score-cell">75 B</td><td>持有</td><td>持仓</td><td>持平</td><td>启动</td><td>BTK+医保放量 +4.03%</td></tr>
+    <tr><td class="rank">15</td><td>海南橡胶</td><td>601118</td><td class="score-cell">75 B</td><td>持续跟踪</td><td>🔒9日</td><td>加速</td><td>启动</td><td>厄尔尼诺+9.98% 涨停</td></tr>
+    <tr><td class="rank">16</td><td>北方铜业</td><td>000737</td><td class="score-cell">75 B</td><td>持续跟踪</td><td>🔒10日</td><td>持平</td><td>启动</td><td>铜主线</td></tr>
+    <tr><td class="rank">17</td><td>苏垦农发</td><td>601952</td><td class="score-cell">74 B</td><td>持续跟踪</td><td>🔒9日</td><td>加速</td><td>启动</td><td>粮食安全 +4.92%</td></tr>
+    <tr><td class="rank">18</td><td>中粮糖业</td><td>600737</td><td class="score-cell">74 B</td><td>持续跟踪</td><td>🔒9日</td><td>加速</td><td>启动</td><td>糖价+农业通胀 +3.24%</td></tr>
+    <tr><td class="rank">19</td><td>佰维存储</td><td>688525</td><td class="score-cell">74 B</td><td>持有(T+8=10/21)</td><td>持仓</td><td>持平</td><td>启动</td><td>存储涨价，持仓抗跌</td></tr>
+    <tr><td class="rank">20</td><td>药明康德</td><td>603259</td><td class="score-cell">74 B</td><td>观察</td><td>—</td><td>减速</td><td>启动</td><td>CXO 龙头等待企稳 -2.59%</td></tr>
+    <tr><td class="rank">21</td><td>万向德农</td><td>600371</td><td class="score-cell">73 B</td><td>持续跟踪(第3次)</td><td>🔒</td><td>加速</td><td>启动</td><td>种业+厄尔尼诺涨停</td></tr>
+    <tr><td class="rank">22</td><td>广汇能源</td><td>600256</td><td class="score-cell">73 B</td><td><span class="tag t-blue">回踩建仓(中线)</span></td><td>是</td><td>进入→加速</td><td>启动</td><td>煤+油气+LNG+高股息 +5.88%</td></tr>
+    <tr><td class="rank">23</td><td>中材科技</td><td>002080</td><td class="score-cell">73 B</td><td>持有观察</td><td>持仓</td><td>持平</td><td>启动</td><td>风电+玻纤+隔膜抗跌</td></tr>
+    <tr><td class="rank">24</td><td>云南锗业</td><td>002428</td><td class="score-cell">73 B</td><td>持有观察</td><td>持仓</td><td>持平</td><td>启动</td><td>锗+军工 +2.51%</td></tr>
+    <tr><td class="rank">25</td><td>东岳硅材</td><td>300821</td><td class="score-cell">72 B</td><td>观察(次日勿追)</td><td>—</td><td>加速</td><td>启动</td><td>20cm 涨停+净流入 5.39 亿</td></tr>
+    <tr><td class="rank">26</td><td>中文在线</td><td>300364</td><td class="score-cell">72 B</td><td><span class="tag t-blue">回踩建仓(短线)</span></td><td>是</td><td>加速</td><td>启动</td><td>AI 影视+三星堆 10/23；20cm 次日回踩</td></tr>
+    <tr><td class="rank">27</td><td>华鑫股份</td><td>600621</td><td class="score-cell">72 B</td><td>观察(次日勿追)</td><td>—</td><td>加速</td><td>启动</td><td>券商弹性涨停</td></tr>
+    <tr><td class="rank">28</td><td>金健米业</td><td>600127</td><td class="score-cell">72 B</td><td>持续跟踪</td><td>🔒18日</td><td>加速</td><td>启动</td><td>粮油涨停+净流入 10.95 亿；距 8/25 为 18 日</td></tr>
+    <tr><td class="rank">29</td><td>东微半导</td><td>688261</td><td class="score-cell">71 B</td><td><span class="tag t-amber">T+8 减仓至半仓</span></td><td>到期</td><td>减速</td><td>启动</td><td>功率半导体退潮</td></tr>
+    <tr><td class="rank">30</td><td>达利凯普</td><td>301566</td><td class="score-cell">70 B</td><td><span class="tag t-amber">T+8 减仓至半仓</span></td><td>到期</td><td>减速</td><td>启动</td><td>MLCC 退潮</td></tr>
+  </table>
+  <p style="font-size:12px;color:var(--muted)">表外 T+8 补充：圣邦股份 300661（70/B）T+8 到期→减仓至半仓；沪电股份 002463（68/C）T+8+盘中触 -6.5% 止损线→减仓至半仓；诺禾致源 688315（T+8 到期但 +14.79% 资金加速=新催化）→续持，新 T+8=10/21。</p>
+</div>
+
+<div class="card">
+  <h2>🗂 Layer 8 组合管理（鑫未来 + 鑫准出击）</h2>
+  <div class="combo2">
+    <div class="combo">
+      <h4>🏦 鑫未来核心组合（中线）· 上限 18%</h4>
+      <table>
+        <tr><th>股票</th><th>评分</th><th>操作</th><th>首次</th><th>T+8</th><th>逻辑</th></tr>
+        <tr><td>东方财富</td><td class="sA">80 A</td><td class="up"><b>优先建仓 6-8%</b></td><td>是</td><td>10/21</td><td>券商中报+成交受益</td></tr>
+        <tr><td>中金黄金</td><td>77 B</td><td class="up"><b>优先建仓 5-6%</b></td><td>是</td><td>10/21</td><td>金价高位+央企+购金</td></tr>
+        <tr><td>广汇能源</td><td>73 B</td><td class="up"><b>回踩建仓 4-5%</b></td><td>是</td><td>10/21</td><td>煤油气+高股息</td></tr>
+        <tr><td>佰维存储</td><td>74 B</td><td>持有</td><td>—</td><td>10/21</td><td>存储涨价</td></tr>
+        <tr><td>中材科技</td><td>73 B</td><td>持有</td><td>—</td><td>10/21</td><td>多主业抗跌</td></tr>
+        <tr><td>云南锗业</td><td>73 B</td><td>持有</td><td>—</td><td>10/21</td><td>锗+军工</td></tr>
+        <tr><td>诺诚健华</td><td>75 B</td><td>持有</td><td>—</td><td>10/21</td><td>创新药 BTK</td></tr>
+        <tr><td>近岸蛋白</td><td>78 B</td><td>持有(半仓)</td><td>—</td><td>10/21</td><td>逆势新高</td></tr>
+        <tr><td>三环集团</td><td class="down">60 C</td><td class="down"><b>减仓至半仓</b></td><td>—</td><td>—</td><td>MLCC 退潮 -3.86%</td></tr>
+        <tr><td>嘉立创</td><td class="down">66 C</td><td class="down"><b>减仓至半仓</b></td><td>—</td><td>—</td><td>PCB 退潮 -4.26%</td></tr>
+        <tr><td>麦格米特</td><td class="down">68 C</td><td class="down"><b>减仓至半仓</b></td><td>—</td><td>—</td><td>-4.16% 无新催化</td></tr>
+        <tr><td>国瓷材料</td><td class="down">52 C</td><td class="down"><b>残余无条件减仓</b></td><td>—</td><td>—</td><td>-6.91% 技术破位</td></tr>
+      </table>
+    </div>
+    <div class="combo">
+      <h4>⚡ 鑫准出击机会池（短线 T+8）· 上限 10%</h4>
+      <table>
+        <tr><th>股票</th><th>评分</th><th>操作</th><th>首次</th><th>T+8</th><th>逻辑</th></tr>
+        <tr><td>天赐材料</td><td class="sA">81 A</td><td class="up"><b>优先建仓 3-4%</b></td><td>是</td><td>10/21</td><td>电解液+排产+57%</td></tr>
+        <tr><td>德方纳米</td><td>78 B</td><td class="up"><b>回踩建仓 2%</b></td><td>是</td><td>10/21</td><td>铁锂正极+储能</td></tr>
+        <tr><td>石大胜华</td><td>77 B</td><td class="up"><b>回踩建仓 1-2%</b></td><td>是</td><td>10/21</td><td>溶剂+涨价链</td></tr>
+        <tr><td>西部黄金</td><td>75 B</td><td class="up"><b>回踩建仓 1-2%</b></td><td>是</td><td>10/21</td><td>黄金弹性</td></tr>
+        <tr><td>中文在线</td><td>72 B</td><td class="up"><b>回踩建仓 1%</b></td><td>是</td><td>10/21</td><td>AI 影视+10/23 定档</td></tr>
+        <tr><td>澜起科技</td><td>76 B</td><td class="down"><b>T+8 减仓至半仓</b></td><td>—</td><td>已到期</td><td>无新催化</td></tr>
+        <tr><td>圣邦股份</td><td>70 B</td><td class="down"><b>T+8 减仓至半仓</b></td><td>—</td><td>已到期</td><td>无新催化</td></tr>
+        <tr><td>达利凯普</td><td>70 B</td><td class="down"><b>T+8 减仓至半仓</b></td><td>—</td><td>已到期</td><td>MLCC 退潮</td></tr>
+        <tr><td>东微半导</td><td>71 B</td><td class="down"><b>T+8 减仓至半仓</b></td><td>—</td><td>已到期</td><td>功率半导体退潮</td></tr>
+        <tr><td>沪电股份</td><td class="down">68 C</td><td class="down"><b>T+8 减仓至半仓</b></td><td>—</td><td>已到期</td><td>盘中触 -6.5% 止损线</td></tr>
+        <tr><td>诺禾致源</td><td>76 B</td><td class="up"><b>续持(新 T+8=10/21)</b></td><td>—</td><td>10/21</td><td>+14.79% 资金加速=新催化</td></tr>
+      </table>
+      <p style="font-size:12px;color:var(--muted);margin-top:6px">🔒 持续跟踪池（20 日内锁定，不占仓位）：宁德时代(91/S 双闸)、紫金矿业(85)、赤峰黄金(80)、芒果超媒(78)、海南橡胶(75)、北方铜业(75)、苏垦农发(74)、中粮糖业(74)、万向德农(73)、金健米业(72)。纪律：禁止追涨停/20cm 次日高开，全部回踩 5 日线企稳后分批执行。</p>
+    </div>
+  </div>
+</div>
+
+<div class="card">
+  <h2>🛡 Layer 9 风险委员会扫描</h2>
+  <div class="risk-amber"><b>🟡 黄灯 1｜反抽确认风险（最高优先）</b>：创指/科创50 年内新低后单日 V 反，+0.05% 假阳线不构成反转；下一交易日能否放量站上 3850 点（20 日线下第一压力）是核心指标；历史上汇金托底需连续 3-5 日净流入才对应有效反弹。</div>
+  <div class="risk-amber"><b>🟡 黄灯 2｜电子链兑现扩散</b>：-168.98 亿连续第 2 日、5 日 -11.7%；OpenAI 营收传闻未证伪；若科技不能止跌，创指 2932 将再度受考验。</div>
+  <div class="risk-amber"><b>🟡 黄灯 3｜利率与估值压制</b>：美债 10Y 5%+ + 年内或再加息；苹果砍单 iPhone 18 Pro 零部件 15-20%（存储成本上涨）利空果链。</div>
+  <div class="risk-amber"><b>🟡 黄灯 4｜地缘+通胀</b>：中东局势推油价 → 输入性通胀压制风险偏好（利好油气/黄金/航运对冲）。</div>
+  <div class="risk-green"><b>🟢 绿灯 1｜政策底信号明确</b>：汇金宽基 ETF 托底（科创50ETF 90 亿+/创业板ETF 70 亿+）。🟢 <b>绿灯 2｜情绪结构健康</b>：涨停 69/封板率 83%/炸板率 ~17%，未过热未冰点。🟢 <b>绿灯 3｜基本面托底</b>：9 月 PMI 重回扩张、券商净利 +23.5%、电池排产 +57%。</div>
+  <div class="risk-red"><b>🔴 最大风险提示｜假阳线陷阱</b>：今日 +0.05% 红盘掩盖早盘 -1.5%/-4% 深跌实质。若下周一汇金托底不能延续（ETF 缩量），3754 一线将二次探底，短线 -6% 止损纪律必须无条件执行。<b>止跌 ≠ 反转，下周一 3850 点得失是第一验证指标。</b></div>
+</div>
+
+<div class="card">
+  <h2>✅ V5.2 合规自检</h2>
+  <div class="check">1. 重复推荐闸：☑ 有 10 只（宁德第4次/紫金第6次/赤峰14日/芒果9日/海南橡胶9日/北方铜业10日/苏垦9日/中粮糖9日/万向德农第3次/金健米业18日）
+   → 全部降级「持续跟踪」，不进组合、不占仓位
+   （修正：11:30 报告将金健米业/赤峰黄金判为"20日外"，按严格口径复核分别为 18/14 个交易日，仍在窗口内，从严执行）
+
+2. 高评分闸：☑ 有 1 只（宁德时代 91/S）→ 已移入「观察（不建仓）」，与重复闸双闸叠加
+
+3. 温度闸：今日市场评分 43 分 → ☑ ≤65 允许建仓（叠加节后两日主力净流出 750 亿+
+   假阳线待确认，主动执行分批+次日确认纪律）
+
+4. 持有期：☑ 已检查——今日 T+8 到期 6 只：澜起/圣邦/达利凯普/东微半导/沪电 → 减仓至半仓；
+   诺禾致源 +14.79% 资金加速=新催化 → 续持（新 T+8=10/21）；今日新建仓 T+8 统一 = 10/21
+
+5. 止损：☑ 有——沪电股份盘中触 -6.5%（T+8 同日叠加）→ 减仓至半仓；
+   国瓷材料技术破位 → 残余仓位无条件减仓
+
+6. 操作类型：☑ 无「清仓」字样（0 条）——统一表述「减仓至半仓（≤15%）」</div>
+</div>
+
+<div class="card">
+  <h2>📌 今日收盘核心结论</h2>
+  <ul class="concl">
+    <li><b>① 指数深 V 假阳线</b>：沪指 3813.79（+0.05%，最低 3754.14）、创指 3043.33（+0.22%，盘中 2932 年内新低）；成交 1.92 万亿放量 2185 亿——止跌信号出现，反转未确认</li>
+    <li><b>② 市场评分 43</b>（较 9/23 下调 7 分）：震荡偏弱下沿；仓位 20%-30%；温度闸允许建仓但执行分批+次日确认纪律</li>
+    <li><b>③ 汇金明确出手</b>：宽基 ETF 全面放量翻倍托底双创，9 月以来首个明确政策底信号</li>
+    <li><b>④ 资金大换仓</b>：电子 -168.98 亿（连续第 2 日）vs 宁德 +24.59 亿（第一）——"高估值科技→政策确定性+通胀受益"赛道切换</li>
+    <li><b>⑤ 新主线梯队</b>：电池（排产 +57%，产业分 86）＞ 黄金（82）＞ 农业（厄尔尼诺创纪录，80）＞ 券商（中报 +23.5%，78）＞ 传媒 AI（76）</li>
+    <li><b>⑥ 建仓清单</b>：中线 3 只（东方财富 80/中金黄金 77/广汇能源 73）+ 短线 5 只（天赐材料 81/德方纳米 78/石大胜华 77/西部黄金 75/中文在线 72），全部为 20 日外首次推荐</li>
+    <li><b>⑦ T+8 到期 6 只</b>：5 只减仓至半仓；诺禾致源（+14.79% 新催化）续持；今日新建仓 T+8 = 10/21</li>
+    <li><b>⑧ 下周关键观察</b>：3850 点得失 + 汇金 ETF 是否连续净流入 + 电子链能否止跌——三者决定反抽能否升级为反弹</li>
+  </ul>
+</div>
+
+<div class="footer">⚡ V5.2 系统 | Smart Money Agent | 2026-10-09 15:30<br>数据源：腾讯行情直连 API + 新华财经 + 财联社 + 东方财富 + 新浪财经 + 21财经（多源交叉，置信度中等偏高）| 红涨绿跌 · 浅色规范</div>
+
+</div></body>
+</html>

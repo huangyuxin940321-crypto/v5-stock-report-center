@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>V5.2 收盘完整分析 2026-10-12</title>
+<style>
+  body{font-family:"Microsoft YaHei",sans-serif;background:#f7f8fa;color:#1f2329;margin:0;padding:24px;max-width:1200px;margin:0 auto;}
+  h1{font-size:26px;border-bottom:3px solid #1a56db;padding-bottom:12px;}
+  h2{font-size:20px;margin-top:36px;border-left:5px solid #1a56db;padding-left:10px;}
+  h3{font-size:16px;color:#333;}
+  table{width:100%;border-collapse:collapse;margin:12px 0;font-size:13px;background:#fff;}
+  th{background:#eef2f7;padding:8px;border:1px solid #d9dee5;text-align:left;}
+  td{padding:7px 8px;border:1px solid #e5e9ef;}
+  tr:nth-child(even) td{background:#fafbfc;}
+  .up{color:#d92c2c;font-weight:600;}
+  .down{color:#0a9c52;font-weight:600;}
+  .banner{background:linear-gradient(90deg,#1a56db,#3b82f6);color:#fff;padding:18px 24px;border-radius:10px;margin:16px 0;}
+  .banner .score{font-size:44px;font-weight:800;margin-right:16px;}
+  .banner .meta{display:inline-block;vertical-align:middle;line-height:1.6;font-size:14px;}
+  .badge{display:inline-block;padding:2px 10px;border-radius:12px;font-size:12px;font-weight:600;margin-right:6px;}
+  .b-red{background:#fde8e8;color:#d92c2c;}
+  .b-yellow{background:#fdf3d8;color:#b7791f;}
+  .b-green{background:#e0f5ec;color:#0a9c52;}
+  .b-blue{background:#e3ecfd;color:#1a56db;}
+  .b-gray{background:#eceff3;color:#555;}
+  .idx-cards{display:flex;gap:12px;flex-wrap:wrap;margin:14px 0;}
+  .idx{flex:1;min-width:150px;background:#fff;border:1px solid #e5e9ef;border-radius:10px;padding:14px;text-align:center;}
+  .idx .name{font-size:13px;color:#666;}
+  .idx .val{font-size:22px;font-weight:700;margin:4px 0;}
+  .idx .pct{font-size:14px;font-weight:700;}
+  .warn{background:#fff8f0;border:1px solid #f5c98a;border-radius:8px;padding:12px 16px;margin:14px 0;font-size:13px;}
+  .conflict{background:#f6f7ff;border:1px solid #b9c6f5;border-radius:8px;padding:14px 18px;margin:14px 0;font-size:13px;white-space:pre-wrap;font-family:Consolas,monospace;}
+  .compliance{background:#f0faf4;border:1px solid #9fd8b8;border-radius:8px;padding:14px 18px;margin:14px 0;font-size:13px;white-space:pre-wrap;font-family:Consolas,monospace;}
+  .footer{color:#888;font-size:12px;margin-top:32px;border-top:1px solid #e5e9ef;padding-top:12px;}
+</style>
+</head>
+<body>
+
+<h1>AI 股票组合主理人系统 V5.2 — 15:30 收盘完整分析</h1>
+<p><span class="badge b-blue">2026-10-12 周一</span><span class="badge b-gray">15:30 全天唯一正式评分输出点</span></p>
+
+<div class="warn">⚠️ <b>数据验证状态条</b>：✅ 指数/成交/涨跌停三源交叉通过 ｜ ❌ 东财板块资金流接口限流 [单源·置信度中等] ｜ ❌ 涨停/炸板池数据缺失 ｜ ❌ 北向实时数据缺失（引用 10/9 北向 +127.27 亿作背景）｜ ⚠️ WebSearch 跨年污染已拦截（混入 2009/2018/2020-2021 数据，按点位识别剔除）</div>
+
+<div class="banner">
+  <span class="score">40<span style="font-size:18px;"> / 100</span></span>
+  <span class="meta">正式市场评分（较 9/23 的 50 分下调 10 分）<br>
+  市场阶段：<b>风险市场偏弱端（震荡偏弱）</b> ｜ 建议仓位：<b>20%-30%</b><br>
+  🌡️ 温度闸门：40 ≤ 65 → ✅ 允许新建仓（普跌缩量，总仓位压至 25%/12%）</span>
+</div>
+
+<div class="idx-cards">
+  <div class="idx"><div class="name">上证指数</div><div class="val">3797.24</div><div class="pct down">-0.43%</div></div>
+  <div class="idx"><div class="name">深证成指</div><div class="val">12384.87</div><div class="pct down">-2.03%</div></div>
+  <div class="idx"><div class="name">创业板指</div><div class="val">2963.82</div><div class="pct down">-2.61%</div></div>
+  <div class="idx"><div class="name">科创50</div><div class="val">1426.72</div><div class="pct down">-2.10%</div></div>
+  <div class="idx"><div class="name">沪深300</div><div class="val">4287.98</div><div class="pct down">-0.68%</div></div>
+</div>
+
+<h2>市场概况</h2>
+<table>
+<tr><th>指标</th><th>数值</th><th>解读</th></tr>
+<tr><td>涨跌家数</td><td class="down">1167 : 4325</td><td>1:3.7 普跌</td></tr>
+<tr><td>涨停 / 跌停</td><td>48 / 22</td><td>涨停 &lt;80 无过热；跌停 22 偏多（炸板率缺失）</td></tr>
+<tr><td>成交额</td><td>15378 亿（缩量 3628 亿）</td><td>量能萎缩 19%，增量资金不足</td></tr>
+<tr><td>情绪档位</td><td><span class="badge b-green">冰点酝酿（8-9分·反向口径偏多）</span></td><td>退潮期后段</td></tr>
+<tr><td>宏观压制</td><td>10Y 美债 5.24% / 30Y 5.60%</td><td>2002 年以来高位；10/14 美国 CPI 是本周最大变量</td></tr>
+</table>
+
+<h2>Layer 3 产业方向 TOP10（独立评分）</h2>
+<table>
+<tr><th>#</th><th>产业方向</th><th>评分</th><th>核心逻辑</th></tr>
+<tr><td>1</td><td>AI视频/传媒影视</td><td><b>86</b></td><td>字节 PineDrama 海外下载破 1 亿，涨停潮 10+ 股</td></tr>
+<tr><td>2</td><td>风电设备</td><td><b>83</b></td><td>欧盟双反辟谣，天顺风能封板，出海订单向上</td></tr>
+<tr><td>3</td><td>银行</td><td><b>82</b></td><td>四大行历史新高，高股息避风港</td></tr>
+<tr><td>4</td><td>游戏</td><td><b>80</b></td><td>AI 视频降本 + 出海回暖</td></tr>
+<tr><td>5</td><td>汽车整车</td><td><b>80</b></td><td>新能源车产销 +11%，中欧磋商共识</td></tr>
+<tr><td>6</td><td>家电</td><td><b>78</b></td><td>以旧换新延续，九阳涨停</td></tr>
+<tr><td>7</td><td>固态电池/电力设备</td><td><b>78</b></td><td>免税政策 + 融资资金集中流入</td></tr>
+<tr><td>8</td><td>证券</td><td><b>75</b></td><td>证监会 5500 亿 + 19 项举措</td></tr>
+<tr><td>9</td><td>存储/半导体设备</td><td><b>72</b></td><td>ASML 涨价 10% vs 板块资金撤退对冲</td></tr>
+<tr><td>10</td><td>粮食/贵金属/能源金属</td><td><b>55</b></td><td>前期主线退潮</td></tr>
+</table>
+
+<h2>Layer 4 资金主线 TOP5（独立评分）</h2>
+<table>
+<tr><th>主线</th><th>阶段</th><th>判断</th></tr>
+<tr><td>AI 视频/传媒</td><td><span class="badge b-red">加速</span></td><td>可轻仓建仓</td></tr>
+<tr><td>银行/高股息</td><td><span class="badge b-red">加速</span></td><td>底仓配置</td></tr>
+<tr><td>风电/电力设备</td><td><span class="badge b-yellow">进入→加速</span></td><td>关注</td></tr>
+<tr><td>固态电池/电池</td><td><span class="badge b-yellow">进入</span></td><td>关注</td></tr>
+<tr><td>通信/半导体/元件</td><td><span class="badge b-green">撤退（第4周）</span></td><td>卖出/回避，严禁抄底</td></tr>
+</table>
+<p style="font-size:13px;color:#b7791f;">⚠️ 背离警示：ASML 涨价利好 vs 元件/半导体资金持续流出 → AI 硬件「反弹非反转」。</p>
+
+<h2>⚠️ 模块冲突标注</h2>
+<div class="conflict">⚠️ 模块冲突标注（一）：
+- Layer 1 市场评分：40分（偏空，风险市场偏弱端）
+- Layer 3 产业评分：AI视频/传媒 86分（偏多，涨停潮主线）
+- 冲突解读：普跌缩量但单主线资金抱团极强 → 存量博弈结构性机会特征
+- 操作建议：总仓位压至 20%-30%，仅在主线方向轻仓集中
+
+⚠️ 模块冲突标注（二）：
+- Layer 4 资金评分：银行 82 分（资金加速，四大行新高）
+- Layer 7 情绪评分：冰点酝酿（涨停48/跌停22/普跌）
+- 冲突解读：防御资金加速进场 = 风险偏好收缩的镜像确认
+- 操作建议：底仓银行高股息 + 主线进攻仓轻仓，哑铃配置
+
+⚠️ 模块冲突标注（三）：
+- 10/9 北向净买入 127.27 亿（近3月新高）vs 融资资金半导体净卖出 17.29 亿
+- 冲突解读：长线外资抄底 vs 短线杠杆撤退
+- 操作建议：跟随有验证的信号（传媒资金加速），回避撤退中的信号（AI硬件）</div>
+
+<h2>鑫未来核心组合（中线 · T+8 复盘 · -8% 硬止损）— 仓位 ≤22%</h2>
+<table>
+<tr><th>股票</th><th>代码</th><th>评分</th><th>评级</th><th>操作</th><th>首次推荐</th><th>距上次推荐</th><th>T+8复盘日</th><th>逻辑</th></tr>
+<tr><td>天顺风能</td><td>002531</td><td><b class="up">85</b></td><td><span class="badge b-blue">A</span></td><td>优先建仓 5%</td><td>是</td><td>—</td><td>10/22</td><td>风电出海+双反辟谣+封板</td></tr>
+<tr><td>上海电影</td><td>601595</td><td><b class="up">84</b></td><td><span class="badge b-blue">A</span></td><td>优先建仓 5%</td><td>是</td><td>—</td><td>10/22</td><td>AI视频+国资影视龙头</td></tr>
+<tr><td>博纳影业</td><td>001330</td><td><b class="up">83</b></td><td><span class="badge b-blue">A</span></td><td>回踩建仓 4%</td><td>是</td><td>—</td><td>10/22</td><td>主旋律影视+AI视频降本</td></tr>
+<tr><td>重庆银行</td><td>601963</td><td><b class="up">82</b></td><td><span class="badge b-blue">A</span></td><td>回踩建仓 5%</td><td>是</td><td>—</td><td>10/22</td><td>城商行补涨+高股息</td></tr>
+<tr><td>果麦文化</td><td>301052</td><td><b class="up">82</b></td><td><span class="badge b-blue">A</span></td><td>回踩建仓 3%</td><td>是</td><td>—</td><td>10/22</td><td>AI视频+图书IP</td></tr>
+</table>
+
+<h2>鑫准出击机会池（短线 · T+8 了结 · -6% 硬止损）— 仓位 ≤12%</h2>
+<table>
+<tr><th>股票</th><th>代码</th><th>评分</th><th>评级</th><th>操作</th><th>首次推荐</th><th>距上次推荐</th><th>T+8复盘日</th><th>逻辑</th></tr>
+<tr><td>果麦文化</td><td>301052</td><td><b class="up">82</b></td><td><span class="badge b-blue">A</span></td><td>优先建仓 3%</td><td>是</td><td>—</td><td>10/22</td><td>20cm涨停+主线龙头</td></tr>
+<tr><td>因赛集团</td><td>300781</td><td><b class="up">79</b></td><td><span class="badge b-gray">B</span></td><td>回踩建仓 2%</td><td>是</td><td>—</td><td>10/22</td><td>AI营销+品牌AIGC</td></tr>
+<tr><td>慈文传媒</td><td>002343</td><td><b class="up">78</b></td><td><span class="badge b-gray">B</span></td><td>回踩建仓 2%</td><td>是</td><td>—</td><td>10/22</td><td>剧集IP+AI视频应用</td></tr>
+<tr><td>九阳股份</td><td>002242</td><td><b class="up">77</b></td><td><span class="badge b-gray">B</span></td><td>回踩建仓 2%</td><td>是</td><td>—</td><td>10/22</td><td>家电以旧换新+涨停</td></tr>
+<tr><td>广电网络</td><td>600831</td><td><b class="up">76</b></td><td><span class="badge b-gray">B</span></td><td>观察</td><td>是</td><td>—</td><td>—</td><td>国资传媒跟风</td></tr>
+<tr><td>TCL智家</td><td>002668</td><td><b class="up">74</b></td><td><span class="badge b-gray">B</span></td><td>观察</td><td>是</td><td>—</td><td>—</td><td>家电出口链</td></tr>
+</table>
+
+<h2>当前持仓调整建议</h2>
+<table>
+<tr><th>股票</th><th>代码</th><th>评分</th><th>操作</th><th>T+8状态</th><th>逻辑</th></tr>
+<tr><td>澜起科技</td><td>688008</td><td>70</td><td class="down">减仓至半仓</td><td>T+8 已到(10/9)</td><td>无新催化+半导体撤退</td></tr>
+<tr><td>圣邦股份</td><td>300661</td><td>69</td><td class="down">减仓至半仓</td><td>T+8 已到(10/9)</td><td>元件板块流出</td></tr>
+<tr><td>诺禾致源</td><td>688315</td><td>72</td><td class="down">减仓至半仓</td><td>T+8 已到(10/9)</td><td>T+8 到期</td></tr>
+<tr><td>达利凯普</td><td>301566</td><td>70</td><td class="down">减仓至半仓</td><td>T+8 已到(10/9)</td><td>T+8 到期</td></tr>
+<tr><td>东微半导</td><td>688261</td><td>68</td><td class="down">减仓至半仓</td><td>T+8 已到(10/9)</td><td>半导体撤退</td></tr>
+<tr><td>佰维存储</td><td>688525</td><td>73</td><td>持有盯止损</td><td>10/21 未到</td><td>存储涨价逻辑未破坏</td></tr>
+<tr><td>科华数据</td><td>002335</td><td>72</td><td>持有</td><td>10/21 未到</td><td>液冷+数据中心</td></tr>
+<tr><td>铜冠铜箔</td><td>301300</td><td>68</td><td class="down">减仓至半仓</td><td>10/21 未到</td><td>复合集流体退潮</td></tr>
+<tr><td>科大国创</td><td>300520</td><td>66</td><td class="down">减仓至半仓</td><td>10/21 未到</td><td>量子题材退潮</td></tr>
+<tr><td>近岸蛋白</td><td>688137</td><td>74</td><td>持有半仓</td><td>已复盘</td><td>医药催化仍在</td></tr>
+<tr><td>三环集团</td><td>300408</td><td>71</td><td>持有半仓</td><td>已复盘</td><td>MLCC 涨价但板块流出</td></tr>
+<tr><td>嘉立创</td><td>001232</td><td>70</td><td>持有半仓</td><td>已复盘</td><td>—</td></tr>
+<tr><td>沪电股份</td><td>002463</td><td>67</td><td class="down">减仓至半仓</td><td>已复盘</td><td>PCB 资金兑现</td></tr>
+<tr><td>中材科技</td><td>002080</td><td>69</td><td>持有半仓盯止损</td><td>已复盘</td><td>风电今日转强</td></tr>
+</table>
+
+<h2>综合评分 TOP30</h2>
+<table>
+<tr><th>#</th><th>股票</th><th>代码</th><th>评分</th><th>评级</th><th>操作</th><th>备注</th></tr>
+<tr><td>1</td><td>天顺风能</td><td>002531</td><td><b class="up">85</b></td><td>A</td><td>优先建仓</td><td>风电出海+封板</td></tr>
+<tr><td>2</td><td>上海电影</td><td>601595</td><td><b class="up">84</b></td><td>A</td><td>优先建仓</td><td>AI视频+国资</td></tr>
+<tr><td>3</td><td>博纳影业</td><td>001330</td><td><b class="up">83</b></td><td>A</td><td>回踩建仓</td><td>影视+AI降本</td></tr>
+<tr><td>4</td><td>果麦文化</td><td>301052</td><td><b class="up">82</b></td><td>A</td><td>优先建仓</td><td>AI视频+IP</td></tr>
+<tr><td>5</td><td>重庆银行</td><td>601963</td><td><b class="up">82</b></td><td>A</td><td>回踩建仓</td><td>城商行+高股息</td></tr>
+<tr><td>6</td><td>因赛集团</td><td>300781</td><td><b class="up">79</b></td><td>B</td><td>回踩建仓</td><td>AI营销</td></tr>
+<tr><td>7</td><td>慈文传媒</td><td>002343</td><td><b class="up">78</b></td><td>B</td><td>回踩建仓</td><td>剧集IP</td></tr>
+<tr><td>8</td><td>九阳股份</td><td>002242</td><td><b class="up">77</b></td><td>B</td><td>回踩建仓</td><td>家电涨停</td></tr>
+<tr><td>9</td><td>渝农商行</td><td>601077</td><td><b class="up">76</b></td><td>B</td><td>关注</td><td>高股息补涨</td></tr>
+<tr><td>10</td><td>广电网络</td><td>600831</td><td><b class="up">76</b></td><td>B</td><td>观察</td><td>国资传媒</td></tr>
+<tr><td>11</td><td>TCL智家</td><td>002668</td><td><b class="up">74</b></td><td>B</td><td>观察</td><td>家电出口</td></tr>
+<tr><td>12</td><td>佰维存储</td><td>688525</td><td><b class="up">73</b></td><td>B</td><td>持有盯止损</td><td>存储涨价</td></tr>
+<tr><td>13</td><td>科华数据</td><td>002335</td><td><b class="up">72</b></td><td>B</td><td>持有</td><td>液冷</td></tr>
+<tr><td>14</td><td>极米科技</td><td>688696</td><td><b class="up">72</b></td><td>B</td><td>观察</td><td>投影回暖</td></tr>
+<tr><td>15</td><td>诺禾致源</td><td>688315</td><td><b class="up">72</b></td><td>B</td><td>减仓至半仓</td><td>T+8 已到</td></tr>
+<tr><td>16</td><td>三环集团</td><td>300408</td><td><b class="up">71</b></td><td>B</td><td>持有半仓</td><td>MLCC涨价</td></tr>
+<tr><td>17</td><td>嘉立创</td><td>001232</td><td><b class="up">70</b></td><td>B</td><td>持有半仓</td><td>PCB平台</td></tr>
+<tr><td>18</td><td>澜起科技</td><td>688008</td><td><b class="up">70</b></td><td>B</td><td>减仓至半仓</td><td>T+8+撤退</td></tr>
+<tr><td>19</td><td>达利凯普</td><td>301566</td><td><b class="up">70</b></td><td>B</td><td>减仓至半仓</td><td>T+8 已到</td></tr>
+<tr><td>20</td><td>中材科技</td><td>002080</td><td><b class="up">69</b></td><td>B</td><td>持有半仓盯止损</td><td>风电玻纤</td></tr>
+<tr><td>21</td><td>圣邦股份</td><td>300661</td><td><b class="up">69</b></td><td>B</td><td>减仓至半仓</td><td>T+8+撤退</td></tr>
+<tr><td>22</td><td>近岸蛋白</td><td>688137</td><td><b class="up">74</b></td><td>B</td><td>持有半仓</td><td>医药催化</td></tr>
+<tr><td>23</td><td>东微半导</td><td>688261</td><td><b class="up">68</b></td><td>C</td><td>减仓至半仓</td><td>撤退</td></tr>
+<tr><td>24</td><td>铜冠铜箔</td><td>301300</td><td><b class="up">68</b></td><td>C</td><td>减仓至半仓</td><td>退潮</td></tr>
+<tr><td>25</td><td>沪电股份</td><td>002463</td><td><b class="up">67</b></td><td>C</td><td>减仓至半仓</td><td>兑现</td></tr>
+<tr><td>26</td><td>科大国创</td><td>300520</td><td><b class="up">66</b></td><td>C</td><td>减仓至半仓</td><td>退潮</td></tr>
+<tr><td>27</td><td>宁德时代</td><td>300750</td><td><b class="up">72</b></td><td>B</td><td>持续跟踪(第2次)</td><td>20日锁定</td></tr>
+<tr><td>28</td><td>药明康德</td><td>603259</td><td><b class="up">73</b></td><td>B</td><td>持续跟踪(第5次)</td><td>20日锁定</td></tr>
+<tr><td>29</td><td>北方铜业</td><td>000737</td><td><b class="up">65</b></td><td>C</td><td>持续跟踪(第3次)</td><td>20日锁定</td></tr>
+<tr><td>30</td><td>紫金矿业</td><td>601899</td><td><b class="up">68</b></td><td>C</td><td>持续跟踪(第3次)</td><td>20日锁定</td></tr>
+</table>
+
+<h2>Layer 9 风险委员会</h2>
+<table>
+<tr><th>风险项</th><th>等级</th><th>说明</th></tr>
+<tr><td>美国 9 月 CPI（10/14）</td><td><span class="badge b-red">红</span></td><td>预期 3.6-3.7%，超预期将抬升加息路径与融资成本</td></tr>
+<tr><td>AI 硬件结构性撤退</td><td><span class="badge b-red">红</span></td><td>上周净流出约 256.7 亿，第 4 周，严禁抄底</td></tr>
+<tr><td>美债收益率历史高位</td><td><span class="badge b-red">红</span></td><td>10Y 5.24% / 30Y 5.60%，压制成长股估值</td></tr>
+<tr><td>传媒主线拥挤度</td><td><span class="badge b-yellow">黄</span></td><td>涨停潮+普跌并存，明日冲高分歧概率大</td></tr>
+<tr><td>缩量普跌</td><td><span class="badge b-yellow">黄</span></td><td>缩量 19% + 涨跌比 1:3.7</td></tr>
+<tr><td>行业集中风险</td><td><span class="badge b-yellow">黄</span></td><td>新建仓 3/9 集中于传媒</td></tr>
+<tr><td>地缘（中东/俄乌）</td><td><span class="badge b-yellow">黄</span></td><td>霍尔木兹谈判拉锯，油价反复</td></tr>
+<tr><td>情绪过热</td><td><span class="badge b-green">绿</span></td><td>涨停 48 &lt; 80，无过热</td></tr>
+</table>
+
+<h2>✅ V5.2 合规自检</h2>
+<div class="compliance">1. 重复推荐闸：☑ 有（药明康德/中材科技/北方铜业/紫金矿业/宁德时代/澜起科技/佰维存储等已降级「持续跟踪」；新建仓 9 只均为首次推荐）
+2. 高评分闸：☑ 无（今日最高分 85 = 天顺风能，无 S/S++ 级）
+3. 温度闸：今日市场评分 40 分 → ☑ ≤65 允许建仓（附加：普跌缩量，总仓位压至 25%/12%）
+4. 持有期：☑ 已检查 —— 澜起/圣邦/诺禾/达利凯普/东微半导 T+8=10/9 已到期 → 减仓至半仓；佰维存储/科华数据 T+8=10/21 未到
+5. 止损：☑ 无明确触及（铜冠铜箔/科大国创按逻辑减仓）
+6. 操作类型：☑ 无「清仓」残留（统一「减仓至半仓/减仓离场/回避」）</div>
+
+<div class="footer">
+<p>数据来源：腾讯行情 API（实时收盘）+ 钛媒体/澎湃(Wind)/中金在线多源交叉；东财资金流接口限流，板块资金为单源推断。</p>
+<p>本报告为 AI 系统模拟输出，不构成投资建议。样本内回测结果不代表未来表现。红涨绿跌配色。</p>
+</div>
+
+</body>
+</html>

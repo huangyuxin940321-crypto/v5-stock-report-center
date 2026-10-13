@@ -1,0 +1,415 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI 股票组合主理人系统 V5.2 — 2026-10-13 收盘分析</title>
+<style>
+  :root {
+    --bg: #f8f9fa;
+    --card-bg: #ffffff;
+    --text: #1f2937;
+    --muted: #6b7280;
+    --border: #e5e7eb;
+    --red: #dc2626;
+    --green: #16a34a;
+    --gold: #f59e0b;
+    --blue: #2563eb;
+    --purple: #7c3aed;
+    --teal: #0891b2;
+    --danger: #fee2e2;
+    --warn: #fef3c7;
+    --ok: #d1fae5;
+    --info: #dbeafe;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "PingFang SC", "Microsoft YaHei", sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.6;
+  }
+  .container { max-width: 1200px; margin: 0 auto; padding: 24px; }
+  .header {
+    background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%);
+    color: white;
+    padding: 32px;
+    border-radius: 16px;
+    margin-bottom: 24px;
+    box-shadow: 0 10px 25px -5px rgba(0,0,0,0.1);
+  }
+  .header h1 { margin: 0 0 8px 0; font-size: 28px; }
+  .header .subtitle { opacity: 0.9; font-size: 16px; }
+  .score-banner {
+    display: flex;
+    gap: 24px;
+    margin: 24px 0;
+    flex-wrap: wrap;
+  }
+  .score-card {
+    flex: 1;
+    min-width: 220px;
+    background: var(--card-bg);
+    border-radius: 16px;
+    padding: 24px;
+    text-align: center;
+    box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);
+    border-top: 4px solid var(--gold);
+  }
+  .score-card .value { font-size: 56px; font-weight: 800; color: var(--gold); }
+  .score-card .label { color: var(--muted); font-size: 14px; margin-top: 4px; }
+  .score-card .state { font-size: 18px; font-weight: 600; margin-top: 8px; }
+  .section {
+    background: var(--card-bg);
+    border-radius: 16px;
+    padding: 24px;
+    margin-bottom: 24px;
+    box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);
+  }
+  .section h2 { margin: 0 0 16px 0; font-size: 20px; color: #111827; border-left: 4px solid var(--blue); padding-left: 12px; }
+  .section h3 { font-size: 16px; color: #374151; margin: 16px 0 8px 0; }
+  table { width: 100%; border-collapse: collapse; font-size: 14px; }
+  th, td { padding: 10px 12px; border-bottom: 1px solid var(--border); text-align: left; }
+  th { background: #f3f4f6; font-weight: 600; color: #374151; }
+  tr:hover { background: #f9fafb; }
+  .badge {
+    display: inline-block;
+    padding: 2px 10px;
+    border-radius: 9999px;
+    font-size: 12px;
+    font-weight: 600;
+  }
+  .badge-up { background: var(--danger); color: white; }
+  .badge-down { background: var(--ok); color: var(--green); }
+  .rating-S { background: #7f1d1d; color: white; }
+  .rating-A { background: #dc2626; color: white; }
+  .rating-B { background: #f59e0b; color: white; }
+  .rating-C { background: #16a34a; color: white; }
+  .fund-stage { font-weight: 600; }
+  .stage-enter { color: var(--blue); }
+  .stage-accel { color: var(--red); }
+  .stage-peak { color: var(--gold); }
+  .stage-exit { color: var(--green); }
+  .status-ok { background: var(--ok); color: #065f46; }
+  .status-warn { background: var(--warn); color: #92400e; }
+  .status-denied { background: var(--danger); color: #991b1b; }
+  .status-info { background: var(--info); color: #1e40af; }
+  .index-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    gap: 16px;
+    margin: 16px 0;
+  }
+  .index-card {
+    background: #f3f4f6;
+    border-radius: 12px;
+    padding: 16px;
+    text-align: center;
+  }
+  .index-card .name { font-size: 13px; color: var(--muted); }
+  .index-card .price { font-size: 22px; font-weight: 700; margin: 4px 0; }
+  .index-card .chg { font-size: 14px; font-weight: 600; }
+  .up { color: var(--red); }
+  .down { color: var(--green); }
+  .conflict-box {
+    background: #fff7ed;
+    border-left: 4px solid var(--gold);
+    padding: 16px;
+    border-radius: 8px;
+    margin: 12px 0;
+    white-space: pre-wrap;
+    font-family: monospace;
+    font-size: 13px;
+  }
+  .risk-red { background: var(--danger); color: #991b1b; padding: 4px 10px; border-radius: 6px; font-weight: 600; }
+  .risk-yellow { background: var(--warn); color: #92400e; padding: 4px 10px; border-radius: 6px; font-weight: 600; }
+  .risk-green { background: var(--ok); color: #065f46; padding: 4px 10px; border-radius: 6px; font-weight: 600; }
+  .compliance-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+  .compliance-item {
+    background: #f3f4f6;
+    border-radius: 8px;
+    padding: 12px 16px;
+  }
+  .highlight { background: #eff6ff; padding: 2px 6px; border-radius: 4px; font-weight: 600; }
+  .two-col {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+  }
+  @media (max-width: 768px) {
+    .two-col { grid-template-columns: 1fr; }
+    .score-banner { flex-direction: column; }
+  }
+  .footer {
+    text-align: center;
+    color: var(--muted);
+    font-size: 13px;
+    padding: 24px;
+  }
+</style>
+</head>
+<body>
+<div class="container">
+  <div class="header">
+    <h1>AI 股票组合主理人系统 V5.2</h1>
+    <div class="subtitle">2026-10-13（周一）15:30 收盘完整分析 | 全天唯一正式市场评分输出点</div>
+  </div>
+
+  <div class="score-banner">
+    <div class="score-card">
+      <div class="label">正式市场评分</div>
+      <div class="value">50</div>
+      <div class="state">震荡偏弱</div>
+      <div class="label">较10/12的40分上调10分</div>
+    </div>
+    <div class="score-card" style="border-top-color: var(--green);">
+      <div class="label">建议仓位</div>
+      <div class="value" style="font-size: 40px; color: var(--green);">30%-40%</div>
+      <div class="state">温度闸门 50 ≤ 65 ✅ 允许建仓</div>
+      <div class="label">外围扰动+主力流出，仓位压至区间下限</div>
+    </div>
+    <div class="score-card" style="border-top-color: var(--blue);">
+      <div class="label">成交/情绪</div>
+      <div class="value" style="font-size: 32px; color: var(--blue);">23742亿</div>
+      <div class="state">涨停73 / 跌停10 / 炸板率约30%</div>
+      <div class="label">缩量1599亿，情绪中性偏谨慎</div>
+    </div>
+  </div>
+
+  <div class="section">
+    <h2>⚠️ 数据验证状态条</h2>
+    <table>
+      <thead><tr><th>验证项</th><th>状态</th><th>说明</th></tr></thead>
+      <tbody>
+        <tr><td>A股指数收盘</td><td><span class="badge status-ok">✅ 通过</span></td><td>上证/深证/创业板/科创50 多源交叉一致</td></tr>
+        <tr><td>涨跌家数/涨停跌停</td><td><span class="badge status-ok">✅ 通过</span></td><td>1684涨/3634跌，涨停73/跌停10，多源一致</td></tr>
+        <tr><td>成交额</td><td><span class="badge status-ok">✅ 通过</span></td><td>沪深京三市23742亿，较上日缩量1599亿</td></tr>
+        <tr><td>板块/个股资金流向</td><td><span class="badge status-warn">⚠️ 部分通过</span></td><td>板块多源交叉；个股为[单源]推断</td></tr>
+        <tr><td>北向资金</td><td><span class="badge status-ok">✅ 通过</span></td><td>净流出64.39亿（沪-39.69/深-24.70）</td></tr>
+        <tr><td>龙虎榜</td><td><span class="badge status-warn">⚠️ 部分通过</span></td><td>中国稀土数据完整；全市场为[单源]</td></tr>
+        <tr><td>炸板率</td><td><span class="badge status-denied">❌ 数据缺失</span></td><td>按封板率70%估算炸板率约30%</td></tr>
+        <tr><td>westock/tdx连接器</td><td><span class="badge status-denied">❌ 未加载</span></td><td>连续第14次未加载；全部数据来自WebSearch，置信度中等</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="section">
+    <h2>Layer 1+2 市场评分与指数卡片</h2>
+    <div class="index-grid">
+      <div class="index-card"><div class="name">上证指数</div><div class="price">3889.50</div><div class="chg down">-0.19%</div></div>
+      <div class="index-card"><div class="name">深证成指</div><div class="price">13231.47</div><div class="chg down">-0.93%</div></div>
+      <div class="index-card"><div class="name">创业板指</div><div class="price">3078.76</div><div class="chg down">-1.11%</div></div>
+      <div class="index-card"><div class="name">科创50</div><div class="price">—</div><div class="chg up">+1.40%</div></div>
+      <div class="index-card"><div class="name">沪深300</div><div class="price">4593.98</div><div class="chg down">-0.49%</div></div>
+      <div class="index-card"><div class="name">北证50</div><div class="price">—</div><div class="chg down">-1.29%</div></div>
+    </div>
+    <p><strong>核心特征：</strong>指数分化——上证/科创50受稀土/半导体/银行支撑相对抗跌，深证/创业板受消费电子/电池拖累跌幅近1%；个股普跌1684:3634；主力净流出约460-601亿，北向净流出64.39亿。</p>
+  </div>
+
+  <div class="section">
+    <h2>Layer 3 产业方向 TOP10</h2>
+    <table>
+      <thead><tr><th>#</th><th>产业方向</th><th>评分</th><th>涨跌/资金</th><th>核心逻辑</th></tr></thead>
+      <tbody>
+        <tr><td>1</td><td>稀土永磁/战略资源</td><td><span class="badge rating-A">88</span></td><td class="up">+7.28%，资金+53.3亿</td><td>商务部出口管制+涨价，10+股涨停</td></tr>
+        <tr><td>2</td><td>贵金属/黄金</td><td><span class="badge rating-A">84</span></td><td class="up">+6.69%，金价历史新高</td><td>现货黄金突破4116美元，避险+央行购金</td></tr>
+        <tr><td>3</td><td>半导体设备/材料</td><td><span class="badge rating-B">78</span></td><td class="up">华虹20cm涨停</td><td>国产替代+自主可控；但板块分化</td></tr>
+        <tr><td>4</td><td>银行/高股息</td><td><span class="badge rating-B">78</span></td><td class="up">资金+11.63亿</td><td>险资/长线资金防御配置</td></tr>
+        <tr><td>5</td><td>氟化工/电解液</td><td><span class="badge rating-B">76</span></td><td class="up">资金+18.5亿</td><td>稀土涨价链扩散+新能源材料补库</td></tr>
+        <tr><td>6</td><td>小金属/工业金属</td><td><span class="badge rating-B">75</span></td><td class="up">资金+19.36亿</td><td>出口管制+涨价预期</td></tr>
+        <tr><td>7</td><td>军工/船舶</td><td><span class="badge rating-B">72</span></td><td class="up">长城军工2连板</td><td>地缘紧张+船舶特别港务费政策</td></tr>
+        <tr><td>8</td><td>AI视频/传媒</td><td><span class="badge rating-B">70</span></td><td class="down">今日分歧</td><td>字节PineDrama热度仍在</td></tr>
+        <tr><td>9</td><td>风电/电力设备</td><td><span class="badge rating-C">68</span></td><td class="down">今日分化</td><td>欧盟双反辟谣后获利回吐</td></tr>
+        <tr><td>10</td><td>消费电子/AI硬件</td><td><span class="badge rating-C">45</span></td><td class="down">资金-47.62亿</td><td>立讯/歌尔领跌，撤退延续</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="section">
+    <h2>Layer 4 资金主线 TOP5</h2>
+    <table>
+      <thead><tr><th>#</th><th>资金主线</th><th>资金阶段</th><th>判断</th></tr></thead>
+      <tbody>
+        <tr><td>1</td><td>稀土永磁/战略资源</td><td><span class="fund-stage stage-accel">加速</span></td><td>板块资金+53.3亿，11股涨停，政策+涨价双重催化 → 可建仓</td></tr>
+        <tr><td>2</td><td>贵金属/黄金</td><td><span class="fund-stage stage-accel">加速</span></td><td>金价创历史新高，避险资金持续流入 → 底仓/轻仓</td></tr>
+        <tr><td>3</td><td>银行/高股息</td><td><span class="fund-stage stage-accel">加速</span></td><td>资金+11.63亿，四大行历史新高 → 防御底仓</td></tr>
+        <tr><td>4</td><td>半导体设备/材料</td><td><span class="fund-stage stage-enter">进入→加速（分化）</span></td><td>华虹20cm+光刻机异动，但板块整体承压 → 精选个股</td></tr>
+        <tr><td>5</td><td>消费电子/AI硬件/电池</td><td><span class="fund-stage stage-exit">撤退（第5周）</span></td><td>电子-54.65亿/消费电子-47.62亿/电力设备-50.22亿 → 回避</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="section">
+    <h2>⚠️ 模块冲突标注区</h2>
+    <div class="conflict-box">⚠️ 模块冲突标注（一）：
+- Layer 1 市场评分：50分（震荡偏弱，个股普跌）
+- Layer 3 产业评分：稀土永磁 88分 / 贵金属 84分（偏多，主线强势）
+- 冲突解读：市场整体偏弱但战略资源/贵金属方向受政策和避险驱动独立走强 → 典型结构性行情
+- 操作建议：总仓位控制在30%-40%，重点配置稀土/黄金/银行，回避消费电子/AI硬件
+
+⚠️ 模块冲突标注（二）：
+- Layer 4 资金评分：稀土永磁板块 +53.3亿（加速流入）
+- Layer 7 情绪评分：炸板率约30%（退潮预警）
+- 冲突解读：资金集中涌入单一主线但情绪退潮预警 → 次日分歧概率大，今日建仓不追高
+- 操作建议：稀土/黄金方向以回踩低吸为主，禁止涨停次日追涨
+
+⚠️ 模块冲突标注（三）：
+- 北向资金净流出64.39亿（白酒/银行被减持）
+- 内资主力净流入银行+11.63亿、稀土+53.3亿
+- 冲突解读：外资撤退 vs 内资防守+主题进攻，方向背离
+- 操作建议：跟随内资验证方向（稀土/银行），但仓位控制在外围扰动明朗前
+    </div>
+  </div>
+
+  <div class="two-col">
+    <div class="section">
+      <h2>鑫未来核心组合（中线 T+8）</h2>
+      <table>
+        <thead><tr><th>股票</th><th>代码</th><th>评分</th><th>评级</th><th>操作</th><th>T+8</th></tr></thead>
+        <tbody>
+          <tr><td>北方稀土</td><td>600111</td><td><span class="badge rating-A">86</span></td><td>A</td><td>优先建仓 6%</td><td>10/23</td></tr>
+          <tr><td>中国稀土</td><td>000831</td><td><span class="badge rating-A">84</span></td><td>A</td><td>优先建仓 5%</td><td>10/23</td></tr>
+          <tr><td>包钢股份</td><td>600010</td><td><span class="badge rating-A">82</span></td><td>A</td><td>回踩建仓 5%</td><td>10/23</td></tr>
+          <tr><td>招商银行</td><td>600036</td><td><span class="badge rating-A">81</span></td><td>A</td><td>回踩建仓 5%</td><td>10/23</td></tr>
+          <tr><td>中国软件</td><td>600536</td><td><span class="badge rating-A">80</span></td><td>A</td><td>回踩建仓 4%</td><td>10/23</td></tr>
+        </tbody>
+      </table>
+      <p><strong>合计仓位：≤25%</strong></p>
+    </div>
+    <div class="section">
+      <h2>鑫准出击机会池（短线 T+8）</h2>
+      <table>
+        <thead><tr><th>股票</th><th>代码</th><th>评分</th><th>评级</th><th>操作</th><th>T+8</th></tr></thead>
+        <tbody>
+          <tr><td>银河磁体</td><td>300127</td><td><span class="badge rating-B">79</span></td><td>B</td><td>回踩建仓 3%</td><td>10/23</td></tr>
+          <tr><td>华虹公司</td><td>688347</td><td><span class="badge rating-B">78</span></td><td>B</td><td>回踩建仓 2%</td><td>10/23</td></tr>
+          <tr><td>多氟多</td><td>002407</td><td><span class="badge rating-B">77</span></td><td>B</td><td>回踩建仓 2%</td><td>10/23</td></tr>
+          <tr><td>天际股份</td><td>002759</td><td><span class="badge rating-B">75</span></td><td>B</td><td>观察</td><td>—</td></tr>
+        </tbody>
+      </table>
+      <p><strong>合计仓位：≤8%</strong></p>
+    </div>
+  </div>
+
+  <div class="section">
+    <h2>持仓调整建议</h2>
+    <table>
+      <thead><tr><th>股票</th><th>代码</th><th>评分</th><th>评级</th><th>操作</th><th>逻辑</th></tr></thead>
+      <tbody>
+        <tr><td>澜起科技</td><td>688008</td><td><span class="badge rating-C">63</span></td><td>C</td><td>减仓至半仓</td><td>T+8已到期+AI硬件撤退，今日跌近6%</td></tr>
+        <tr><td>三环集团</td><td>300408</td><td><span class="badge rating-C">64</span></td><td>C</td><td>减仓至半仓</td><td>今日跌5.4%，元件板块撤退</td></tr>
+        <tr><td>佰维存储</td><td>688525</td><td><span class="badge rating-B">73</span></td><td>B</td><td>减仓至半仓</td><td>存储板块今日继续调整</td></tr>
+        <tr><td>10/12传媒/风电/银行新建仓</td><td>多只</td><td>—</td><td>—</td><td>持有观察</td><td>T+1未触发止损，传媒今日分歧</td></tr>
+        <tr><td>AI硬件/消费电子</td><td>多只</td><td>—</td><td>C</td><td>回避</td><td>电子-54.65亿，撤退第5周</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="section">
+    <h2>综合评分 TOP30</h2>
+    <table>
+      <thead><tr><th>#</th><th>股票</th><th>代码</th><th>评分</th><th>评级</th><th>操作</th><th>风险</th></tr></thead>
+      <tbody>
+        <tr><td>1</td><td>北方稀土</td><td>600111</td><td><span class="badge rating-A">86</span></td><td>A</td><td>优先建仓</td><td>机构分歧</td></tr>
+        <tr><td>2</td><td>中国稀土</td><td>000831</td><td><span class="badge rating-A">84</span></td><td>A</td><td>优先建仓</td><td>机构净卖</td></tr>
+        <tr><td>3</td><td>包钢股份</td><td>600010</td><td><span class="badge rating-A">82</span></td><td>A</td><td>回踩建仓</td><td>业绩亏损</td></tr>
+        <tr><td>4</td><td>招商银行</td><td>600036</td><td><span class="badge rating-A">81</span></td><td>A</td><td>回踩建仓</td><td>息差压力</td></tr>
+        <tr><td>5</td><td>中国软件</td><td>600536</td><td><span class="badge rating-A">80</span></td><td>A</td><td>回踩建仓</td><td>估值偏高</td></tr>
+        <tr><td>6</td><td>银河磁体</td><td>300127</td><td><span class="badge rating-B">79</span></td><td>B</td><td>回踩建仓</td><td>高波动</td></tr>
+        <tr><td>7</td><td>华虹公司</td><td>688347</td><td><span class="badge rating-B">78</span></td><td>B</td><td>回踩建仓</td><td>板块承压</td></tr>
+        <tr><td>8</td><td>西部黄金</td><td>601069</td><td><span class="badge rating-B">78</span></td><td>B</td><td>持续跟踪</td><td>20日锁定</td></tr>
+        <tr><td>9</td><td>多氟多</td><td>002407</td><td><span class="badge rating-B">77</span></td><td>B</td><td>回踩建仓</td><td>需求波动</td></tr>
+        <tr><td>10</td><td>石大胜华</td><td>603026</td><td><span class="badge rating-B">76</span></td><td>B</td><td>持续跟踪</td><td>20日锁定</td></tr>
+        <tr><td>11</td><td>天际股份</td><td>002759</td><td><span class="badge rating-B">75</span></td><td>B</td><td>观察</td><td>产能过剩</td></tr>
+        <tr><td>12</td><td>中金黄金</td><td>600489</td><td><span class="badge rating-B">75</span></td><td>B</td><td>持续跟踪</td><td>20日锁定</td></tr>
+        <tr><td>13</td><td>上海电影</td><td>601595</td><td><span class="badge rating-B">74</span></td><td>B</td><td>持续跟踪</td><td>20日锁定+分歧</td></tr>
+        <tr><td>14</td><td>果麦文化</td><td>301052</td><td><span class="badge rating-B">73</span></td><td>B</td><td>持续跟踪</td><td>20日锁定</td></tr>
+        <tr><td>15</td><td>天顺风能</td><td>002531</td><td><span class="badge rating-B">73</span></td><td>B</td><td>持续跟踪</td><td>20日锁定</td></tr>
+        <tr><td>16</td><td>紫金矿业</td><td>601899</td><td><span class="badge rating-B">72</span></td><td>B</td><td>持续跟踪</td><td>20日锁定</td></tr>
+        <tr><td>17</td><td>重庆银行</td><td>601963</td><td><span class="badge rating-B">72</span></td><td>B</td><td>持续跟踪</td><td>20日锁定</td></tr>
+        <tr><td>18</td><td>江丰电子</td><td>300666</td><td><span class="badge rating-B">71</span></td><td>B</td><td>观察</td><td>板块调整</td></tr>
+        <tr><td>19</td><td>中国巨石</td><td>600176</td><td><span class="badge rating-B">70</span></td><td>B</td><td>观察</td><td>行业底部</td></tr>
+        <tr><td>20</td><td>博纳影业</td><td>001330</td><td><span class="badge rating-B">70</span></td><td>B</td><td>持续跟踪</td><td>20日锁定</td></tr>
+        <tr><td>21</td><td>有研新材</td><td>600206</td><td><span class="badge rating-C">66</span></td><td>C</td><td>回避</td><td>今日大跌</td></tr>
+        <tr><td>22</td><td>立讯精密</td><td>002475</td><td><span class="badge rating-C">62</span></td><td>C</td><td>回避</td><td>板块撤退</td></tr>
+        <tr><td>23</td><td>宁德时代</td><td>300750</td><td><span class="badge rating-C">65</span></td><td>C</td><td>持续跟踪</td><td>20日锁定</td></tr>
+        <tr><td>24</td><td>三环集团</td><td>300408</td><td><span class="badge rating-C">64</span></td><td>C</td><td>减仓至半仓</td><td>20日锁定</td></tr>
+        <tr><td>25</td><td>澜起科技</td><td>688008</td><td><span class="badge rating-C">63</span></td><td>C</td><td>减仓至半仓</td><td>T+8已复盘</td></tr>
+        <tr><td>26</td><td>中际旭创</td><td>300308</td><td><span class="badge rating-C">60</span></td><td>C</td><td>回避</td><td>板块撤退</td></tr>
+        <tr><td>27</td><td>新易盛</td><td>300502</td><td><span class="badge rating-C">58</span></td><td>C</td><td>回避</td><td>主力净流出</td></tr>
+        <tr><td>28</td><td>长鑫科技</td><td>688825</td><td><span class="badge rating-C">55</span></td><td>C</td><td>持续跟踪</td><td>多次重复</td></tr>
+        <tr><td>29</td><td>东山精密</td><td>002384</td><td><span class="badge rating-C">54</span></td><td>C</td><td>回避</td><td>资金撤退</td></tr>
+        <tr><td>30</td><td>歌尔股份</td><td>002241</td><td><span class="badge rating-C">52</span></td><td>C</td><td>回避</td><td>板块领跌</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="section">
+    <h2>Layer 9 风险委员会扫描</h2>
+    <table>
+      <thead><tr><th>风险项</th><th>等级</th><th>说明</th></tr></thead>
+      <tbody>
+        <tr><td>中美贸易关系反复</td><td><span class="risk-red">🔴 红</span></td><td>周末关税升级+川普"TACO"言论，外围波动传导A股早盘</td></tr>
+        <tr><td>AI 硬件结构性撤退</td><td><span class="risk-red">🔴 红</span></td><td>电子/半导体/消费电子连续5周资金撤退</td></tr>
+        <tr><td>10Y 美债高位</td><td><span class="risk-red">🔴 红</span></td><td>全球成长股估值承压，A股科技链分母端扩张</td></tr>
+        <tr><td>稀土/黄金主线拥挤</td><td><span class="risk-yellow">🟡 黄</span></td><td>10+股涨停与全市场普跌并存，次日分歧概率大</td></tr>
+        <tr><td>行业集中风险</td><td><span class="risk-yellow">🟡 黄</span></td><td>新建仓集中于稀土/银行/信创，单一主线回撤冲击组合</td></tr>
+        <tr><td>炸板率估算</td><td><span class="risk-yellow">🟡 黄</span></td><td>数据缺失，按30%估算处于退潮预警区</td></tr>
+        <tr><td>外围地缘</td><td><span class="risk-yellow">🟡 黄</span></td><td>霍尔木兹海峡通航谈判、油价波动</td></tr>
+        <tr><td>情绪过热</td><td><span class="risk-green">🟢 绿</span></td><td>涨停73 &lt; 80，无过热信号</td></tr>
+      </tbody>
+    </table>
+    <p><strong>最大风险：</strong>AI 硬件撤退未完 + 稀土/黄金主线次日分歧。若外围CPI/贸易消息超预期，"避险资产+高股息"可能继续吸金，但追涨稀土/黄金风险极高；持仓中的成长方向须严格执行-8%/-6%止损。</p>
+  </div>
+
+  <div class="section">
+    <h2>V5.2 合规自检区块</h2>
+    <div class="compliance-grid">
+      <div class="compliance-item">
+        <strong>1. 重复推荐闸</strong>：本次推荐是否有标的在 20 个交易日内已推荐过？
+        <div>☑ 有（25+只已降级为「持续跟踪」）；<span class="highlight">新建仓 9 只均为首次推荐</span></div>
+      </div>
+      <div class="compliance-item">
+        <strong>2. 高评分闸</strong>：是否有评分 ≥90 的标的被列入建仓？
+        <div>☑ 无（今日最高分 86 = 北方稀土，<span class="highlight">无 S/S++ 级</span>）</div>
+      </div>
+      <div class="compliance-item">
+        <strong>3. 温度闸</strong>：今日市场评分 <span class="highlight">50</span> 分 → ☑ ≤65 允许建仓（仓位压至30%-40%）
+      </div>
+      <div class="compliance-item">
+        <strong>4. 持有期</strong>：9/21组T+8已到期并执行减仓至半仓；10/9组T+8=10/21未到；10/12组T+8=10/22未到；☑ 已检查
+      </div>
+      <div class="compliance-item">
+        <strong>5. 止损</strong>：是否有持仓触及短线 -6% / 中线 -8%？☑ 无明确价格止损触发
+      </div>
+      <div class="compliance-item">
+        <strong>6. 操作类型</strong>：是否残留「清仓」字样？☑ 无（统一使用「减仓至半仓/持有观察/回避/持续跟踪」）
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <h2>今日收盘核心结论</h2>
+    <ol>
+      <li><strong>市场评分 50 分（+10）</strong>：震荡偏弱中沿，指数分化，建议仓位 30%-40%</li>
+      <li><strong>主线切换</strong>：AI视频/传媒昨日涨停潮后今日分歧，资金切向稀土永磁/贵金属/银行/氟化工；AI硬件继续撤退</li>
+      <li><strong>稀土永磁爆发</strong>：政策出口管制+涨价催化，板块资金+53.3亿，10+股涨停，但机构分歧加大</li>
+      <li><strong>贵金属创历史新高</strong>：现货黄金突破4116美元，西部黄金/招金黄金涨停</li>
+      <li><strong>新建仓 9 只首次推荐</strong>：鑫未来 5 只（北方稀土/中国稀土/包钢股份/招商银行/中国软件，≤25%）；鑫准出击 4 只（银河磁体/华虹公司/多氟多/天际股份观察，≤8%），T+8 = 10/23</li>
+      <li><strong>持仓调整</strong>：AI硬件/半导体（澜起/三环/有研/立讯等）统一「减仓至半仓/回避」；10/12 传媒/风电/银行新建仓 T+1 持有观察</li>
+      <li><strong>最大风险</strong>：中美贸易反复 + AI硬件撤退未完 + 稀土/黄金主线次日分歧；禁止涨停次日追涨</li>
+      <li><strong>闸门核查</strong>：温度闸 50≤65 允许建仓；高评分闸无 ≥90；重复推荐闸拦截 25+ 只锁定标的</li>
+    </ol>
+  </div>
+
+  <div class="footer">
+    ⚠️ 本报告为系统模拟输出，不构成投资建议。样本内回测结果不代表未来表现。 westock-mcp / tdx-connector 未在本会话加载，数据来自 WebSearch 多源交叉，置信度中等。
+  </div>
+</div>
+</body>
+</html>

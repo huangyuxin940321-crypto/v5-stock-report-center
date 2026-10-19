@@ -1,0 +1,954 @@
+<!DOCTYPE html><html><head><meta charset='utf-8'><title>AI_STOCK_CLOSE_V5_20261019</title><style>
+body{font-family:"Microsoft YaHei",sans-serif;background:#f7f8fa;color:#2c3e50;margin:0;padding:24px;max-width:1080px;margin:auto;line-height:1.65}
+h1{color:#1a3c6e;border-bottom:3px solid #c9a227;padding-bottom:8px}
+h2{color:#1a3c6e;border-left:5px solid #c9a227;padding-left:10px;margin-top:32px}
+table{border-collapse:collapse;width:100%;margin:12px 0;font-size:13px;background:#fff}
+th{background:#1a3c6e;color:#fff;padding:7px 9px;text-align:left}
+td{border:1px solid #dfe4ea;padding:6px 9px}
+tr:nth-child(even){background:#f4f7fb}
+code,pre{background:#eef1f5;border-radius:4px;font-size:13px}
+pre{padding:12px;overflow-x:auto}
+.banner{background:#fff;border-radius:10px;padding:18px 22px;margin-bottom:18px;box-shadow:0 2px 8px rgba(0,0,0,.06);border-left:6px solid #c9a227}
+.banner .score{font-size:44px;font-weight:800;color:#c0392b}
+.banner .sub{color:#7f8c8d;font-size:14px}
+.valid{background:#e8f6ee;border:1px solid #b7dfc6;border-radius:8px;padding:12px 16px;margin-bottom:16px;font-size:13px}
+.valid b{color:#1e7e46}
+.conflict{background:#fff8e6;border:1px solid #f0d98c;border-radius:8px;padding:12px 16px;font-size:13px}
+.up{color:#c0392b;font-weight:bold}.down{color:#1e9e5a;font-weight:bold}
+.risk{background:#fdecea;border:1px solid #f2b8b5;border-radius:8px;padding:12px 16px;font-size:13px}
+footer{color:#95a5a6;font-size:12px;margin-top:30px;border-top:1px solid #e0e4e8;padding-top:10px}
+</style></head><body>
+<div class='banner'><span class='score'>50 分</span> &nbsp;<b style='font-size:20px'>震荡偏弱 · 结构分化市</b>
+<div class='sub'>建议仓位 20%-30% ｜ 沪指 3730.92 (+0.39%) 低开高走 ｜ 成交 1.45 万亿缩量 ｜ 涨停 46 / 跌停 22 / 炸板率 31.3%（冰点预警）｜ V5.2 温度闸 50≤65 允许建仓（轻仓）</div></div>
+<div class='valid'><b>✅ 数据验证：前收衔接通过（3716.28）｜指数/涨跌停=直连一手数据 ✅｜连接器第18次未加载→腾讯API+东财池+WebSearch多源｜北向字段缺失已按V5.2删除｜置信度：中等偏高</b></div>
+
+<div class='conflict'><b>⚠️ 模块冲突标注：</b>Layer1 市场 50 分（偏弱） vs Layer3 机器人/物理AI 85 分（偏多） vs Layer7 情绪冰点（炸板率31.3%）→ 结构性机会特征；操作：总仓位压至 20%-30%，只保留强势方向低仓配置。</div><br>
+<h1>AI 股票组合主理人系统 V5.2 — 15:30 收盘完整扫描报告</h1>
+<p><strong>日期：2026-10-19（周一） | 报告节点：15:30（全天唯一正式市场评分输出点）</strong></p>
+<hr />
+<h2>⚠️ 数据验证报告</h2>
+<table>
+<thead>
+<tr>
+<th>项目</th>
+<th>状态</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>前收衔接校验</td>
+<td>✅ 通过</td>
+<td>今日上证前收 3716.28 = 10/16 报告收盘 3716.28，无单日数据污染</td>
+</tr>
+<tr>
+<td>指数快照（腾讯直连 API）</td>
+<td>✅ 通过</td>
+<td>沪指 3730.92 / 深成 11817.42 / 创业板 2746.29，涨跌幅与收盘点位自洽</td>
+</tr>
+<tr>
+<td>westock-mcp / tdx-connector</td>
+<td>⚠️ 未加载</td>
+<td>连续第 18 次未加载，本报告采用腾讯直连 API + 东财涨停/跌停/炸板池 + WebSearch 多源交叉</td>
+</tr>
+<tr>
+<td>涨停/跌停/炸板（东财池）</td>
+<td>✅ 通过</td>
+<td>涨停 46 / 跌停 22 / 炸板 21（东财口径，炸板率 31.3%）</td>
+</tr>
+<tr>
+<td>板块资金流（东财 push2）</td>
+<td>⚠️ 不可用</td>
+<td>API 限流，改用财联社盯盘数据（多源一致：通信/食品饮料/贵金属流入，电子 -27.66 亿流出）</td>
+</tr>
+<tr>
+<td>北向资金</td>
+<td>⚠️ 数据缺失</td>
+<td>当日披露渠道缺失，本报告不含北向净额（V5.2 已删除该字段）</td>
+</tr>
+<tr>
+<td>个股快照名称核对</td>
+<td>✅ 通过</td>
+<td>涨停池 46 只逐只含行业标签，无 *ST 误标</td>
+</tr>
+</tbody>
+</table>
+<p><strong>整体数据置信度：中等偏高</strong>（指数/涨跌停为直连一手数据，资金流为媒体转述财联社盯盘）。</p>
+<hr />
+<h2>一、当前 A 股市场评分（全天唯一正式评分）：<strong>50 分</strong></h2>
+<p><strong>市场阶段：震荡偏弱（权重护盘 + 题材冰点并存的结构分化市）</strong>
+<strong>建议仓位：20%-30%</strong></p>
+<p>评分依据：沪指低开高走 +0.39%（3730.92）但个股跌多涨少（超 3000 只飘绿）；创业板 -0.94%、科创50 -2.17%；成交 1.45 万亿（缩量约 1000 亿）；涨停 46 家（偏低）、跌停 22 家（偏高）、炸板率 31.3%（越过 30% 冰点预警线）；银行权重创新高托底指数，题材端情绪处于冰点修复期。</p>
+<hr />
+<h2>二、收盘全景</h2>
+<table>
+<thead>
+<tr>
+<th>指数</th>
+<th>收盘</th>
+<th>涨跌幅</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>上证指数</td>
+<td>3730.92</td>
+<td>+0.39%（低开高走）</td>
+</tr>
+<tr>
+<td>深证成指</td>
+<td>11817.42</td>
+<td>+0.13%</td>
+</tr>
+<tr>
+<td>创业板指</td>
+<td>2746.29</td>
+<td>-0.94%（探底回升收窄）</td>
+</tr>
+<tr>
+<td>科创50</td>
+<td>1329.19</td>
+<td>-2.17%</td>
+</tr>
+<tr>
+<td>沪深300</td>
+<td>4174.53</td>
+<td>+0.09%</td>
+</tr>
+<tr>
+<td>上证50</td>
+<td>2774.30</td>
+<td>+0.22%</td>
+</tr>
+<tr>
+<td>中证1000</td>
+<td>6698.30</td>
+<td>+0.24%</td>
+</tr>
+</tbody>
+</table>
+<p>成交 <strong>1.45 万亿</strong>（较上周五 1.555 万亿缩量约 1000 亿）；涨跌 <strong>跌多涨少（超 3000 只下跌）</strong>；涨停 <strong>46</strong> / 跌停 <strong>22</strong> / 炸板 <strong>21</strong> → <strong>炸板率 31.3% &gt; 30% 冰点预警线</strong>。</p>
+<p><strong>板块结构</strong>：
+- <strong>领涨</strong>：机器人/人形机器人（宇树科技 +15% 市值重返 2000 亿、宁波东力/浙江荣泰/科森科技/兆威机电等十余股涨停）、汽车零部件（涨停池 9+ 只）、PCB 回暖（天津普林"地天板"、肯特股份 20cm、协和电子涨停）、通信（亨通光电涨停 +10%）、银行（工行/建行历史新高）、军工 2 连板梯队（海洋王/甘化科工/长春一东）、贵金属、白酒（顺鑫农业 +6.43%）
+- <strong>领跌</strong>：农业（金健米业触及跌停）、房地产（荣丰控股跌停）、CRO（昭衍新药 -9.2%、药明康德一度触跌停）、元件/游戏/能源金属/电池</p>
+<p><strong>资金方向</strong>：主力净流入 → 通信（亨通光电 +17.65 亿全市场第一）、食品饮料、贵金属；净流出 → 电子 -27.66 亿、医药、电新。个股：寒武纪/新易盛/德明利净流入居前；<strong>长鑫科技遭净卖出 12.12 亿居首（-7.55%）</strong>，新华传媒/胜宏科技/天孚通信净流出居前。</p>
+<p><strong>外围与催化</strong>：上周五纳指 -2.14%（CoreWeave -11.9%、Arm -6.9%、SK海力士 -6.6%，AI 算力链二次压力）；10Y 美债 5.068%；美元 101.83；现货金 4173 美元；WTI 97.9（俄柴油赴美协议缓和油价）；人民币中间价 6.7220。CME：美联储 10 月维持利率不变概率 83.9%、12 月累计加息 25bp 概率 77.3%。<strong>今日金融街论坛年会开幕（四大金融监管部门负责人发声）</strong>；<strong>本周中国 GDP + LPR 公布</strong>；<strong>英伟达 GTC 柏林 10/20-22（物理 AI/机器人主题，黄仁勋 21 日演讲）</strong>；人形机器人首批六项国标 2027/4/1 实施；珠海航展门票开售。</p>
+<hr />
+<h2>三、九层模型分层评分（各模块独立）</h2>
+<h3>Layer 3 产业趋势：<strong>机器人/物理 AI 85 分（偏多）</strong></h3>
+<p>TOP10 产业方向（评分）：
+1. 人形机器人/物理 AI（85）：英伟达 GTC 柏林 + 六项国标 + 宇树 2000 亿市值锚定，产业空间/政策/资金三重共振
+2. 汽车零部件-机器人执行器（82）：涨停池最密集方向（9+ 只），特斯拉链+机器人链双催化
+3. 通信/光通信（80）：亨通光电 Q3 净利预增 151%-168% 落地 + 资金全市场第一
+4. 银行-高股息（78）：工行/建行历史新高，险资/汇金配置逻辑，防守端核心
+5. PCB/元件（75）：DDR5 现货 10 月环比 +8%，回暖但高位股仍分化（胜宏/天津普林地天板波动极大）
+6. 军工装备（74）：航展 12/7 定档 + 地缘，2 连板梯队形成
+7. 贵金属（73）：金 4173 美元高位震荡，央行购金 + 避险
+8. 电力/绿电（72）：江苏新能/浙江新能/晶科科技涨停，估值低位
+9. 食品饮料/白酒（71）：资金回流 + 超跌修复
+10. 存储（68）：德明利 +7%、巴克莱 DDR5 提价，但电子板块整体仍净流出，分层向好</p>
+<h3>Layer 4 资金方向：主线 TOP5（独立评分）</h3>
+<ol>
+<li><strong>机器人/减速器</strong> — 加速（涨停集群+龙头市值突破）→ <strong>建仓窗口</strong></li>
+<li><strong>通信</strong> — 加速（亨通 +17.65 亿第一 + 业绩落地）→ <strong>建仓窗口</strong></li>
+<li><strong>银行</strong> — 进入（新高但缩量，配置型资金）→ 关注/防守配置</li>
+<li><strong>PCB/元件</strong> — 高潮后修复（地天板=极端分歧）→ 谨慎</li>
+<li><strong>电子-存储（分层）</strong> — 撤退中分化（板块 -27.66 亿但寒武纪/德明利个股流入）→ 谨慎</li>
+</ol>
+<h3>Layer 5-6 个股评分：综合 TOP30</h3>
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th>股票</th>
+<th>代码</th>
+<th>评分</th>
+<th>评级</th>
+<th>资金加速度</th>
+<th>情绪档位</th>
+<th>逻辑</th>
+<th>风险</th>
+<th>操作</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>兆威机电</td>
+<td>003021</td>
+<td>84</td>
+<td>A</td>
+<td>加速</td>
+<td>冰点(9)</td>
+<td>机器人精密微特电机+减速器龙头，涨停放量</td>
+<td>涨停次日分歧</td>
+<td>优先建仓</td>
+</tr>
+<tr>
+<td>2</td>
+<td>文灿股份</td>
+<td>603348</td>
+<td>81</td>
+<td>A</td>
+<td>加速</td>
+<td>冰点(9)</td>
+<td>2连板，一体化压铸+机器人结构件</td>
+<td>连板波动</td>
+<td>回踩建仓</td>
+</tr>
+<tr>
+<td>3</td>
+<td>建设银行</td>
+<td>601939</td>
+<td>81</td>
+<td>A</td>
+<td>进入</td>
+<td>冰点(9)</td>
+<td>历史新高+高股息防守，资金配置型流入</td>
+<td>涨速慢</td>
+<td>优先建仓（防守仓）</td>
+</tr>
+<tr>
+<td>4</td>
+<td>保隆科技</td>
+<td>603197</td>
+<td>80</td>
+<td>A</td>
+<td>加速</td>
+<td>冰点(9)</td>
+<td>2连板，汽车电子+空悬，机器人传感器延伸</td>
+<td>追高风险</td>
+<td>回踩建仓</td>
+</tr>
+<tr>
+<td>5</td>
+<td>苏州银行</td>
+<td>002966</td>
+<td>80</td>
+<td>A</td>
+<td>进入</td>
+<td>冰点(9)</td>
+<td>+3.33% 城商行补涨，低估值高股息</td>
+<td>弹性有限</td>
+<td>优先建仓（防守仓）</td>
+</tr>
+<tr>
+<td>6</td>
+<td>浙江荣泰</td>
+<td>603119</td>
+<td>82</td>
+<td>A</td>
+<td>加速</td>
+<td>冰点(9)</td>
+<td>涨停，云母绝缘材料→机器人执行器</td>
+<td>题材切换快</td>
+<td>回踩建仓</td>
+</tr>
+<tr>
+<td>7</td>
+<td>润建股份</td>
+<td>002929</td>
+<td>78</td>
+<td>B</td>
+<td>加速</td>
+<td>冰点(9)</td>
+<td>涨停，通信网络运维+算力服务</td>
+<td>炸板1次</td>
+<td>回踩建仓</td>
+</tr>
+<tr>
+<td>8</td>
+<td>宁波东力</td>
+<td>002164</td>
+<td>79</td>
+<td>B</td>
+<td>加速</td>
+<td>冰点(9)</td>
+<td>涨停，减速器核心标的</td>
+<td>业绩兑现待验证</td>
+<td>回踩建仓</td>
+</tr>
+<tr>
+<td>9</td>
+<td>能科科技</td>
+<td>603859</td>
+<td>79</td>
+<td>B</td>
+<td>加速</td>
+<td>冰点(9)</td>
+<td>物理AI直线涨停，GTC催化</td>
+<td>主题炒作波动</td>
+<td>回踩建仓</td>
+</tr>
+<tr>
+<td>10</td>
+<td>肯特股份</td>
+<td>301591</td>
+<td>78</td>
+<td>B</td>
+<td>加速</td>
+<td>冰点(9)</td>
+<td>PCB材料20cm涨停</td>
+<td>20cm高波动</td>
+<td>轻仓回踩</td>
+</tr>
+<tr>
+<td>11</td>
+<td>协和电子</td>
+<td>605258</td>
+<td>77</td>
+<td>B</td>
+<td>加速</td>
+<td>冰点(9)</td>
+<td>PCB涨停，回暖主线</td>
+<td>小盘高波动</td>
+<td>轻仓回踩</td>
+</tr>
+<tr>
+<td>12</td>
+<td>科森科技</td>
+<td>603626</td>
+<td>78</td>
+<td>B</td>
+<td>加速</td>
+<td>冰点(9)</td>
+<td>涨停，机器人精密结构件</td>
+<td>题材属性强</td>
+<td>轻仓回踩</td>
+</tr>
+<tr>
+<td>13</td>
+<td>四会富仕</td>
+<td>300852</td>
+<td>75</td>
+<td>B</td>
+<td>温和加速</td>
+<td>冰点(9)</td>
+<td>+16.27%，PCB回暖</td>
+<td>高位分歧</td>
+<td>观察/轻仓</td>
+</tr>
+<tr>
+<td>14</td>
+<td>索辰科技</td>
+<td>688507</td>
+<td>75</td>
+<td>B</td>
+<td>温和加速</td>
+<td>冰点(9)</td>
+<td>物理AI仿真，GTC催化</td>
+<td>科创板波动</td>
+<td>观察/轻仓</td>
+</tr>
+<tr>
+<td>15</td>
+<td>海正药业</td>
+<td>600267</td>
+<td>74</td>
+<td>B</td>
+<td>温和加速</td>
+<td>冰点(9)</td>
+<td>涨停，医药超跌+制剂出海</td>
+<td>医药板块仍流出</td>
+<td>观察/轻仓</td>
+</tr>
+<tr>
+<td>16</td>
+<td>浙江新能</td>
+<td>600032</td>
+<td>73</td>
+<td>B</td>
+<td>进入</td>
+<td>冰点(9)</td>
+<td>涨停，绿电+电价改革预期</td>
+<td>跟风属性</td>
+<td>观察/轻仓</td>
+</tr>
+<tr>
+<td>17</td>
+<td>长春一东</td>
+<td>600148</td>
+<td>74</td>
+<td>B</td>
+<td>加速</td>
+<td>冰点(9)</td>
+<td>军工2连板，兵装重组</td>
+<td>连板拥挤</td>
+<td>观察/轻仓</td>
+</tr>
+<tr>
+<td>18</td>
+<td>大普微-UW</td>
+<td>301666</td>
+<td>74</td>
+<td>B</td>
+<td>加速</td>
+<td>冰点(9)</td>
+<td>涨停，企业级SSD+存储涨价</td>
+<td>次新波动大</td>
+<td>观察/轻仓</td>
+</tr>
+<tr>
+<td>19</td>
+<td>金达威</td>
+<td>002626</td>
+<td>72</td>
+<td>B</td>
+<td>进入</td>
+<td>冰点(9)</td>
+<td>涨停，辅酶Q10+食品饮料资金回流</td>
+<td>题材单一</td>
+<td>观察</td>
+</tr>
+<tr>
+<td>20</td>
+<td>锦鸡股份</td>
+<td>300798</td>
+<td>72</td>
+<td>B</td>
+<td>加速</td>
+<td>冰点(9)</td>
+<td>染料20cm涨停，化工涨价</td>
+<td>纯题材</td>
+<td>观察</td>
+</tr>
+<tr>
+<td>21</td>
+<td>晶科科技</td>
+<td>601778</td>
+<td>71</td>
+<td>C+</td>
+<td>进入</td>
+<td>冰点(9)</td>
+<td>涨停，光伏运营</td>
+<td>弹性弱</td>
+<td>观察</td>
+</tr>
+<tr>
+<td>22</td>
+<td>甘化科工</td>
+<td>000576</td>
+<td>75</td>
+<td>B</td>
+<td>加速</td>
+<td>冰点(9)</td>
+<td>军工2连板+并购重组</td>
+<td>连板拥挤</td>
+<td>观察/轻仓</td>
+</tr>
+<tr>
+<td>23</td>
+<td>海洋王</td>
+<td>002724</td>
+<td>76</td>
+<td>B</td>
+<td>加速</td>
+<td>冰点(9)</td>
+<td>2连板，军工特种照明</td>
+<td>小盘连板</td>
+<td>观察/轻仓</td>
+</tr>
+<tr>
+<td>24</td>
+<td>天津普林</td>
+<td>002134</td>
+<td>74</td>
+<td>B</td>
+<td>高潮</td>
+<td>冰点(9)</td>
+<td>PCB"地天板"回暖标志</td>
+<td>极端分歧，波动巨大</td>
+<td>观察（禁追涨）</td>
+</tr>
+<tr>
+<td>25</td>
+<td>凡拓数创</td>
+<td>301313</td>
+<td>72</td>
+<td>B</td>
+<td>温和加速</td>
+<td>冰点(9)</td>
+<td>物理AI+数字媒体</td>
+<td>跟风股</td>
+<td>观察</td>
+</tr>
+<tr>
+<td>26</td>
+<td>新坐标</td>
+<td>603040</td>
+<td>72</td>
+<td>B</td>
+<td>加速</td>
+<td>冰点(9)</td>
+<td>涨停，冷锻工艺机器人零件</td>
+<td>题材跟风</td>
+<td>观察</td>
+</tr>
+<tr>
+<td>27</td>
+<td>大业股份</td>
+<td>603278</td>
+<td>73</td>
+<td>B</td>
+<td>加速</td>
+<td>冰点(9)</td>
+<td>2连板，胎圈钢丝+机器人绳驱</td>
+<td>连板拥挤</td>
+<td>观察</td>
+</tr>
+<tr>
+<td>28</td>
+<td>日盈电子</td>
+<td>603286</td>
+<td>71</td>
+<td>C+</td>
+<td>加速</td>
+<td>冰点(9)</td>
+<td>涨停，汽车清洗系统+传感器</td>
+<td>题材跟风</td>
+<td>观察</td>
+</tr>
+<tr>
+<td>29</td>
+<td>亚邦股份</td>
+<td>603188</td>
+<td>70</td>
+<td>C+</td>
+<td>加速</td>
+<td>冰点(9)</td>
+<td>回封涨停，染料化工</td>
+<td>基本面弱</td>
+<td>观察</td>
+</tr>
+<tr>
+<td>30</td>
+<td>东安动力</td>
+<td>600178</td>
+<td>73</td>
+<td>B</td>
+<td>加速</td>
+<td>冰点(9)</td>
+<td>2连板，动力总成+兵装系</td>
+<td>连板拥挤</td>
+<td>观察/轻仓</td>
+</tr>
+</tbody>
+</table>
+<p><strong>🔴 闸门① 降级标的（20 个交易日内已推荐，只跟踪不建仓）</strong>：
+| 股票 | 代码 | 评分 | 距上次推荐 | 处置 |
+|------|------|------|-----------|------|
+| 亨通光电 | 600487 | 88 | 8 交易日（9/17） | <strong>持续跟踪（第4次）</strong> — 涨停+17.65亿全市场第一+Q3预增151%-168%，本日最强信号但触闸，明日回踩可视作跟踪标的首选 |
+| 赤峰黄金 | 600988 | 77 | 5 交易日（10/9） | 持续跟踪（第2次） |
+| 江苏新能 | 603693 | 73 | 10 交易日（9/11） | 持续跟踪（第3次） |
+| 工商银行 | 601398 | 79 | 15 交易日（9/3） | 持续跟踪（第2次） |
+| 沃特股份 | 002886 | 76 | 16 交易日（9/2） | 持续跟踪（第2次） |
+| 泓博医药 | 301230 | — | 1 交易日（10/16） | 持续跟踪 — 今日炸板 -6.84%，见持仓处置 |</p>
+<p><strong>妖股警示（不评不建）</strong>：澳弘电子 21 天 12 板、慈文传媒 7 天 6 板、新华传媒 11 连板（净卖出居前）——高位断板传导风险，禁追涨。</p>
+<hr />
+<h2>四、Layer 7 市场情绪：冰点修复期（独立评分 9/10 反向档）</h2>
+<ul>
+<li>涨停 <strong>46</strong>（&lt;40 临界）/ 跌停 <strong>22</strong> / 炸板 <strong>21</strong> → <strong>炸板率 31.3% &gt; 30%</strong> → 冰点预警档（反向规则情绪分 9-10）</li>
+<li>连板梯队：慈文传媒 6 板、澳弘电子 12 板（妖股）、吉大正元/东方嘉盛 3 板、2 连板 10 只 —— 高度尚存但集中度下降</li>
+<li>判断：<strong>退潮末段/冰点修复期</strong>。跌停 22 家偏多、跌多涨少，但午后机器人/PCB 情绪回暖修复。冰点后 1-3 日若涨停回升至 60+ 且炸板率回落 &lt;25%，情绪周期切向"启动"。</li>
+</ul>
+<hr />
+<h2>⚠️ 模块冲突标注</h2>
+<ul>
+<li>Layer 1 市场评分：50 分（偏弱）</li>
+<li>Layer 3 产业评分：机器人/物理 AI 85 分（偏多）</li>
+<li>Layer 7 情绪评分：冰点预警档（炸板率 31.3%、跌停 22）</li>
+<li>冲突解读：市场整体弱（跌多涨少+权重独强）但机器人/通信产业方向强且资金加速 → <strong>典型结构性机会特征</strong></li>
+<li>操作建议：总仓位压至 20%-30%，只保留强势方向（机器人链/通信回踩/银行防守）低仓配置；不做全面防御清空</li>
+</ul>
+<hr />
+<h2>五、Layer 8 组合管理</h2>
+<p><strong>鑫未来核心组合（中线，T+8 强制复盘，中线 -8% 硬止损）</strong></p>
+<table>
+<thead>
+<tr>
+<th>股票</th>
+<th>代码</th>
+<th>评分</th>
+<th>评级</th>
+<th>操作</th>
+<th style="text-align: center;">是否首次推荐</th>
+<th style="text-align: center;">距上次推荐交易日数</th>
+<th style="text-align: center;">T+8复盘日</th>
+<th>逻辑</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>兆威机电</td>
+<td>003021</td>
+<td>84</td>
+<td>A</td>
+<td>优先建仓 4%-5%</td>
+<td style="text-align: center;">是</td>
+<td style="text-align: center;">—</td>
+<td style="text-align: center;">10-29</td>
+<td>机器人微特电机龙头，涨停放量，GTC催化</td>
+</tr>
+<tr>
+<td>建设银行</td>
+<td>601939</td>
+<td>81</td>
+<td>A</td>
+<td>优先建仓 3%-4%</td>
+<td style="text-align: center;">是</td>
+<td style="text-align: center;">—</td>
+<td style="text-align: center;">10-29</td>
+<td>历史新高+高股息，防守端哑铃配置</td>
+</tr>
+<tr>
+<td>文灿股份</td>
+<td>603348</td>
+<td>81</td>
+<td>A</td>
+<td>回踩建仓 3%-4%</td>
+<td style="text-align: center;">是</td>
+<td style="text-align: center;">—</td>
+<td style="text-align: center;">10-29</td>
+<td>一体化压铸+机器人结构件 2 连板</td>
+</tr>
+<tr>
+<td>保隆科技</td>
+<td>603197</td>
+<td>80</td>
+<td>A</td>
+<td>回踩建仓 3%-4%</td>
+<td style="text-align: center;">是</td>
+<td style="text-align: center;">—</td>
+<td style="text-align: center;">10-29</td>
+<td>汽车电子+传感器，2 连板回踩买</td>
+</tr>
+<tr>
+<td>苏州银行</td>
+<td>002966</td>
+<td>80</td>
+<td>A</td>
+<td>优先建仓 3%-4%</td>
+<td style="text-align: center;">是</td>
+<td style="text-align: center;">—</td>
+<td style="text-align: center;">10-29</td>
+<td>城商行补涨+低估值高股息</td>
+</tr>
+</tbody>
+</table>
+<p>仓位合计上限 18%-20%（市场 50 分冰点修复期，中线建仓规模压缩）。</p>
+<p><strong>鑫准出击机会池（短线，T+8=10-29 了结，-6% 硬止损）</strong></p>
+<table>
+<thead>
+<tr>
+<th>股票</th>
+<th>代码</th>
+<th>评分</th>
+<th>评级</th>
+<th>操作</th>
+<th style="text-align: center;">是否首次推荐</th>
+<th style="text-align: center;">距上次推荐交易日数</th>
+<th style="text-align: center;">T+8复盘日</th>
+<th>逻辑</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>浙江荣泰</td>
+<td>603119</td>
+<td>82</td>
+<td>A</td>
+<td>回踩建仓 1%-2%</td>
+<td style="text-align: center;">是</td>
+<td style="text-align: center;">—</td>
+<td style="text-align: center;">10-29</td>
+<td>机器人执行器涨停</td>
+</tr>
+<tr>
+<td>能科科技</td>
+<td>603859</td>
+<td>79</td>
+<td>B</td>
+<td>回踩建仓 1%-2%</td>
+<td style="text-align: center;">是</td>
+<td style="text-align: center;">—</td>
+<td style="text-align: center;">10-29</td>
+<td>物理 AI 直线涨停，GTC 催化</td>
+</tr>
+<tr>
+<td>宁波东力</td>
+<td>002164</td>
+<td>79</td>
+<td>B</td>
+<td>回踩建仓 1%-2%</td>
+<td style="text-align: center;">是</td>
+<td style="text-align: center;">—</td>
+<td style="text-align: center;">10-29</td>
+<td>减速器核心</td>
+</tr>
+<tr>
+<td>润建股份</td>
+<td>002929</td>
+<td>78</td>
+<td>B</td>
+<td>回踩建仓 1%-2%</td>
+<td style="text-align: center;">是</td>
+<td style="text-align: center;">—</td>
+<td style="text-align: center;">10-29</td>
+<td>算力运维涨停</td>
+</tr>
+<tr>
+<td>科森科技</td>
+<td>603626</td>
+<td>78</td>
+<td>B</td>
+<td>轻仓回踩 1%</td>
+<td style="text-align: center;">是</td>
+<td style="text-align: center;">—</td>
+<td style="text-align: center;">10-29</td>
+<td>机器人结构件</td>
+</tr>
+<tr>
+<td>肯特股份</td>
+<td>301591</td>
+<td>78</td>
+<td>B</td>
+<td>轻仓回踩 1%</td>
+<td style="text-align: center;">是</td>
+<td style="text-align: center;">—</td>
+<td style="text-align: center;">10-29</td>
+<td>PCB 材料 20cm</td>
+</tr>
+<tr>
+<td>协和电子</td>
+<td>605258</td>
+<td>77</td>
+<td>B</td>
+<td>轻仓回踩 1%</td>
+<td style="text-align: center;">是</td>
+<td style="text-align: center;">—</td>
+<td style="text-align: center;">10-29</td>
+<td>PCB 回暖</td>
+</tr>
+<tr>
+<td>长春一东</td>
+<td>600148</td>
+<td>74</td>
+<td>B</td>
+<td>轻仓回踩 1%</td>
+<td style="text-align: center;">是</td>
+<td style="text-align: center;">—</td>
+<td style="text-align: center;">10-29</td>
+<td>军工 2 连板</td>
+</tr>
+</tbody>
+</table>
+<p>短线合计 ≤10%（炸板率 31% 冰点期短线轻仓）。</p>
+<p><strong>当前持仓调整建议</strong>（无「清仓」，统一减仓至半仓）：</p>
+<table>
+<thead>
+<tr>
+<th>股票</th>
+<th>代码</th>
+<th>评分</th>
+<th>评级</th>
+<th>操作</th>
+<th style="text-align: center;">是否首次推荐</th>
+<th style="text-align: center;">距上次推荐交易日数</th>
+<th style="text-align: center;">T+8复盘日</th>
+<th>逻辑</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>泓博医药</td>
+<td>301230</td>
+<td>—</td>
+<td>—</td>
+<td><strong>减仓至半仓</strong></td>
+<td style="text-align: center;">否</td>
+<td style="text-align: center;">1 交易日</td>
+<td style="text-align: center;">—</td>
+<td>10/16 建仓后今日高位炸板 -6.84%，逼近短线 -6% 止损线，先减半仓保护利润</td>
+</tr>
+<tr>
+<td>澳弘电子</td>
+<td>605058</td>
+<td>—</td>
+<td>—</td>
+<td><strong>减仓至半仓</strong></td>
+<td style="text-align: center;">否</td>
+<td style="text-align: center;">3 交易日</td>
+<td style="text-align: center;">—</td>
+<td>21 天 12 板妖股，今日炸板收 8% 涨幅区，落袋优先</td>
+</tr>
+<tr>
+<td>长鑫科技</td>
+<td>688041</td>
+<td>—</td>
+<td>—</td>
+<td><strong>减仓至半仓</strong></td>
+<td style="text-align: center;">否</td>
+<td style="text-align: center;">5 交易日（10/9）</td>
+<td style="text-align: center;">—</td>
+<td>今日 -7.55% + 主力净卖出 12.12 亿全市场第一，逼近中线 -8% 止损</td>
+</tr>
+<tr>
+<td>天孚通信</td>
+<td>300394</td>
+<td>—</td>
+<td>—</td>
+<td>减仓至半仓</td>
+<td style="text-align: center;">否</td>
+<td style="text-align: center;">—</td>
+<td style="text-align: center;">—</td>
+<td>主力净流出居前 -3.87%，AI 硬件撤退延续</td>
+</tr>
+<tr>
+<td>新华传媒</td>
+<td>600825</td>
+<td>—</td>
+<td>—</td>
+<td>减仓至半仓（如有持仓）</td>
+<td style="text-align: center;">否</td>
+<td style="text-align: center;">—</td>
+<td style="text-align: center;">—</td>
+<td>11 连板高位+净卖出 9 亿，断板风险</td>
+</tr>
+<tr>
+<td>德明利</td>
+<td>001309</td>
+<td>—</td>
+<td>—</td>
+<td>持有</td>
+<td style="text-align: center;">否</td>
+<td style="text-align: center;">1 交易日（10/16）</td>
+<td style="text-align: center;">10-28</td>
+<td>+7.03% 资金流入，存储涨价逻辑在</td>
+</tr>
+<tr>
+<td>江波龙</td>
+<td>301308</td>
+<td>—</td>
+<td>—</td>
+<td>持有</td>
+<td style="text-align: center;">否</td>
+<td style="text-align: center;">1 交易日（10/16）</td>
+<td style="text-align: center;">10-28</td>
+<td>存储主线，正常波动</td>
+</tr>
+<tr>
+<td>中航沈飞/航发动力/中航高科/洪都航空</td>
+<td>—</td>
+<td>—</td>
+<td>—</td>
+<td>持有</td>
+<td style="text-align: center;">否</td>
+<td style="text-align: center;">1 交易日（10/16）</td>
+<td style="text-align: center;">10-28</td>
+<td>军工主线延续（航展 12/7 催化在途）</td>
+</tr>
+<tr>
+<td>掌阅科技/新经典</td>
+<td>—</td>
+<td>—</td>
+<td>—</td>
+<td>持有观察</td>
+<td style="text-align: center;">否</td>
+<td style="text-align: center;">3 交易日（10/14）</td>
+<td style="text-align: center;">10-28</td>
+<td>传媒退潮，午后无修复则 T+8 前择机减</td>
+</tr>
+<tr>
+<td>中国神华/陕西煤业/中国石油/中国海油</td>
+<td>—</td>
+<td>—</td>
+<td>—</td>
+<td>持有</td>
+<td style="text-align: center;">否</td>
+<td style="text-align: center;">3 交易日（10/14）</td>
+<td style="text-align: center;">10-28</td>
+<td>高股息+油气，与银行同为防守端</td>
+</tr>
+<tr>
+<td>电魂网络</td>
+<td>—</td>
+<td>—</td>
+<td>—</td>
+<td>已执行止损（10/16）</td>
+<td style="text-align: center;">—</td>
+<td style="text-align: center;">—</td>
+<td style="text-align: center;">—</td>
+<td>—</td>
+</tr>
+<tr>
+<td>10/09 建仓批次</td>
+<td>—</td>
+<td>—</td>
+<td>—</td>
+<td><strong>明日 10/21 = T+8，逐一核查</strong></td>
+<td style="text-align: center;">—</td>
+<td style="text-align: center;">—</td>
+<td style="text-align: center;">10-21</td>
+<td>无新增催化即减仓离场</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2>六、Layer 9 风险委员会扫描</h2>
+<table>
+<thead>
+<tr>
+<th>风险</th>
+<th>等级</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>情绪过热/冰点风险</td>
+<td>🟡 黄</td>
+<td>炸板率 31.3% &gt; 30% 冰点线 + 跌停 22 家；若明日涨停 &lt;40 且炸板率续升 → 冰点确认，仓位降至 15% 以内</td>
+</tr>
+<tr>
+<td>海外流动性</td>
+<td>🟡 黄</td>
+<td>纳指 -2.14%（AI 算力链二次下杀）、10Y 美债 5.068%、12 月加息概率 77.3%</td>
+</tr>
+<tr>
+<td>AI 硬件分歧</td>
+<td>🟡 黄</td>
+<td>电子板块连续净流出 -27.66 亿，长鑫 -12.12 亿第一；但亨通/寒武纪/德明利个股流入 → 分层分化，不整体定性</td>
+</tr>
+<tr>
+<td>高位妖股断板传导</td>
+<td>🔴 红</td>
+<td>澳弘 12 板/慈文 6 板/新华传媒 11 板/天津普林地天板——断板将压制题材情绪</td>
+</tr>
+<tr>
+<td>政策/数据事件</td>
+<td>🟢 绿</td>
+<td>本周 GDP+LPR、金融街论坛、英伟达 GTC（偏多催化），不确定性地缘（俄美柴油协议缓和油价）</td>
+</tr>
+<tr>
+<td>组合集中度</td>
+<td>🟢 绿</td>
+<td>今日新增集中于机器人/防守双端，符合哑铃结构</td>
+</tr>
+</tbody>
+</table>
+<p><strong>最大风险提示</strong>：①炸板率 31% 冰点未确认反转前，一切回踩建仓必须轻仓且设 -6%/-8% 硬止损；②纳指 AI 链二次下杀若传导，创业板/科创反弹将夭折；③机器人主线明日 GTC 开幕存在"利好兑现"回撤风险——<strong>回踩买、不追涨停后</strong>。</p>
+<hr />
+<h2>✅ V5.2 合规自检</h2>
+<p><code>1. 重复推荐闸：本次推荐是否有标的在 20 个交易日内已推荐过？  ☑ 无
+   （亨通光电/赤峰黄金/江苏新能/工商银行/沃特股份/泓博医药 6 只已降级「持续跟踪」，不占仓位）
+2. 高评分闸：是否有评分 ≥90 的标的被列入建仓？              ☑ 无
+   （TOP30 最高 84 分兆威机电；亨通光电 88 分已因闸门①降级，双重不建仓）
+3. 温度闸：今日市场评分 50 分 → ☑ ≤65 允许建仓（仓位压至 20%-30%）
+4. 持有期：鑫准出击持仓是否已达 T+8？鑫未来是否有持仓超 T+8 未复盘？ ☑ 已检查
+   （10/09 批 T+8=10/21 明日到期核查；10/12 批=10/22；10/13 批=10/23；10/14 批=10/28；10/16 批=10/28；今日新建仓 T+8=10/29）
+5. 止损：是否有持仓触及 短线 -6% / 中线 -8%？                ☑ 有（已执行：泓博医药 -6.84% 减仓至半仓；长鑫科技 -7.55% 减仓至半仓）
+6. 操作类型：是否残留「清仓」字样                            ☑ 无</code></p>
+<hr />
+<p><em>数据来源：腾讯直连行情 API、东财涨停/跌停/炸板池（20261019）、财联社盯盘、华尔街见闻收评、金十数据。本报告由 V5.2 系统自动生成，仅供参考，不构成投资建议。</em></p>
+<div class='risk'><b>🔴 最大风险：</b>①炸板率31%冰点未确认反转前，回踩建仓必须轻仓+硬止损（短-6%/中-8%）；②纳指AI链二次下杀传导风险；③机器人主线明日GTC开幕存在利好兑现回撤——回踩买、不追涨停后；④高位妖股（澳弘12板/新华传媒11板/慈文6板）断板传导。</div>
+<footer>V5.2 系统 15:30 收盘报告 · 2026-10-19 · 全天唯一正式市场评分输出点 · 仅供参考，不构成投资建议</footer></body></html>
